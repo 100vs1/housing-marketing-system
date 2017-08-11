@@ -1,0 +1,26 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+
+{% block title %}문의하기{% endblock %}
+{% block meta_description %}이메일로 문의하셔서 도움을 받으세요.{% endblock %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2 well">
+      {% call f.form_tag('contact.index') %}
+        <legend>문의하기</legend>
+
+        {% call f.form_group(form.email, css_class='margin-bottom',
+                             placeholder='이메일 주소') %}
+        {% endcall %}
+
+        {% call f.form_group(form.message, css_class='margin-bottom',
+                             placeholder='문의하실 내용을 자세히 작성하시면 답변에 많은 참고가 됩니다.',
+                             rows='12') %}
+        {% endcall %}
+
+        <button type="submit" class="btn btn-primary">발송하기</button>
+      {% endcall %}
+    </div>
+  </div>
+{% endblock %}

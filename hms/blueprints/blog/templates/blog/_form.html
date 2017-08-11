@@ -1,0 +1,49 @@
+{% import 'macros/form.html' as f with context %}
+
+{% if request.endpoint.endswith('new') %}
+  {% set endpoint = 'blog.posts_new' %}
+  {% set form_kwargs = {} %}
+  {% set legend = '글 등록하기' %}
+  {% set button = '등록하기' %}
+{% else %}
+  {% set endpoint = 'blog.posts_edit' %}
+  {% set form_kwargs = {'id': post.id} %}
+  {% set legend = '글 수정하기' %}
+  {% set button = '저장하기' %}
+{% endif %}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2 well">
+    {% call f.form_tag(endpoint, **form_kwargs) %}
+      <legend>{{ legend }}</legend>
+
+      {% call f.form_group(form.title, css_class='margin-bottom',
+                           placeholder='제목을 입력해주세요.') %}
+      {% endcall %}
+
+      {% call f.form_group(form.body, css_class='margin-bottom',
+                           placeholder='본문을 입력해주세요.',
+                           rows='12') %}
+      {% endcall %}
+
+      <hr/>
+      <div class="row">
+        <div class="col-md-6">
+          <button type="submit" class="btn btn-primary btn-block">
+            <img src="{{ url_for('static', filename='images/spinner.gif') }}"
+                class="spinner"
+                width="16" height="11" alt="Spinner"/>
+            {{ button }}
+          </button>
+        </div>
+        <div class="col-md-6">
+          <div class="visible-xs visible-sm sm-margin-top"></div>
+          <a href="{{ url_for('blog.posts') }}"
+              class="btn btn-default btn-block">
+            취소하기
+          </a>
+        </div>
+      </div>
+    {% endcall %}
+  </div>
+</div>

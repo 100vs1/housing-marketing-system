@@ -1,0 +1,48 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/items.html' as items %}
+
+{% block title %}읍면동{% endblock %}
+
+{% block body %}
+  <h2>읍면동 목록</h2>
+  {% if emds.total == 0 %}
+    <p>조회 결과가 없습니다.</p>
+  {% else %}
+    <table class="table">
+      <thead>
+      <tr>
+        <th>uid</th>
+        <th>PolygonID</th>
+        <th>dong</th>
+        <th>dong_en</th>
+        <th>dong_kor</th>
+        <th>SubPolygonID</th>
+        <th>PointID</th>
+        <th>Longitude</th>
+        <th>Latitude</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for emd in emds.items %}
+        <tr>
+          <td>{{ emd.uid }}</td>
+          <td>{{ emd.polygon_id }}</td>
+          <td>{{ emd.dong }}</td>
+          <td>{{ emd.dong_en }}</td>
+          <td>{{ emd.dong_kor }}</td>
+          <td>{{ emd.sub_polygon_id }}</td>
+          <td>{{ emd.point_id }}</td>
+          <td>{{ emd.longitude }}</td>
+          <td>{{ emd.latitude }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    {{ items.paginate(emds) }}
+  {% endif %}
+  <hr/>
+  <a href="{{ url_for('user.settings') }}" class="margin-top btn btn-primary">
+    Go back to your account
+  </a>
+{% endblock %}

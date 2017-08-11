@@ -1,0 +1,203 @@
+{% extends 'layouts/app.html' %}
+
+{% block body %}
+        <script type="text/javascript" src="https://sgisapi.kostat.go.kr/OpenAPI3/auth/javascriptAuth?consumer_key=9632a43de88040e4ae70"></script>
+<script type=text/javascript>
+	var map, mapOptions, oriArea, sopArea;
+	var consumer_key = '9632a43de88040e4ae70';
+	var consumer_sercret = '4c46359dbb124e5890a9';
+	var accessToken = '';
+
+	mapOptions = {
+		ollehTileLayer: true,
+		measureControl: false,
+		zoomSliderControl: false,
+		panControl: false,
+		attributionControl: false
+	};
+
+  $(function() {
+    createServiceRequest();
+
+	map = sop.map("map", mapOptions);
+	map.setView([953427, 1950827], 0);
+
+	sop.DomUtil.get("addArea").onclick = addArea;
+	sop.DomUtil.get("addStatistic").onclick = addStatistic;
+	sop.DomUtil.get("clear").onclick = clear;
+  });
+
+	function createServiceRequest() {
+        // 인증 API
+        $.ajax({
+          url : 'https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json' +
+                '?consumer_key='+consumer_key+'&consumer_secret='+consumer_sercret,
+          type : 'get',
+            success: function (res, status) {
+                accessToken = res.result.accessToken;
+            }
+        });
+	}
+
+	function addArea() {
+		if (sopArea) {
+			sopArea.remove();
+			sopArea = undefined;
+			oriArea = undefined;
+		}
+        var year = "2010";
+      	var adm_cd = "11";
+		$.ajax({
+          url : 'https://sgisapi.kostat.go.kr/OpenAPI3/boundary/hadmarea.geojson' +
+          		'?accessToken='+ accessToken +'&year='+year+'&adm_cd='+adm_cd,
+          type : 'get',
+	      datatype : "geojson",
+			success: function( res,status) {
+                oriArea = res;
+				sopArea = sop.geoJson(res).addTo(map);
+				map.fitBounds(sopArea.getBounds());
+			}
+		});
+	}
+
+	function addStatistic() {
+		if (!oriArea) {
+			alert("경계조회를 먼저 하세요");
+			return;
+		}
+
+          var year = "2010";
+          var adm_cd = "11";
+          var low_search = "1";
+          $.ajax({
+            url : 'https://sgisapi.kostat.go.kr/OpenAPI3/stats/population.json' +
+          	'?accessToken='+accessToken+'&year='+year+'&adm_cd='+adm_cd+
+            '&low_search=' +low_search,
+            type : 'get',
+			success: function (res,status) {
+				// 맵형태로 변환한다.
+				var idx, len, target, conComplite = {}, key, value, strToolTip;
+				target = res.result;
+
+				for (idx = 0, len = target.length; idx < len; idx ++) {
+					conComplite[target[idx].adm_cd] = target[idx];
+				}
+				sopArea.eachLayer(function (layer) {
+					key = layer.feature.properties.adm_cd;
+					value = conComplite[key];
+
+					if (!value) { return; }
+
+					strToolTip = "<p>지역(구)명 : " + value.adm_nm + "</p>";
+					strToolTip += "<p>총인구 : " + value.tot_ppltn + "</p>";
+					strToolTip += "<p>평균나이(세) : " + value.avg_age + "</p>";
+					strToolTip += "<p>인구밀도(명/㎢) : " + value.ppltn_dnsty + "</p>";
+					strToolTip += "<p>노령화지수(%) : " + value.aged_child_idx + "</p>";
+					strToolTip += "<p>노년부양비(%) : " + value.oldage_suprt_per + "</p>";
+					strToolTip += "<p>유년부양비(%) : " + value.juv_suprt_per + "</p>";
+                  	strToolTip += "<p>총가구 : " + value.tot_family + "</p>";
+                	strToolTip += "<p>평균가구원수 : " + value.avg_fmember_cnt + "</p>";
+                  	strToolTip += "<p>총주택 : " + value.tot_house + "</p>";
+             		strToolTip += "<p>농가(가구) : " + value.nongga_cnt + "</p>";
+                  	strToolTip += "<p>농가 인구 : " + value.nongga_ppltn + "</p>";
+                  	strToolTip += "<p>임가(가구) : " + value.imga_cnt + "</p>";
+                  	strToolTip += "<p>임가 인구 : " + value.imga_ppltn + "</p>";
+                  	strToolTip += "<p>내수면 어가(가구) : " + value.naesuoga_cnt + "</p>";
+                  	strToolTip += "<p>내수면 인구 : " + value.naesuoga_ppltn + "</p>";
+                  	strToolTip += "<p>해수면 어가(가구) : " + value.haesuoga_cnt + "</p>";
+                  	strToolTip += "<p>해수면 인구 : " + value.haesuoga_ppltn + "</p>";
+               		strToolTip += "<p>종업원수(전체 사업체) : " + value.employee_cnt + "</p>";
+                  	strToolTip += "<p>사업체수(전체 사업체) : " + value.corp_cnt + "</p>";
+
+					layer.bindToolTip(strToolTip);
+				});
+			}
+		});
+	}
+
+	function clear() {
+		if (sopArea) {
+			sopArea.remove();
+		}
+		sopArea = undefined;
+		oriArea = undefined;
+	}
+
+/*
+  $(function() {
+    $('a#calculate').bind('click', function() {
+      $.getJSON('/market/json_ajax', {
+        a: $('input[name="a"]').val(),
+        b: $('input[name="b"]').val()
+      }, function(data) {
+        $("#result").text(data.result);
+      });
+      return false;
+    });
+  });*/
+</script>
+
+<div class="container sm-margin-top">
+  <div class="col-lg-2"></div>
+  <div id="map" class="row text-center lg-margin-bottom" style="width:650px;height:400px"></div>
+
+    <button id="addArea">경계조회</button>
+    <button id="addStatistic">인구통계조회</button>
+    <button id="clear">지도초기화</button>
+
+  <div class="row text-center">
+<p><input type=text size=5 name=a> +
+   <input type=text size=5 name=b> =
+   <span id=result>?</span>
+<p><a href=# id=calculate>calculate server side</a>
+
+<script type=text/javascript>
+  var accessToken;
+  $(function() {
+    $('a#calculate').bind('click', function() {
+	$.ajax({
+		type: 'GET',
+		url: 'https://sgisapi.kostat.go.kr/OpenAPI3/stats/population.json',
+		data: {'accessToken': accessToken, 'year': '2015', 'adm_cd': '11'},
+		crossDomain: true,
+		success: function(data) {
+			alert(JSON.stringify(data));
+		},
+		error: function(xhr, status, error) {
+			alert(error);
+		}
+     });
+     return false;
+   });
+  });
+
+  $(function() {
+    $('a#calculate2').bind('click', function() {
+      $.ajax({
+      	type: 'GET',
+      	url: 'https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json',
+      	data: {'consumer_key': '9632a43de88040e4ae70', 'consumer_secret': '4c46359dbb124e5890a9'},
+      	success: function(data) {
+	      	var rslt = JSON.stringify(data);
+	      	if (data.errCd == 0) {
+	      		accessToken = data.result.accessToken;
+	      	} else {
+	      		alert(data.errCd);
+	      	}
+	       	$("#result2").html(rslt);
+	    },
+	    error: function(xhr, status, error) {
+	    	alert(error);
+	    }
+     });
+     return false;
+   });
+  });
+</script>
+<p><input type=text size=5 name=year>
+<p><span id=result2>?</span>
+<p><a href=# id=calculate2>calculate server side</a>
+
+	</div>
+</div>
+{% endblock %}

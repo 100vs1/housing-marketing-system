@@ -1,0 +1,80 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}주택 마케팅 포털 시스템{% endblock %}
+{% block meta_description %}Compete against yourself and others by guessing the
+outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
+
+{% block body %}
+  <div class="container sm-margin-top">
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="item active">
+          <img src="{{ url_for('static', filename='images/la.jpg') }}" alt="Los Angeles">
+          <div class="carousel-caption">
+            <h3>Los Angeles</h3>
+            <p>LA is always so much fun!</p>
+          </div>
+        </div>
+        <div class="item">
+          <img src="{{ url_for('static', filename='images/chicago.jpg') }}" alt="Chicago">
+          <div class="carousel-caption">
+            <h3>Chicago</h3>
+            <p>Thank you, Chicago!</p>
+          </div>
+        </div>
+        <div class="item">
+          <img src="{{ url_for('static', filename='images/ny.jpg') }}" alt="New York">
+          <div class="carousel-caption">
+            <h3>New York</h3>
+            <p>We love the Big Apple!</p>
+          </div>
+        </div>
+      </div>
+      <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+        <span class="sr-only">Prev</span>
+      </a>
+      <a class="right carousel-control" href="#myCarousel" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+    <div class="row text-center lg-margin-bottom">
+      <h1>주택시장 분석을 제대로 하고 싶으신가요?</h1>
+      <h3 class="text-muted">
+        시간과 비용과 행복을 지켜드립니다!!!
+      </h3>
+    </div>
+    <div class="row text-center">
+      <div class="col-lg-4">
+        <i class="fa fa-fw fa-4x fa-bullhorn text-primary"></i>
+        <h2>지역현황</h2>
+        <p class="text-muted">체계적인 주택시장 조사를 위한 지역별 지도 기반의 서비스.</p>
+        <p>
+          <a href="{{ url_for('user.signup') }}" class="btn btn-default">지금 가입하기</a>
+        </p>
+      </div>
+      <div class="col-lg-4">
+        <i class="fa fa-fw fa-4x fa-database text-primary"></i>
+        <h2>미래예측</h2>
+        <p class="text-muted">현재의 추세를 토대로 향후 수요 전망을 사전에 감지하는 예측 서비스.</p>
+        <p>
+          <a href="{{ url_for('user.signup') }}" class="btn btn-default">지금 가입하기</a>
+        </p>
+      </div>
+      <div class="col-lg-4">
+        <i class="fa fa-fw fa-4x fa-trophy text-primary"></i>
+        <h2>인공지능</h2>
+        <p class="text-muted">신속하고 효율적인 기계학습으로 최적의 결과를 생산하는 분석 서비스.</p>
+        <p>
+          <a href="{{ url_for('user.signup') }}" class="btn btn-default">지금 가입하기</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

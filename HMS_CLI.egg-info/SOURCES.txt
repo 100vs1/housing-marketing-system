@@ -1,0 +1,9 @@
+HMS_CLI.egg-info/PKG-INFO
+HMS_CLI.egg-info/SOURCES.txt
+HMS_CLI.egg-info/dependency_links.txt
+HMS_CLI.egg-info/entry_points.txt
+HMS_CLI.egg-info/requires.txt
+HMS_CLI.egg-info/top_level.txt
+cli/__init__.py
+cli/cli.py
+cli/commands/__init__.py

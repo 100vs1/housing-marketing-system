@@ -1,0 +1,9 @@
+
+	@font-face{
+		font-family: "NanumGothic";
+		src: url("http://themes.googleusercontent.com/static/fonts/earlyaccess/nanumgothic/v3/NanumGothic-Regular.eot");
+		src: url("http://themes.googleusercontent.com/static/fonts/earlyaccess/nanumgothic/v3/NanumGothic-Regular.eot?#iefix") format("embedded-opentype"),
+				/*url("http://themes.googleusercontent.com/static/fonts/earlyaccess/nanumgothic/v3/NanumGothic-Regular.woff2") format("woff2"),*/
+				url("http://themes.googleusercontent.com/static/fonts/earlyaccess/nanumgothic/v3/NanumGothic-Regular.woff") format("woff"),
+				url("http://themes.googleusercontent.com/static/fonts/earlyaccess/nanumgothic/v3/NanumGothic-Regular.ttf") format("truetype");
+	}

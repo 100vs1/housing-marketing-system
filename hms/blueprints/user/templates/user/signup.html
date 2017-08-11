@@ -1,0 +1,74 @@
+{% extends 'layouts/app.html' %}
+{% import 'macros/form.html' as f with context %}
+
+{% block title %}회원가입{% endblock %}
+
+{% block body %}
+  <div class="row">
+    <div class="col-md-5">
+      <h2>지금 가입하시면 아래의 주요 서비스 이용이 가능합니다.</h2>
+
+      <div class="media md-margin-bottom">
+        <div class="media-left">
+          <i class="fa fa-fw fa-3x fa-bullhorn text-primary"></i>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">지역현황</h4>
+          <span class="text-muted">
+            체계적인 주택시장 조사를 위한 지역별 지도 기반의 서비스.
+          </span>
+        </div>
+      </div>
+      <div class="media md-margin-bottom">
+        <div class="media-left">
+          <i class="fa fa-fw fa-3x fa-database text-primary"></i>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">미래예측</h4>
+          <span class="text-muted">
+            현재의 추세를 토대로 향후 수요 전망을 사전에 감지하는 예측 서비스.
+          </span>
+        </div>
+      </div>
+      <div class="media md-margin-bottom">
+        <div class="media-left">
+          <i class="fa fa-fw fa-3x fa-trophy text-primary"></i>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">인공지능</h4>
+          <span class="text-muted">
+            신속하고 효율적인 기계학습으로 최적의 결과를 생산하는 분석 서비스.
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5 col-md-push-1 col-md-offset-1 well">
+      {% call f.form_tag('user.signup') %}
+        <legend>지금 가입하기</legend>
+
+        {% call f.form_group(form.email, css_class='sm-margin-bottom',
+                             autofocus='autofocus',
+                             placeholder='예) test@test.com') %}
+        {% endcall %}
+
+        {% call f.form_group(form.password, css_class='sm-margin-bottom') %}
+        {% endcall %}
+
+        <div class="row">
+          <div class="col-md-6">
+            <button type="submit" class="btn btn-primary btn-block">
+              가입하기
+            </button>
+          </div>
+          <div class="col-md-6">
+            <div class="visible-xs visible-sm sm-margin-top"></div>
+            <a href="{{ url_for('user.login') }}"
+               class="btn btn-default btn-block">
+              로그인하러 가기
+            </a>
+          </div>
+        </div>
+      {% endcall %}
+    </div>
+  </div>
+{% endblock %}
