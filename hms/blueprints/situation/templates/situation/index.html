@@ -5,66 +5,70 @@
 outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 
 {% block body %}
-    <style type="text/css">
-      .ol-custom-overviewmap,
-      .ol-custom-overviewmap.ol-uncollapsible {
+<style type="text/css">
+    .ol-custom-overviewmap,
+    .ol-custom-overviewmap.ol-uncollapsible {
         bottom: 0;
         left: auto;
         right: 0;
         top: auto;
-      }
+    }
 
-      .ol-custom-overviewmap:not(.ol-collapsed)  {
+    .ol-custom-overviewmap:not(.ol-collapsed) {
         border: 1px solid black;
-      }
+    }
 
-      .ol-custom-overviewmap .ol-overviewmap-map {
+    .ol-custom-overviewmap .ol-overviewmap-map {
         border: none;
         width: 300px;
-      }
+    }
 
-      .ol-custom-overviewmap .ol-overviewmap-box {
+    .ol-custom-overviewmap .ol-overviewmap-box {
         border: 2px solid red;
-      }
+    }
 
-      .ol-custom-overviewmap:not(.ol-collapsed) button{
+    .ol-custom-overviewmap:not(.ol-collapsed) button {
         bottom: 1px;
         left: auto;
         right: 1px;
         top: auto;
-      }
+    }
 
-      .map:-moz-full-screen {
+    .map:-moz-full-screen {
         height: 100%;
-      }
-      .map:-webkit-full-screen {
-        height: 100%;
-      }
-      .map:-ms-fullscreen {
-        height: 100%;
-      }
-      .map:fullscreen {
-        height: 100%;
-      }
+    }
 
-      .ol-rotate {
+    .map:-webkit-full-screen {
+        height: 100%;
+    }
+
+    .map:-ms-fullscreen {
+        height: 100%;
+    }
+
+    .map:fullscreen {
+        height: 100%;
+    }
+
+    .ol-rotate {
         top: 3em;
-      }
+    }
 
-        /* 팝업 */
-      .ol-popup {
+    /* 팝업 */
+    .ol-popup {
         position: absolute;
         background-color: white;
-        -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+        filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
         padding: 15px;
         border-radius: 10px;
         border: 1px solid #cccccc;
         bottom: 12px;
         left: -50px;
         min-width: 280px;
-      }
-      .ol-popup:after, .ol-popup:before {
+    }
+
+    .ol-popup:after, .ol-popup:before {
         top: 100%;
         border: solid transparent;
         content: " ";
@@ -72,218 +76,372 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         width: 0;
         position: absolute;
         pointer-events: none;
-      }
-      .ol-popup:after {
+    }
+
+    .ol-popup:after {
         border-top-color: white;
         border-width: 10px;
         left: 48px;
         margin-left: -10px;
-      }
-      .ol-popup:before {
+    }
+
+    .ol-popup:before {
         border-top-color: #cccccc;
         border-width: 11px;
         left: 48px;
         margin-left: -11px;
-      }
-      .ol-popup-closer {
+    }
+
+    .ol-popup-closer {
         text-decoration: none;
         position: absolute;
         top: 2px;
         right: 8px;
-      }
-      .ol-popup-closer:after {
+    }
+
+    .ol-popup-closer:after {
         content: "✖";
-      }
-    </style>
-    {# 공통 지역선택 모달 #}
-    <div id="mdl-area" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-area-label">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="mdl-area-label">지역선택</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item active">시도</a>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item active">시군구</a>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item active">읍면동</a>
-                                </div>
+    }
+
+    /**** hms ****/
+    .ol-zoom {
+        left : 18.5%;
+    }
+
+    .ol-zoomslider {
+        left : 18.5%;
+    }
+
+    .ol-scale-line {
+        left : 18.5%;
+    }
+
+    .ol-full-screen {
+        right : 18.5%;
+    }
+
+    .layer-switcher {
+        right : 18.5%;
+    }
+
+    .ol-overviewmap {
+        right : 18.5%;
+        bottom : 0.5em;
+    }
+
+    .md-margin-top {
+        margin-top: 0;
+    }
+
+    .footer {
+        border-top: 0px;
+    }
+
+    .text-primary-bookmark {
+        color: #545454;
+    }
+
+    .btn-bookmark {
+        padding : 0 4px 0 4px;
+        border : 0;
+        margin-right: 2px;
+    }
+    /**** hms ****/
+</style>
+{# 공통 지역선택 모달 #}
+<div id="mdl-area" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-area-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-area-label">지역선택</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="list-group">
+                                <a href="#" class="list-group-item active">시도</a>
                             </div>
                         </div>
-                        <div class="row">
-                            <div id="div-sid-area" class="col-sm-4 pre-scrollable">
+                        <div class="col-sm-4">
+                            <div class="list-group">
+                                <a href="#" class="list-group-item active">시군구</a>
                             </div>
-                            <div id="div-sgg-area" class="col-sm-4 pre-scrollable">
-                            </div>
-                            <div id="div-emd-area" class="col-sm-4 pre-scrollable">
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="list-group">
+                                <a href="#" class="list-group-item active">읍면동</a>
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div id="div-sid-area" class="col-sm-4 pre-scrollable">
+                        </div>
+                        <div id="div-sgg-area" class="col-sm-4 pre-scrollable">
+                        </div>
+                        <div id="div-emd-area" class="col-sm-4 pre-scrollable">
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button id="btn-area" type="button" class="btn btn-default" data-dismiss="modal">확인</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-area" type="button" class="btn btn-default" data-dismiss="modal">확인</button>
             </div>
         </div>
     </div>
-    {# 즐겨찾기 모달 #}
-    <div id="mdl-bookmark" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-bookmark-label">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="mdl-bookmark-label">즐겨찾기</h4>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-                </div>
+</div>
+{# 즐겨찾기 모달 #}
+<div id="mdl-bookmark" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-bookmark-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-bookmark-label">즐겨찾기</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
             </div>
         </div>
     </div>
-    {# 차트 모달 #}
-    <div id="mdl-chart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-label">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="mdl-chart-label">차트</h4>
-                </div>
-                <div class="modal-body">
-                    <canvas id="cnv-chart"></canvas>
-                    <script>
-                        var ctx = document.getElementById("cnv-chart").getContext("2d");
-                        var chart;
-                        var config = {
-                            type: 'horizontalBar',
-                            data: {
-                                labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
-                                datasets: [{
-                                    label: '남자',
-                                    backgroundColor: [
-                                        '#3e95cd',
-                                        '#3e95cd',
-                                        '#3e95cd',
-                                        '#3e95cd',
-                                        '#3e95cd'
-                                    ],
-                                    data: [
-                                        2478,
-                                        526,
-                                        734,
-                                        784,
-                                        433
-                                    ]
-                                }, {
-                                    label: '여자',
-                                    backgroundColor: [
-                                        '#3e9500',
-                                        '#3e9500',
-                                        '#3e9500',
-                                        '#3e9500',
-                                        '#3e9500'
-                                    ],
-                                    data: [
-                                        247,
-                                        5263,
-                                        7355,
-                                        1823,
-                                        1333
-                                    ]
-                                }, {
-                                    label: '합계',
-                                    backgroundColor: [
-                                        '#3ecc00',
-                                        '#3ecc00',
-                                        '#3ecc00',
-                                        '#3ecc00',
-                                        '#3ecc00'
-                                    ],
-                                    data: [
-                                        247,
-                                        5263,
-                                        7355,
-                                        1823,
-                                        1333
-                                    ]
-                                }]
+</div>
+{# 차트 모달 #}
+<div id="mdl-chart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-chart-label">차트</h4>
+            </div>
+            <div class="modal-body">
+                <canvas id="cnv-chart"></canvas>
+                <script>
+                    var ctx = document.getElementById("cnv-chart").getContext("2d");
+                    var chart;
+                    var config = {
+                        type: 'polarArea',
+                        data: {
+                            labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
+                            datasets: [{
+                                label: '남자',
+                                backgroundColor: [
+                                    '#3e95cd',
+                                    '#3e95cd',
+                                    '#3e95cd',
+                                    '#3e95cd',
+                                    '#3e95cd'
+                                ],
+                                data: [
+                                    2478,
+                                    526,
+                                    734,
+                                    784,
+                                    433
+                                ]
+                            }, {
+                                label: '여자',
+                                backgroundColor: [
+                                    '#3e9500',
+                                    '#3e9500',
+                                    '#3e9500',
+                                    '#3e9500',
+                                    '#3e9500'
+                                ],
+                                data: [
+                                    247,
+                                    5263,
+                                    7355,
+                                    1823,
+                                    1333
+                                ]
+                            }, {
+                                label: '합계',
+                                backgroundColor: [
+                                    '#3ecc00',
+                                    '#3ecc00',
+                                    '#3ecc00',
+                                    '#3ecc00',
+                                    '#3ecc00'
+                                ],
+                                data: [
+                                    247,
+                                    5263,
+                                    7355,
+                                    1823,
+                                    1333
+                                ]
+                            }]
+                        },
+                        options: {
+                            legend: {
+                                display: true
                             },
-                            options: {
-                                legend: {
-                                    display: true
-                                },
-                                title: {
-                                    display: false,
-                                    text: '인구통계'
-                                }
+                            title: {
+                                display: false,
+                                text: '인구통계'
                             }
-                        };
-
-                        function create_chart(chart_type) {
-                            chart = new Chart(ctx, config);
-                            chart.type = chart_type;
-                            chart.update();
                         }
-                    </script>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-                </div>
+                    };
+
+                    function create_chart(chart_type) {
+                        chart = new Chart(ctx, config);
+                        chart.type = chart_type;
+                        chart.update();
+                    }
+                </script>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
             </div>
         </div>
     </div>
-	<div class="ui-layout-center">
-        <div id="map" class="map"></div>
-        <div id="popup" class="ol-popup">
-            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div id="popup-content"></div>
-        </div>
-    </div>
-	<div class="ui-layout-west">
-      <div id="west-accordion">
-        <h3><a href="#">인구이동</a></h3>
+</div>
+<div class="ui-layout-center">
+    <!--<div>빈값</div>-->
+</div>
+<div id="map" class="map"></div>
+<div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="west-accordion">
+        <h3><a href="#">인구통계</a></h3>
         <div>
-            <form id="frm-west-0" class="form-horizontal">
+            <form id="frm-west-2" class="form-horizontal">
+                <!--templates/macros/form.html에 form의 action이 정의되어 있음. -->
                 <div class="form-group">
-                    <button id="btn-pm-oa" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-area">전출지 선택 +</button>
-                    <p><span id="spn-pm-oa"></span></p>
+                    <button id="btn-ps-area" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-area">지역선택 +
+                    </button>
+                    <p><span id="spn-ps-area"></span></p>
                 </div>
                 <div class="form-group">
-                    <button id="btn-pm-ia" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-area">전입지 선택 +</button>
-                    <p><span id="spn-pm-ia"></span></p>
+                    <select id="age_grp" name="age_grp_cd" class="selectpicker" multiple title="연령대"
+                            data-actions-box="true">
+                        <!--{% for i in range(5, 95, 5) %}-->
+                        <!--<option value="{{i}}">{{i}}세</option>-->
+                        <!--{% endfor %}-->
+                    </select>
                 </div>
+                <!--<div class="form-group">-->
+                <!--<select required id="ps-sex" name="ps-sex" class="selectpicker" multiple title="성별" data-actions-box="true">-->
+                <!--<option value="1">남자</option>-->
+                <!--<option value="2">여자</option>-->
+                <!--</select>-->
+                <!--</div>-->
                 <div class="form-group">
-                    <select name="aplcnt_age" class="selectpicker" multiple title="나이" data-actions-box="true">
-                        {% for i in range(0, 142) %}
-                        <option value="{{i}}">{{i}}세</option>
+                    <select name="ps-syear" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                        {% for year in range(now.year, 2012, -1) %}
+                        <option value="{{year}}">{{year}}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="ps-smonth" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
+                        {% for month in range(1, 13) %}
+                        <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="aplcnt_sex" name="aplcnt_sex_cd" class="selectpicker" multiple title="성별" data-actions-box="true">
+                    <select id="ps-eyear" name="ps-eyear" class="selectpicker" title="종료년" data-actions-box="true"
+                            data-width="fit">
+                        {% for year in range(now.year, 2012, -1) %}
+                        <option value="{{year}}">{{year}}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="ps-emonth" name="ps-emonth" class="selectpicker" title="종료월" data-actions-box="true"
+                            data-width="fit">
+                        {% for month in range(1, 13) %}
+                        <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="div-west-2" class="form-group"></div>
+                <button id="btn-ps-search" class="btn btn-default pull-right" type="button" onclick="srch_popltn_stats();">
+                    검색
+                </button>
+            </form>
+        </div>
+        <h3><a href="#">세대통계</a></h3>
+        <div>
+            <form id="frm-west-1" class="form-horizontal">
+                <div class="form-group">
+                    <button id="btn-hs-a" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-area">지역선택 +
+                    </button>
+                    <p><span id="spn-hs-a"></span></p>
+                </div>
+                <div class="form-group">
+                    <select id="fmly_num" name="fmly_num_cd" class="selectpicker" multiple title="가구원수"
+                            data-actions-box="true">
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="mv_reasn" name="mv_reasn_cd" class="selectpicker" multiple title="이동사유" data-actions-box="true">
+                    <select id="rsdnc_clsftn" name="rsdnc_clsftn_cd" class="selectpicker" multiple title="주거유형"
+                            data-actions-box="true">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="room_num" name="room_num_cd" class="selectpicker" multiple title="방개수"
+                            data-actions-box="true">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select name="st_year" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                        {% for year in range(now.year, 2001, -1) %}
+                        <option value="{{year}}">{{year}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select name="ed_year" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
+                        {% for year in range(now.year, 2001, -1) %}
+                        <option value="{{year}}">{{year}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+            <button id="btn-hs-search" class="btn btn-default pull-right" type="button" onclick="srch_hshold_stats();">
+                검색
+            </button>
+        </div>
+        <h3><a href="#">인구이동</a></h3>
+        <div>
+            <form id="frm-west-0" class="form-horizontal">
+                <div class="form-group">
+                    <button id="btn-pm-oa" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-area">전출지 선택 +
+                    </button>
+                    <p><span id="spn-pm-oa"></span></p>
+                </div>
+                <div class="form-group">
+                    <button id="btn-pm-ia" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-area">전입지 선택 +
+                    </button>
+                    <p><span id="spn-pm-ia"></span></p>
+                </div>
+                <div class="form-group">
+                    <select id='aplcnt_age' name="aplcnt_age_cd" class="selectpicker" multiple title="연령대"
+                            data-actions-box="true">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="aplcnt_sex" name="aplcnt_sex_cd" class="selectpicker" multiple title="성별"
+                            data-actions-box="true">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="mv_reasn" name="mv_reasn_cd" class="selectpicker" multiple title="이동사유"
+                            data-actions-box="true">
                     </select>
                 </div>
                 <div class="form-group">
@@ -320,135 +478,105 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             </form>
             <button class="btn btn-default pull-right" type="button" onclick="srch_popltn_mvmt();">검색</button>
         </div>
-        <h3><a href="#">세대통계</a></h3>
-        <div>
-            <form id="frm-west-1" class="form-horizontal">
-                <div class="form-group">
-                    <button id="btn-hs-a" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-area">지역선택 +</button>
-                    <p><span id="spn-hs-a"></span></p>
-                </div>
-                <div class="form-group">
-                    <select id="fmly_num" name="fmly_num_cd" class="selectpicker" multiple title="가구원수" data-actions-box="true">
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select id="rsdnc_clsftn" name="rsdnc_clsftn_cd" class="selectpicker" multiple title="주거유형" data-actions-box="true">
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select id="room_num" name="room_num_cd" class="selectpicker" multiple title="방개수" data-actions-box="true">
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select name="st_year" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
-                        {% for year in range(now.year, 2001, -1) %}
-                        <option value="{{year}}">{{year}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select name="ed_year" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
-                        {% for year in range(now.year, 2001, -1) %}
-                        <option value="{{year}}">{{year}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </form>
-            <button id="btn-hs-search" class="btn btn-default pull-right" type="button" onclick="srch_hshold_stats();">검색</button>
-        </div>
-        <h3><a href="#">인구통계</a></h3>
-        <div>
-            <form id="frm-west-2" class="form-horizontal">
-                <div class="form-group">
-                    <button id="btn-ps-area" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-area">지역선택 +</button>
-                </div>
-                <div class="form-group">
-                    <select id="ps-age" name="ps-age" class="selectpicker" multiple title="나이대" data-actions-box="true">
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select id="ps-sex" name="ps-sex" class="selectpicker" multiple title="성별" data-actions-box="true">
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select name="ps-syear" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
-                        {% for year in range(now.year, 2012, -1) %}
-                        <option value="{{year}}">{{year}}</option>
-                        {% endfor %}
-                    </select>
-                    <select name="ps-smonth" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
-                        {% for month in range(1, 13) %}
-                        <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select name="ps-eyear" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
-                        {% for year in range(now.year, 2012, -1) %}
-                        <option value="{{year}}">{{year}}</option>
-                        {% endfor %}
-                    </select>
-                    <select name="ps-emonth" class="selectpicker" title="종료월" data-actions-box="true" data-width="fit">
-                        {% for month in range(1, 13) %}
-                        <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div id="div-west-2" class="form-group"></div>
-            </form>
-            <button id="btn-ps-search" class="btn btn-default pull-right" type="button" onclick="srch_popltn_stats();">검색</button>
-        </div>
         <h3><a href="#">실거래가</a></h3>
         <div>
             <form id="frm-west-3" class="form-horizontal">
                 <div class="form-group">
-                    <button id="btn-mp-area" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-mp-area">지역선택 +</button>
-                    <input type="hidden" name="mp-sido" value="11">
-                    <input type="hidden" name="mp-sigu" value="11111">
-                    <input type="hidden" name="mp-emd" value="1111111111">
+                    <button id="btn-mp-area" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-area">지역선택 +
+                    </button>
+                    <p><span id="spn-mp-area"></span></p>
                 </div>
                 <div class="form-group">
-                    <input type="radio" name="mp-house-type" checked="checked"> 전월세
-                    <input type="radio" name="mp-house-type"> 매매
+                    <input id="sale" type="radio" name="mp-trans-type" value="1" checked="checked"> 매매
+                    <input id="rent" type="radio" name="mp-trans-type" value="2"> 전월세
+
                 </div>
+
                 <div class="form-group">
-                    <input type="radio" name="mp-house-kind" checked="checked"> 1
-                    <input type="radio" name="mp-house-kind"> 2
-                    <input type="radio" name="mp-house-kind"> 3
-                    <input type="radio" name="mp-house-kind"> 4
+                    <input type="radio" name="mp-house-kind" value="1" checked="checked"> 아파트
+                    <input type="radio" name="mp-house-kind" value="2"> 오피스텔
+                    <br>
+                    <input type="radio" name="mp-house-kind" value="3"> 연립/다세대
+                    <input type="radio" name="mp-house-kind" value="4"> 단독/다가구
                 </div>
-                <div class="form-group" style="display: none;">
-                    <input type="radio" name="mp-house-kind"> 5
-                    <input type="radio" name="mp-house-kind"> 6
-                    <input type="radio" name="mp-house-kind"> 7
-                    <input type="radio" name="mp-house-kind"> 8
-                </div>
-                <div class="form-group">
-                    <select id="mp-deposit" name="mp-deposit" class="selectpicker" multiple title="보증금" data-actions-box="true">
+
+                <div id="sale_form" class="form-group">
+                    <select id="mp-ss" name="mp-ss" class="selectpicker" title="매매가" data-actions-box="true">
+                        {% for p in range(0, 195000, 5000) %}
+                        <option value="{{p}}">{{p}}만원</option>
+                        {% endfor %}
                     </select>
-                    <input type="text" name="mp-sdeposit">
-                    -
-                    <input type="text" name="mp-edeposit"> 만원
-                </div>
-                <div class="form-group">
-                    <select id="mp-rent" name="mp-rent" class="selectpicker" multiple title="월세" data-actions-box="true">
+                    <input type="text" name="mp-ssale" value="">
+                    ~
+                    <select id="mp-es" name="mp-es" class="selectpicker" title="매매가" data-actions-box="true">
+                        {% for p in range(5000, 200000, 5000) %}
+                        <option value="{{p}}">{{p}}만원</option>
+                        {% endfor %}
                     </select>
-                    <input type="text" name="mp-srent">
-                    -
-                    <input type="text" name="mp-erent"> 만원
+                    <input type="text" name="mp-esale" value=""> 만원
+                </div>
+
+                <div id="rent_form" style="display: none">
+                    <div class="form-group">
+                        <select id="mp-sdep" name="mp-sdep" class="selectpicker" title="보증금" data-actions-box="true">
+                            {% for p in range(0, 145000, 5000) %}
+                            <option value="{{p}}">{{p}}만원</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="mp-sdeposit">
+                        ~
+                        <select id="mp-edep" name="mp-edep" class="selectpicker" title="보증금" data-actions-box="true">
+                            {% for p in range(5000, 150000, 5000) %}
+                            <option value="{{p}}">{{p}}만원</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="mp-edeposit"> 만원
+                    </div>
+                    <div class="form-group">
+                        <select id="mp-sre" name="mp-sre" class="selectpicker" title="월세" data-actions-box="true">
+                            {% for p in range(0, 800, 100) %}
+                            <option value="{{p}}">{{p}}만원</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="mp-srent">
+                        ~
+                        <select id="mp-ere" name="mp-ere" class="selectpicker" title="월세" data-actions-box="true">
+                            {% for p in range(100, 900, 100) %}
+                            <option value="{{p}}">{{p}}만원</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" name="mp-erent"> 만원
+                    </div>
                 </div>
                 <div class="form-group">
-                    <select id="mp-extent" name="mp-extent" class="selectpicker" multiple title="면적" data-actions-box="true">
+                    <select id="mp-sarea" name="mp-sarea" class="selectpicker" title="면적" data-actions-box="true">
+                        {% for p in range(0, 450, 50) %}
+                        <option value="{{p}}">{{p}}㎡</option>
+                        {% endfor %}
                     </select>
-                    <input type="text" name="mp-sextent">
-                    -
-                    <input type="text" name="mp-eextent"> ㎡
+                    <input type="text" name="mp-sexarea">
+                    ~
+                    <select id="mp-earea" name="mp-earea" class="selectpicker" title="면적" data-actions-box="true">
+                        {% for p in range(50, 500, 50) %}
+                        <option value="{{p}}">{{p}}㎡</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="mp-eexarea"> ㎡
                 </div>
                 <div class="form-group">
-                    <select id="mp-decrepit" name="mp-decrepit" class="selectpicker" multiple title="노후도" data-actions-box="true">
+                    <select id="mp-sdec" name="mp-sdec" class="selectpicker" title="노후도" data-actions-box="true">
+                        {% for p in range(0, 45, 5) %}
+                        <option value="{{p}}">{{p}}년</option>
+                        {% endfor %}
                     </select>
                     <input type="text" name="mp-sdecrepit">
-                    -
+                    ~
+                    <select id="mp-edec" name="mp-edec" class="selectpicker" title="노후도" data-actions-box="true">
+                        {% for p in range(5, 50, 5) %}
+                        <option value="{{p}}">{{p}}년</option>
+                        {% endfor %}
+                    </select>
                     <input type="text" name="mp-edecrepit"> 년
                 </div>
                 <div class="form-group">
@@ -475,31 +603,61 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                         {% endfor %}
                     </select>
                 </div>
+                <button id="btn-mp-search" class="btn btn-default pull-right" type="button"
+                        onclick="srch_trnstn_situtn()">검색
+                </button>
             </form>
-            <button id="btn-mp-search" class="btn btn-default pull-right" type="button">검색</button>
+            <script type="text/javascript">
+                $('#frm-west-3 .selectpicker').on('change', function () {
+                    var slecteditem = $(this).find("option:selected").val();
+                    if (slecteditem != "") {
+                        $(this).parent().next().val(slecteditem);
+                    }
+                });
+
+            </script>
+            <script type="text/javascript">
+                $('input:radio[name="mp-trans-type"]').change(
+                    function () {
+                        if ($(this).val() == '1') {
+                            $('#sale_form').css("display", "block");
+                            $('#rent_form').css("display", "none");
+                        } else {
+                            $('#sale_form').css("display", "none");
+                            $('#rent_form').css("display", "block");
+                        }
+                    });
+
+            </script>
         </div>
         <h3><a href="#">건물현황</a></h3>
         <div>
             <form id="frm-west-4" class="form-horizontal">
                 <div class="form-group">
-                    <button id="btn-bs-area" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-mp-area">지역/건물선택 +</button>
+                    <button id="btn-bs-area" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-mp-area">지역/건물선택 +
+                    </button>
                     <input type="hidden" name="bs-area-sido" value="11">
                 </div>
                 <div class="form-group">
-                    <select id="bs-use" name="bs-use" class="selectpicker" multiple title="건물용도" data-actions-box="true">
+                    <select id="bs-use" name="bs-use" class="selectpicker" multiple title="건물용도"
+                            data-actions-box="true">
                     </select>
-                    <select id="bs-common" name="bs-common" class="selectpicker" multiple title="전유/공용" data-actions-box="true">
+                    <select id="bs-common" name="bs-common" class="selectpicker" multiple title="전유/공용"
+                            data-actions-box="true">
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="bs-extent" name="bs-extent" class="selectpicker" multiple title="면적" data-actions-box="true">
+                    <select id="bs-extent" name="bs-extent" class="selectpicker" multiple title="면적"
+                            data-actions-box="true">
                     </select>
                     <input type="text" name="mp-sextent">
                     -
                     <input type="text" name="mp-eextent"> ㎡
                 </div>
                 <div class="form-group">
-                    <select id="bs-decrepit" name="mp-decrepit" class="selectpicker" multiple title="노후도" data-actions-box="true">
+                    <select id="bs-decrepit" name="mp-decrepit" class="selectpicker" multiple title="노후도"
+                            data-actions-box="true">
                     </select>
                     <input type="text" name="bs-sdecrepit">
                     -
@@ -536,29 +694,36 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         <div>
             <form id="frm-west-5" class="form-horizontal">
                 <div class="form-group">
-                    <button id="btn-is-area" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-is-area">지역선택 +</button>
+                    <button id="btn-is-area" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-is-area">지역선택 +
+                    </button>
                     <input type="hidden" name="is-sido" value="11">
                 </div>
                 <div class="form-group">
-                    <button id="btn-is-class" type="button" class="btn btn-default" data-toggle="modal" data-target="#mdl-is-class">업종선택 +</button>
+                    <button id="btn-is-class" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-is-class">업종선택 +
+                    </button>
                     <input type="hidden" name="is-class" value="00">
                 </div>
             </form>
         </div>
-      </div>
     </div>
-	<div class="ui-layout-east">
-      <div id="east-accordion">
+</div>
+<div class="ui-layout-east">
+    <div id="east-accordion">
         <h3>
             <a href="#">즐겨찾기</a>
-            <button id="btn-bookmark-edit" class="btn btn-default btn-xs pull-right" type="button" onclick="edit_bookmark();">
-                <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
+            <button id="btn-bookmark-edit" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
+                    onclick="edit_bookmark();">
+                <i class="fa fa-pencil text-primary text-primary-bookmark" aria-hidden="true"></i>
             </button>
-            <button id="btn-bookmark-delete" class="btn btn-default btn-xs pull-right" type="button" onclick="delete_bookmark();">
-                <i class="fa fa-trash text-primary" aria-hidden="true"></i>
+            <button id="btn-bookmark-delete" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
+                    onclick="delete_bookmark();">
+                <i class="fa fa-trash text-primary text-primary-bookmark" aria-hidden="true"></i>
             </button>
-            <button id="btn-bookmark-add" class="btn btn-default btn-xs pull-right" type="button" onclick="add_bookmark();" data-toggle="modal" data-target="#mdl-bookmark">
-                <i class="fa fa-file-text text-primary" aria-hidden="true"></i>
+            <button id="btn-bookmark-add" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
+                    onclick="add_bookmark();" data-toggle="modal" data-target="#mdl-bookmark">
+                <i class="fa fa-file-text text-primary text-primary-bookmark" aria-hidden="true"></i>
             </button>
         </h3>
         <div>
@@ -566,7 +731,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 $(document).ready(find_bookmarks);
 
                 function set_bookmark_name($this) {
-                    $('input:text[name=txt-bookmark-name]').val($this.is(':checked')?$this.next().text():'');
+                    $('input:text[name=txt-bookmark-name]').val($this.is(':checked') ? $this.next().text() : '');
                     $('input:checkbox[name=cbx-bookmark]').not($this).prop('checked', false);
                 }
 
@@ -576,12 +741,12 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                         url: '{{url_for("bookmark.bookmarks")}}',
                         data: {},
                         dataType: 'json'
-                    }).done(function(data) {
+                    }).done(function (data) {
                         var results = [];
-                        $.each(data.items, function(i, item) {
+                        $.each(data.items, function (i, item) {
                             results.push('<tr><td>');
-                            results.push('<input type="checkbox" name="cbx-bookmark" value="'+item.id+'" onclick="set_bookmark_name($(this));"> ');
-                            results.push('<a href="#" onclick="execute_bookmark('+item.target+',\''+item.parameter+'\');">'+item.name+'</a>');
+                            results.push('<input type="checkbox" name="cbx-bookmark" value="' + item.id + '" onclick="set_bookmark_name($(this));"> ');
+                            results.push('<a href="#" onclick="execute_bookmark(' + item.target + ',\'' + item.parameter + '\');">' + item.name + '</a>');
                             results.push('</td></tr>');
                         });
                         $('#tbl-bookmark tbody').empty().append(results.join(''));
@@ -592,16 +757,16 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 function execute_bookmark(target, parameter) {
                     $('#west-accordion').accordion('option', 'active', target);
                     var $parameter = decodeURIComponent(parameter);
-                    $.each($parameter.split('&'), function(i, param) {
+                    $.each($parameter.split('&'), function (i, param) {
                         $pairs = param.split('=');
-                        $('input[name='+$pairs[0]+']').val($pairs[1]);
+                        $('input[name=' + $pairs[0] + ']').val($pairs[1]);
                     });
                 }
 
                 function add_bookmark() {
                     var $name_obj = $('input[name=txt-bookmark-name]');
                     var $target = $('#west-accordion').accordion('option', 'active');
-                    var $parameter = $('#frm-west-'+$target).serialize();
+                    var $parameter = $('#frm-west-' + $target).serialize();
                     if ($name_obj.val() == '') {
                         alert('검색 명칭을 입력해주세요.');
                         $name_obj.focus();
@@ -612,7 +777,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                         url: '{{url_for("bookmark.insert_bookmark")}}',
                         data: {name: $name_obj.val(), target: $target, parameter: encodeURIComponent($parameter)},
                         dataType: 'json'
-                    }).done(function(data) {
+                    }).done(function (data) {
                         alert(data.msg);
                         find_bookmarks();
                     });
@@ -625,7 +790,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                         return;
                     }
                     var $id;
-                    $this.each(function() {
+                    $this.each(function () {
                         if ($(this).is(':checked') == true) {
                             $id = $(this).val();
                         }
@@ -635,7 +800,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                         url: '{{url_for("bookmark.delete_bookmark")}}',
                         data: {id: $id},
                         dataType: 'json'
-                    }).done(function(data) {
+                    }).done(function (data) {
                         alert(data.msg);
                         find_bookmarks();
                     });
@@ -648,7 +813,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                         return;
                     }
                     var $id;
-                    $this.each(function() {
+                    $this.each(function () {
                         if ($(this).is(':checked') == true) {
                             $id = $(this).val();
                         }
@@ -658,7 +823,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                         url: '{{url_for("bookmark.update_bookmark")}}',
                         data: {id: $id, name: $('input:text[name=txt-bookmark-name]').val()},
                         dataType: 'json'
-                    }).done(function(data) {
+                    }).done(function (data) {
                         alert(data.msg);
                         find_bookmarks();
                     });
@@ -669,7 +834,8 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 <tr>
                     <td>
                         <form class="form-inline">
-                            <input type="text" class="form-control input-sm pull-right" name="txt-bookmark-name" maxlength="100">
+                            <input type="text" class="form-control input-sm pull-right" name="txt-bookmark-name"
+                                   maxlength="100">
                         </form>
                     </td>
                 </tr>
@@ -683,7 +849,8 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart" onclick="create_chart('radar');">
                 <i class="fa fa-area-chart fa-lg text-info"></i> 레이더
             </a>
-            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart" onclick="create_chart('horizontalBar');">
+            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart"
+               onclick="create_chart('horizontalBar');">
                 <i class="fa fa-bar-chart fa-lg text-info"></i> 가로막대
             </a>
             <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart">
@@ -793,581 +960,680 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 </div>
             </div>
         </div>
-      </div>
     </div>
-	<div class="ui-layout-south">
-        <table id="jqGrid"></table>
-        <div id="jqGridPager"></div>
-    </div>
+</div>
+<div class="ui-layout-south">
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
+</div>
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-            {# 지역현황 > 인구이동 > 전출지 선택 #}
-            $('#btn-pm-oa').button().on('click', function() {
-                set_law_sid_areas('checkbox');
-                $('#btn-area').button().on('click', function() {
-                    set_areas('out_', 'spn-pm-oa');
-                });
-            });
-            {# 지역현황 > 인구이동 > 전입지 선택 #}
-            $('#btn-pm-ia').button().on('click', function() {
-                set_law_sid_areas('radio');
-                $('#btn-area').button().on('click', function() {
-                    set_areas('in_', 'spn-pm-ia');
-                });
-            });
-            {# 지역현황 > 세대통계 > 지역선택 #}
-            $('#btn-hs-a').button().on('click', function() {
-                set_law_sid_areas('checkbox');
-                $('#btn-area').button().on('click', function() {
-                    set_areas('', 'spn-hs-a');
-                });
-            });
-            {# 각 아코디언 탭에 들어가는 검색조건인 셀렉트박스에 코드를 로딩 시 세팅 #}
-            {# 지역현황 > 인구이동 #}
-            set_codes_for_selectpicker('age_grp', 'age_grp');
-            set_codes_for_selectpicker('aplcnt_sex', 'aplcnt_sex');
-            set_codes_for_selectpicker('mv_reasn', 'mv_reasn');
-            {# 지역현황 > 세대통계 #}
-            set_codes_for_selectpicker('rsdnc_clsftn', 'rsdnc_clsftn');
-            set_codes_for_selectpicker('fmly_num', 'fmly_num');
-            set_codes_for_selectpicker('room_num', 'room_num');
-            {# begin of 지도 컨트롤 설정 #}
-            $('input:radio[name=rdo-control-all]').click(function() {
-                if ($(this).val() == 'true') {
-                    map.addControl(overviewMapControl);
-                    map.addControl(fullScreenControl);
-                    map.addControl(zoomSliderControl);
-                    map.addControl(scaleLineControl);
-                    $('.layer-switcher').show();
-                    $('.ol-zoom').show();
+<script type="text/javascript">
+    function resizeMap() {
+        var mapHeight = $('#main').height() - (6 + $('.ui-layout-south').outerHeight());
+        $('#map').css('height', mapHeight);
+    }
 
-                    $('input:radio[name=rdo-control-zbutton][value=true]').prop('checked', true);
-                    $('input:radio[name=rdo-control-zslider][value=true]').prop('checked', true);
-                    $('input:radio[name=rdo-control-sline][value=true]').prop('checked', true);
-                    $('input:radio[name=rdo-control-fscreen][value=true]').prop('checked', true);
-                    $('input:radio[name=rdo-control-lswitcher][value=true]').prop('checked', true);
-                    $('input:radio[name=rdo-control-ovmap][value=true]').prop('checked', true);
-                } else {
-                    map.removeControl(overviewMapControl);
-                    map.removeControl(fullScreenControl);
-                    map.removeControl(zoomSliderControl);
-                    map.removeControl(scaleLineControl);
-                    $('.layer-switcher').hide();
-                    $('.ol-zoom').hide();
+    $(window).resize(function(){
+        resizeMap();
+    });
 
-                    $('input:radio[name=rdo-control-zbutton][value=false]').prop('checked', true);
-                    $('input:radio[name=rdo-control-zslider][value=false]').prop('checked', true);
-                    $('input:radio[name=rdo-control-sline][value=false]').prop('checked', true);
-                    $('input:radio[name=rdo-control-fscreen][value=false]').prop('checked', true);
-                    $('input:radio[name=rdo-control-lswitcher][value=false]').prop('checked', true);
-                    $('input:radio[name=rdo-control-ovmap][value=false]').prop('checked', true);
-                }
+    $(document).ready(function () {
+        resizeMap();
+//        {# 지역현황 > 인구이동 > 전출지 선택 # }
+        $("#btn-pm-oa").button().on('click', function () {
+            set_law_sid_areas('checkbox');
+            $('#btn-area').button().on('click', function () {
+                set_areas('out_', 'spn-pm-oa');
             });
-
-            $('input:radio[name=rdo-control-zbutton]').click(function() {
-                if ($(this).val() == 'true') {
-                    $('.ol-zoom').show();
-                } else {
-                    $('.ol-zoom').hide();
-                }
-            });
-
-            $('input:radio[name=rdo-control-zslider]').click(function() {
-                if ($(this).val() == 'true') {
-                    map.addControl(zoomSliderControl);
-                } else {
-                    map.removeControl(zoomSliderControl);
-                }
-            });
-
-            $('input:radio[name=rdo-control-sline]').click(function() {
-                if ($(this).val() == 'true') {
-                    map.addControl(scaleLineControl);
-                } else {
-                    map.removeControl(scaleLineControl);
-                }
-            });
-
-            $('input:radio[name=rdo-control-fscreen]').click(function() {
-                if ($(this).val() == 'true') {
-                    map.addControl(fullScreenControl);
-                } else {
-                    map.removeControl(fullScreenControl);
-                }
-            });
-
-            $('input:radio[name=rdo-control-lswitcher]').click(function() {
-                if ($(this).val() == 'true') {
-                    $('.layer-switcher').show();
-                } else {
-                    $('.layer-switcher').hide();
-                }
-            });
-
-            $('input:radio[name=rdo-control-ovmap]').click(function() {
-                if ($(this).val() == 'true') {
-                    map.addControl(overviewMapControl);
-                } else {
-                    map.removeControl(overviewMapControl);
-                }
-            });
-            {# end of 지도 컨트롤 설정 #}
-	    });
-        {# end of document.ready #}
-        {# Initialize JQuery UI Layout plug-in #}
-        $('html').css('height', '100%');
-        $('body').css('height', '100%');
-        $('#main').css('height', '95%');
-        $('#main').layout({
-            west__size: '30%',
-            west__maxSize: '48%',
-            east__size: '20%',
-            east__maxSize: '48%',
-            south__size: '1%',
-            south__maxSize: '95%',
-            south__zIndex: 99,
-            west__onresize: $.layout.callbacks.resizePaneAccordions,
-            east__onresize: $.layout.callbacks.resizePaneAccordions,
-            south__onclose_start: function(){
-                if(this.isClosed){
-                    this.isClosed = false;
-                    $('#main').layout().sizePane('south', '1%');
-                    $('.ui-layout-toggler-south-closed').removeClass('ui-layout-toggler-south-closed').addClass('ui-layout-toggler-south-open');
-                }else{
-                    this.isClosed = true;
-                    $('#main').layout().sizePane('south', '95%');
-                    $('.ui-layout-toggler-south-open').removeClass('ui-layout-toggler-south-open').addClass('ui-layout-toggler-south-closed');
-                }
-                return false;
-            }
         });
-        $('#west-accordion').accordion({ heightStyle:'fill' });
-        $('#east-accordion').accordion({ heightStyle:'fill', active:0 });
-
-        var layers = [];
-
-        layers[0] = new ol.layer.Tile({
-            title: '위성 지도',
-            type: 'base',
-            source: new ol.source.XYZ({
-                url: 'http://xdworld.vworld.kr:8080/2d/Satellite/201612/{z}/{x}/{y}.jpeg'
-            })
-        });
-
-        layers[1] = new ol.layer.Tile({
-            title: '기본 지도',
-            type: 'base',
-            source: new ol.source.XYZ({
-                url: 'http://xdworld.vworld.kr:8080/2d/Base/201612/{z}/{x}/{y}.png'
-            })
-        });
-
-        var overviewMapControl = new ol.control.OverviewMap({
-            className: 'ol-overviewmap ol-custom-overviewmap',
-            layers: layers,
-            collapseLabel: '\u00BB',
-            label: '\u00AB',
-            collapsed: false
-        });
-
-        var fullScreenControl = new ol.control.FullScreen();
-
-        var zoomSliderControl = new ol.control.ZoomSlider();
-
-        var scaleLineControl = new ol.control.ScaleLine();
-
-        var layerSwitcherControl = new ol.control.LayerSwitcher();
-
-		var view = new ol.View({
-            center: ol.proj.fromLonLat([126.991823835784,37.5519181289032]),
-            zoom: 8,
-            minZoom: 7,
-            maxZoom: 18
-		});
-        {# 오픈레이어스 팝업 #}
-        var container = document.getElementById('popup');
-        var content = document.getElementById('popup-content');
-        var closer = document.getElementById('popup-closer');
-
-        var overlay = new ol.Overlay( ({
-            element: container,
-            autoPan: true,
-            autoPanAnimation: {
-              duration: 250
-            }
-        }));
-
-        closer.onclick = function() {
-            overlay.setPosition(undefined);
-            closer.blur();
-            return false;
-        };
-        {# 동적으로 레이어를 생성하기 위해 오버레이 그룹을 별도로 만듦 #}
-        var overlayGroup = new ol.layer.Group({
-            title: 'Overlays',
-            layers: []
-        });
-        {# 베이스 맵 그룹을 포함한 맵 객체를 생성 #}
-        var map = new ol.Map({
-            controls: ol.control.defaults().extend([
-                overviewMapControl,
-                fullScreenControl,
-                zoomSliderControl,
-                scaleLineControl,
-                layerSwitcherControl
-            ]),
-            interactions: ol.interaction.defaults().extend([
-                new ol.interaction.DragRotateAndZoom()
-            ]),
-            layers: [
-                new ol.layer.Group({
-                    title: 'Base maps',
-                    layers: layers
-                }),
-                overlayGroup
-            ],
-            logo: false,
-            overlays: [overlay],
-            target: 'map',
-            view: view
-        });
-        {# geoserver url은 설정에서 가져오도록 수정해야 함 #}
-        var url = 'http://183.109.124.94:8080/geoserver/hms/wms';
-        var mvmt_layer = new ol.layer.Tile({
-            title: '',//오버레이 그룹에 나오지 않도록 하기 위해 타이틀 없앰
-            source: new ol.source.TileWMS({
-                url: url,
-                serverType: 'geoserver',
-                crossOrigin: 'anonymous'
-            })
-        });
-        var update_params = function(layers, featureid) {
-            mvmt_layer.getSource().updateParams({
-                'layers': layers,
-                'featureid': featureid
+//        {# 지역현황 > 인구이동 > 전입지 선택 #}
+        $('#btn-pm-ia').button().on('click', function () {
+            set_law_sid_areas('radio');
+            $('#btn-area').button().on('click', function () {
+                set_areas('in_', 'spn-pm-ia');
             });
-        }
-        overlayGroup.getLayers().push(mvmt_layer);
-        //layerSwitcherControl.showPanel();//자꾸 떠서 걸리적거림...ㅡㅡ;
-
-        {# 지도 좌표 이동 애니메이션 #}
-        var do_bounce = function(location, view, done) {
-            var duration = 1000;
-            var zoom = view.getZoom();
-            var parts = 2;
-            var called = false;
-            function callback(complete) {
-                --parts;
-                if (called) {
-                    return;
-                }
-                if (parts === 0 || !complete) {
-                    called = true;
-                    done(complete);
-                }
-            }
-            view.animate({
-                center: location,
-                duration: duration
-            }, callback);
-            view.animate({
-                zoom: zoom - 1,
-                duration: duration / 2
-            }, {
-                zoom: zoom,
-                duration: duration / 2
-            }, callback);
-        }
-/*
-        map.on('singleclick', function(e) {
-            var coordinate = e.coordinate;
-            var url = overlayGroup.getLayers().item(0).getSource().getGetFeatureInfoUrl(
-                coordinate,
-                view.getResolution(),
-                view.getProjection(),
-                {
-                    'INFO_FORMAT': 'text/html',
-                    'FEATURE_COUNT': 50,
-                    'QUERY_LAYERS': 'hms:law_sid_area'
-                }
-            );
-            content.innerHTML = '<iframe seamless src="' + url + '"></iframe>';
-            overlay.setPosition(coordinate);
         });
-*/
-/*
-        var highlight;
-        var displayFeatureInfo = function(pixel) {
-
-            var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
-                return feature;
+//        {# 지역현황 > 세대통계 > 지역선택 #}
+        $('#btn-hs-a').button().on('click', function () {
+            set_law_sid_areas('checkbox');
+            $('#btn-area').button().on('click', function () {
+                set_areas('', 'spn-hs-a');
             });
+        });
+//        {# 지역현황 > 인구통계 > 지역선택 #}
+        $('#btn-ps-area').button().on('click', function () {
+            set_law_sid_areas('radio');
+            $('#btn-area').button().on('click', function () {
+                set_areas('', 'spn-ps-area');
+            });
+        });
+//        {# 지역현황 > 실거래가 > 지역선택 #}
+        $('#btn-mp-area').button().on('click', function () {
+            set_law_sid_areas('radio');
+            $('#btn-area').button().on('click', function () {
+                set_areas('', 'spn-mp-area');
+            });
+        });
+//        {# 각 아코디언 탭에 들어가는 검색조건인 셀렉트박스에 코드를 로딩 시 세팅 #}
+//        {# 지역현황 > 인구이동 #}
+        set_codes_for_selectpicker('aplcnt_age', 'aplcnt_age');
+        set_codes_for_selectpicker('aplcnt_sex', 'aplcnt_sex');
+        set_codes_for_selectpicker('mv_reasn', 'mv_reasn');
 
-            var info = document.getElementById('info');
-            if (feature) {
-              info.innerHTML = feature.getId() + ': ' + feature.get('name');
+//        {# 지역현황 > 세대통계 #}
+        set_codes_for_selectpicker('rsdnc_clsftn', 'rsdnc_clsftn');
+        set_codes_for_selectpicker('fmly_num', 'fmly_num');
+        set_codes_for_selectpicker('room_num', 'room_num');
+
+//        {# 지역현황 > 인구통계 #}
+        set_codes_for_selectpicker('age_grp', 'age_grp');
+
+//        {# begin of 지도 컨트롤 설정 #}
+        $('input:radio[name=rdo-control-all]').click(function () {
+            if ($(this).val() === 'true') {
+                map.addControl(overviewMapControl);
+                map.addControl(fullScreenControl);
+                map.addControl(zoomSliderControl);
+                map.addControl(scaleLineControl);
+                $('.layer-switcher').show();
+                $('.ol-zoom').show();
+
+                $('input:radio[name=rdo-control-zbutton][value=true]').prop('checked', true);
+                $('input:radio[name=rdo-control-zslider][value=true]').prop('checked', true);
+                $('input:radio[name=rdo-control-sline][value=true]').prop('checked', true);
+                $('input:radio[name=rdo-control-fscreen][value=true]').prop('checked', true);
+                $('input:radio[name=rdo-control-lswitcher][value=true]').prop('checked', true);
+                $('input:radio[name=rdo-control-ovmap][value=true]').prop('checked', true);
             } else {
-              info.innerHTML = '&nbsp;';
+                map.removeControl(overviewMapControl);
+                map.removeControl(fullScreenControl);
+                map.removeControl(zoomSliderControl);
+                map.removeControl(scaleLineControl);
+                $('.layer-switcher').hide();
+                $('.ol-zoom').hide();
+
+                $('input:radio[name=rdo-control-zbutton][value=false]').prop('checked', true);
+                $('input:radio[name=rdo-control-zslider][value=false]').prop('checked', true);
+                $('input:radio[name=rdo-control-sline][value=false]').prop('checked', true);
+                $('input:radio[name=rdo-control-fscreen][value=false]').prop('checked', true);
+                $('input:radio[name=rdo-control-lswitcher][value=false]').prop('checked', true);
+                $('input:radio[name=rdo-control-ovmap][value=false]').prop('checked', true);
             }
-
-            if (feature !== highlight) {
-                if (highlight) {
-                    featureOverlay.getSource().removeFeature(highlight);
-                }
-                if (feature) {
-                    featureOverlay.getSource().addFeature(feature);
-                }
-                highlight = feature;
-            }
-
-        };
-*/
-/*
-        var select = new ol.interaction.Select();
-        map.addInteraction(select);
-
-        map.on('click', function(e) {
-            displayFeatureInfo(e.pixel);
         });
-*/
-        {# 코드 목록을 조회하여 selectpicker에 옵션들을 세팅 #}
-        var set_codes_for_selectpicker = function(group_code, element_id, element_type) {
-            $.ajax({
-                method: 'POST',
-                url: '{{ url_for("common.get_codes") }}',
-                data: {group_code: group_code},
-                dataType: 'json'
-            }).done(function(data) {
-                var results = [];
-                $.each(data.codes, function(i, code) {
-                    results.push('<option value="'+code.code+'">'+code.name+'</option>');
+        console.dir(fullScreenControl.getKeys());
+        $('input:radio[name=rdo-control-zbutton]').click(function () {
+            $(this).val() === 'true' ? $('.ol-zoom').show() : $('.ol-zoom').hide();
+        });
+        $('input:radio[name=rdo-control-zslider]').click(function () {
+            $(this).val() === 'true' ? map.addControl(zoomSliderControl) : map.removeControl(zoomSliderControl);
+        });
+        $('input:radio[name=rdo-control-sline]').click(function () {
+            $(this).val() === 'true' ? map.addControl(scaleLineControl) : map.removeControl(scaleLineControl);
+        });
+        $('input:radio[name=rdo-control-fscreen]').click(function () {
+            $(this).val() === 'true' ? map.addControl(fullScreenControl) : map.removeControl(fullScreenControl);
+        });
+        $('input:radio[name=rdo-control-lswitcher]').click(function () {
+            $(this).val() === 'true' ? $('.layer-switcher').show() : $('.layer-switcher').hide();
+        });
+        $('input:radio[name=rdo-control-ovmap]').click(function () {
+            $(this).val() === 'ture' ? map.addControl(overviewMapControl) : map.removeControl(overviewMapControl);
+        });
+//        {# end of 지도 컨트롤 설정 #}
+    });
+//    {# end of document.ready #}
+
+//    {# Initialize JQuery UI Layout plug - in #}
+    $('html').css('height', '100%');
+    $('body').css('height', '100%');
+    $('#main').css('height', '100%');
+    $('#main').layout({
+        west__size: '18%',
+        west__resizable : false,
+        west__onclose_start : function(){
+            resetControl('ol-zoom', 'left', '0.5%');
+            resetControl('ol-zoomslider', 'left', '0.5%');
+            resetControl('ol-scale-line', 'left', '0.5%');
+        },
+//        west__minSize: '18%',
+//        west__maxSize: '48%',
+        east__size: '18%',
+        east__resizable : false,
+        east__onclose_start : function(){
+            resetControl('ol-full-screen', 'right', '0.5%');
+            resetControl('layer-switcher', 'right', '0.5%');
+            resetControl('ol-overviewmap', 'right', '0.5%');
+        },
+//        east__minSize: '18%',
+//        east__maxSize: '48%',
+        south__size: '1%',
+        south__minSize: '5%',
+        south__maxSize: '100%',
+        south__zIndex: 99,
+
+        west__onresize: function(){
+            $.layout.callbacks.resizePaneAccordions;
+            resetControl('ol-zoom', 'left', '18.5%');
+            resetControl('ol-zoomslider', 'left', '18.5%');
+            resetControl('ol-scale-line', 'left', '18.5%');
+        },
+        east__onresize: function(){
+            $.layout.callbacks.resizePaneAccordions
+            resetControl('ol-full-screen', 'right', '18.5%');
+            resetControl('layer-switcher', 'right', '18.5%');
+            resetControl('ol-overviewmap', 'right', '18.5%');
+        },
+        south__onclose_start: function () {
+            if (this.isClosed) {
+                this.isClosed = false;
+                $('#main').layout().sizePane('south', '1%');
+                $('.ui-layout-toggler-south-closed').removeClass('ui-layout-toggler-south-closed').addClass('ui-layout-toggler-south-open');
+            } else {
+                this.isClosed = true;
+                $('#main').layout().sizePane('south', '95%');
+                $('.ui-layout-toggler-south-open').removeClass('ui-layout-toggler-south-open').addClass('ui-layout-toggler-south-closed');
+            }
+            return false;
+        },
+    });
+    $('#west-accordion').accordion({heightStyle: 'fill'});
+    $('#east-accordion').accordion({heightStyle: 'fill', active: 0});
+
+    var layers = [];
+
+    function resetControl(class_name, target_css, value) {
+        $('.' + class_name).css(target_css, value);
+    }
+
+    layers[0] = new ol.layer.Tile({
+        title: '위성 지도',
+        type: 'base',
+        source: new ol.source.XYZ({
+            url: 'http://xdworld.vworld.kr:8080/2d/Satellite/201612/{z}/{x}/{y}.jpeg'
+        })
+    });
+
+    layers[1] = new ol.layer.Tile({
+        title: '기본 지도',
+        type: 'base',
+        source: new ol.source.XYZ({
+            url: 'http://xdworld.vworld.kr:8080/2d/Base/201612/{z}/{x}/{y}.png'
+        })
+    });
+
+    var overviewMapControl = new ol.control.OverviewMap({
+        className: 'ol-overviewmap ol-custom-overviewmap',
+        layers: layers,
+        collapseLabel: '\u00BB',
+        label: '\u00AB',
+        collapsed: false
+    });
+    var fullScreenControl = new ol.control.FullScreen();
+
+    fullScreenControl.on('change', function(evt){
+        alert(evt);
+    });
+
+    fullScreenControl.on('propertychange', function(evt){
+        alert(evt);
+    });
+
+    var zoomSliderControl = new ol.control.ZoomSlider();
+    var scaleLineControl = new ol.control.ScaleLine();
+    var layerSwitcherControl = new ol.control.LayerSwitcher();
+
+    var view = new ol.View({
+        center: ol.proj.fromLonLat([126.991823835784, 37.5519181289032]),
+        zoom: 8,
+        minZoom: 7,
+        maxZoom: 18
+    });
+//    {# 오픈레이어스 팝업 #}
+    var container = document.getElementById('popup');
+    var content = document.getElementById('popup-content');
+    var closer = document.getElementById('popup-closer');
+
+    var overlay = new ol.Overlay(({
+        element: container,
+        autoPan: true,
+        autoPanAnimation: {
+            duration: 250
+        }
+    }));
+
+    closer.onclick = function () {
+        overlay.setPosition(undefined);
+        closer.blur();
+        return false;
+    };
+//    {# 동적으로 레이어를 생성하기 위해 오버레이 그룹을 별도로 만듦 #}
+    var overlayGroup = new ol.layer.Group({
+        title: 'Overlays',
+        layers: []
+    });
+//    {# 베이스 맵 그룹을 포함한 맵 객체를 생성 #}
+    var map = new ol.Map({
+        controls: ol.control.defaults().extend([
+            overviewMapControl,
+            fullScreenControl,
+            zoomSliderControl,
+            scaleLineControl,
+            layerSwitcherControl
+        ]),
+        interactions: ol.interaction.defaults().extend([
+            new ol.interaction.DragRotateAndZoom()
+        ]),
+        layers: [
+            new ol.layer.Group({
+                title: 'Base maps',
+                layers: layers
+            }),
+            overlayGroup
+        ],
+        logo: false,
+        overlays: [overlay],
+        target: 'map',
+        view: view
+    });
+//    {# geoserver url은 설정(settings.py) 에서 가져오도록 수정해야 함 #}
+    var url = 'http://183.109.124.94:8080/geoserver/hms/wms';
+    var mvmt_layer = new ol.layer.Tile({
+        title: '',//오버레이 그룹에 나오지 않도록 하기 위해 타이틀 없앰
+        source: new ol.source.TileWMS({
+            url: url,
+            serverType: 'geoserver',
+            crossOrigin: 'anonymous'
+        })
+    });
+    var update_params = function (layers, featureid) {
+        mvmt_layer.getSource().updateParams({
+            'layers': layers,
+            'featureid': featureid
+        });
+    }
+    overlayGroup.getLayers().push(mvmt_layer);
+    //layerSwitcherControl.showPanel();//자꾸 떠서 걸리적거림...ㅡㅡ;
+
+//    {# 지도 좌표 이동 애니메이션 #}
+    var do_bounce = function (location, view, done) {
+        var duration = 1000;
+        var zoom = view.getZoom();
+        var parts = 2;
+        var called = false;
+
+        function callback(complete) {
+            --parts;
+            if (called) {
+                return;
+            }
+            if (parts === 0 || !complete) {
+                called = true;
+                done(complete);
+            }
+        }
+
+        view.animate({
+            center: location,
+            duration: duration
+        }, callback);
+        view.animate({
+            zoom: zoom - 1,
+            duration: duration / 2
+        }, {
+            zoom: zoom,
+            duration: duration / 2
+        }, callback);
+    }
+    /*
+            map.on('singleclick', function(e) {
+                var coordinate = e.coordinate;
+                var url = overlayGroup.getLayers().item(0).getSource().getGetFeatureInfoUrl(
+                    coordinate,
+                    view.getResolution(),
+                    view.getProjection(),
+                    {
+                        'INFO_FORMAT': 'text/html',
+                        'FEATURE_COUNT': 50,
+                        'QUERY_LAYERS': 'hms:law_sid_area'
+                    }
+                );
+                content.innerHTML = '<iframe seamless src="' + url + '"></iframe>';
+                overlay.setPosition(coordinate);
+            });
+    */
+    /*
+            var highlight;
+            var displayFeatureInfo = function(pixel) {
+
+                var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
+                    return feature;
                 });
-                $('#'+element_id).html(results.join('')).selectpicker('refresh');
+
+                var info = document.getElementById('info');
+                if (feature) {
+                  info.innerHTML = feature.getId() + ': ' + feature.get('name');
+                } else {
+                  info.innerHTML = '&nbsp;';
+                }
+
+                if (feature !== highlight) {
+                    if (highlight) {
+                        featureOverlay.getSource().removeFeature(highlight);
+                    }
+                    if (feature) {
+                        featureOverlay.getSource().addFeature(feature);
+                    }
+                    highlight = feature;
+                }
+
+            };
+    */
+    /*
+            var select = new ol.interaction.Select();
+            map.addInteraction(select);
+
+            map.on('click', function(e) {
+                displayFeatureInfo(e.pixel);
             });
-        }
-        {# 인구이동 검색 #}
-        var srch_popltn_mvmt = function() {
-            $.ajax({
-                url: '{{ url_for("situation.srch_popltn_mvmt") }}',
-                method: 'POST',
-                data: $('#frm-west-0').serialize()+'&req_type=map',
-                dataType: 'json'
-            }).done(function(data) {
-                $.each(data.rows, function(i, item) {
-                    content.innerHTML = '총 전입자수: '+item.fmly_sum+'<br>(총 전입세대수: '+item.hshold_cnt+')';
-                    overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
-                });
-            }).fail(function(data) {
-                alert(data.msg);
-            });
-            {# 남쪽 패널에 jqGrid 출력 #}
-            $('#jqGrid').jqGrid({
-                url: '{{ url_for("situation.srch_popltn_mvmt") }}',
-                mtype: 'POST',
-                styleUI: 'Bootstrap',
-                datatype: 'json',
-                postData: $('#frm-west-0').serialize(),
-                colModel: [
-                    { label: '전입시기', name: 'in_yyyymm' },
-                    { label: '전입시도', name: 'in_sid' },
-                    { label: '전입시군구', name: 'in_sgg' },
-                    { label: '전입읍면동', name: 'in_emd' },
-                    { label: '전출시도', name: 'out_sid' },
-                    { label: '전출시군구', name: 'out_sgg' },
-                    { label: '전출읍면동', name: 'out_emd' },
-                    { label: '이동사유', name: 'mv_reasn' },
-                    { label: '신고자유형', name: 'aplcnt_clsftn' },
-                    { label: '신고자나이', name: 'aplcnt_age' },
-                    { label: '신고자성별', name: 'aplcnt_sex' },
-                    { label: '이동가구원수', name: 'fmly_num' },
-                ],
-                viewrecords: true,
-                width: '100%',
-                height: '100%',
-                rowNum: 100,
-                loadonce: true,
-                pager: '#jqGridPager'
-            });
-        }
-        {# 세대통계 검색 #}
-        var srch_hshold_stats = function() {
-            $.ajax({
-                url: '{{ url_for("situation.srch_hshold_stats") }}',
-                method: 'POST',
-                data: $('#frm-west-1').serialize()+'&req_type=map',
-                dataType: 'json'
-            }).done(function(data) {
-                $.each(data.rows, function(i, item) {
-                    content.innerHTML = '총 세대수: '+item.hshold_sum;
-                    overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
-                });
-            }).fail(function(data) {
-                alert(data.msg);
-            });
-            {# 남쪽 패널에 jqGrid 출력 #}
-            $('#jqGrid').jqGrid({
-                url: '{{ url_for("situation.srch_hshold_stats") }}',
-                mtype: 'POST',
-                styleUI: 'Bootstrap',
-                datatype: 'json',
-                postData: $('#frm-west-1').serialize(),
-                colModel: [
-                    { label: '측정년도', name: 'srvy_year' },
-                    { label: '시도', name: 'sid' },
-                    { label: '시군구', name: 'sgg' },
-                    { label: '주거유형', name: 'rsdnc_clsftn' },
-                    { label: '세대원수', name: 'fmly_num' },
-                    { label: '방개수', name: 'room_num' },
-                    { label: '세대수', name: 'hshold_num' },
-                ],
-                viewrecords: true,
-                width: '100%',
-                height: '100%',
-                rowNum: 100,
-                loadonce: true,
-                pager: '#jqGridPager'
-            });
-        }
-        {# 인구통계 검색 #}
-        var srch_popltn_stats = function() {
-            $.ajax({
-                method: 'POST',
-                url: '{{ url_for("situation.srch_popltn_stats") }}',
-                data: $('#frm-west-2').serialize(),
-                dataType: 'json'
-            }).done(function(data) {
-                    var results = [];
-                    results.push('<table class="table">');
-                    results.push('<thead>');
-                    results.push('<tr>');
-                    results.push('<td>지역</td>');
-                    results.push('<td>남자</td>');
-                    results.push('<td>여자</td>');
-                    results.push('<td>전체</td>');
-                    results.push('</tr>');
-                    results.push('</thead>');
-                    results.push('<tbody>');
-                    $.each(data.items, function(i, item) {
-                        results.push('<tr>');
-                        results.push('<td>'+item.area_nm+'</td>');
-                        results.push('<td>'+item.man_sum+'</td>');
-                        results.push('<td>'+item.woman_sum+'</td>');
-                        results.push('<td>'+item.total_sum+'</td>');
-                        results.push('</tr>');
-                    });
-                    results.push('</tbody>');
-                    results.push('</table>');
-                    $('.ui-layout-south').html(results.join(''));
-            }).fail(function(data) {
-                alert(data.msg);
-            });
-        }
-        {# 선택한 지역을 검색조건으로 세팅 #}
-        var set_areas = function(name_prefix, target_id) {
+    */
+//    {# 코드 목록을 조회하여 selectpicker에 옵션들을 세팅 #}
+
+    function set_codes_for_selectpicker(group_code, element_id, element_type) {
+        $.ajax({
+            method: 'POST',
+            url: '{{ url_for("common.get_codes") }}',
+            data: {group_code: group_code},
+            dataType: 'json'
+        }).done(function (data) {
             var results = [];
-            $('#div-sid-area').find('input[name$=-area]:checked').each(function() {
-                results.push('<input type="hidden" name="'+name_prefix+'sid_cd" value="'+$(this).val()+'">');
-                results.push('<span class="label label-success" style="display: inline-block;">'+$(this).parent().text()+'</span>\n');
+            $.each(data.codes, function (i, code) {
+                results.push('<option value="' + code.code + '">' + code.name + '</option>');
             });
-            $('#div-sgg-area').find('input[name$=-area]:checked').each(function() {
-                results.push('<input type="hidden" name="'+name_prefix+'sgg_cd" value="'+$(this).val()+'">');
-                results.push('<span class="label label-success" style="display: inline-block;">'+$(this).parent().text()+'</span>\n');
+            $('#' + element_id).html(results.join('')).selectpicker('refresh');
+        });
+    }
+//    {# 인구이동 검색 #}
+    function srch_popltn_mvmt() {
+        $.ajax({
+            url: '{{ url_for("situation.srch_popltn_mvmt") }}',
+            method: 'POST',
+            data: $('#frm-west-0').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = '총 전입자수: ' + item.fmly_sum + '<br>(총 전입세대수: ' + item.hshold_cnt + ')';
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
             });
-            $('#div-emd-area').find('input[name$=-area]:checked').each(function() {
-                results.push('<input type="hidden" name="'+name_prefix+'emd_cd" value="'+$(this).val()+'">');
-                results.push('<span class="label label-success" style="display: inline-block;">'+$(this).parent().text()+'</span>\n');
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+//        {# 남쪽 패널에 jqGrid 출력 #}
+        $('#jqGrid').jqGrid({
+            url: '{{ url_for("situation.srch_popltn_mvmt") }}',
+            mtype: 'POST',
+            styleUI: 'Bootstrap',
+            datatype: 'json',
+            postData: $('#frm-west-0').serialize(),
+            colModel: [
+                {label: '전입시기', name: 'in_yyyymm'},
+                {label: '전입시도', name: 'in_sid'},
+                {label: '전입시군구', name: 'in_sgg'},
+                {label: '전입읍면동', name: 'in_emd'},
+                {label: '전출시도', name: 'out_sid'},
+                {label: '전출시군구', name: 'out_sgg'},
+                {label: '전출읍면동', name: 'out_emd'},
+                {label: '이동사유', name: 'mv_reasn'},
+                {label: '신고자유형', name: 'aplcnt_clsftn'},
+                {label: '신고자나이', name: 'aplcnt_age'},
+                {label: '신고자성별', name: 'aplcnt_sex'},
+                {label: '이동가구원수', name: 'fmly_num'},
+            ],
+            viewrecords: true,
+            width: '100%',
+            height: '100%',
+            rowNum: 100,
+            loadonce: true,
+            pager: '#jqGridPager'
+        });
+    }
+//    {# 세대통계 검색 #}
+    function srch_hshold_stats() {
+        $.ajax({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-1').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = '총 세대수: ' + item.hshold_sum;
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
             });
-            $('#'+target_id).html(results.join(''));
-            {# 실행 후 반드시 클릭 이벤트 오프를 해줌 #}
-            $('#btn-area').button().off('click');
-        }
-/*
-        var check_input = function() {
-            $('[type=checkbox]').click(function(e) {
-                e.stopPropagation();
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+//        {# 남쪽 패널에 jqGrid 출력 #}
+        $('#jqGrid').jqGrid({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            mtype: 'POST',
+            styleUI: 'Bootstrap',
+            datatype: 'json',
+            postData: $('#frm-west-1').serialize(),
+            colModel: [
+                {label: '측정년도', name: 'srvy_year'},
+                {label: '시도', name: 'sid'},
+                {label: '시군구', name: 'sgg'},
+                {label: '주거유형', name: 'rsdnc_clsftn'},
+                {label: '세대원수', name: 'fmly_num'},
+                {label: '방개수', name: 'room_num'},
+                {label: '세대수', name: 'hshold_num'},
+            ],
+            viewrecords: true,
+            width: '100%',
+            height: '100%',
+            rowNum: 100,
+            loadonce: true,
+            pager: '#jqGridPager'
+        });
+    }
+//    {# 인구통계 검색 #}
+    function srch_popltn_stats() {
+        var year = $('#ps-eyear').val();
+        var month = $('#ps-emonth').val();
+        var selected_area = $('#spn-ps-area').text();
+        $.ajax({
+            url: '{{ url_for("situation.srch_popltn_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-2').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = '<span class="label label-success" style="display: inline-block;">' + selected_area +
+                    '</span><br>' + year + '년 ' + month + '월 선택 연령대 인구수: ' + set_comma(item.total_num) + '(명)';
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
             });
-            $('[type=radio]').click(function(e) {
-                e.stopPropagation();
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+
+//        {# 남쪽 패널에 jqGrid 출력 #}
+        $('#jqGrid').jqGrid({
+            url: '{{ url_for("situation.srch_popltn_stats") }}',
+            mtype: 'POST',
+            styleUI: 'Bootstrap',
+            datatype: 'json',
+            postData: $('#frm-west-2').serialize(),
+            colModel: [
+                {label: '측정년도', name: 'srvy_yyyymm'},
+                {label: '시도', name: 'sid'},
+                {label: '시군구', name: 'sgg'},
+                {label: '읍면동', name: 'emd'},
+                {label: '연령대', name: 'age_grp'},
+                {label: '남자수', name: 'man_num'},
+                {label: '여자수', name: 'woman_num'},
+                {label: '총인구수', name: 'total_num'},
+            ],
+            viewrecords: true,
+            width: '100%',
+            height: '100%',
+            rowNum: 50,
+            pager: "#jqGridPager"
+        });
+    }
+
+//    {# 실거래가 검색 #}
+    function srch_trnstn_situtn() {
+        $.ajax({
+            url: '{{ url_for("situation.srch_trnstn_situtn") }}',
+            method: 'POST',
+            data: $('#frm-west-3').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            alert(1);
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = item.id;
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
             });
-            $('.list-group a').click(function(e) {
-                e.stopPropagation();
-                var $this;
-                $this = $(this).find('[type=checkbox]');
-                if ($this.is(':checked')) {
-                    $this.prop('checked', false);
-                } else {
-                    $this.prop('checked', true);
-                }
-                $this = $(this).find('[type=radio]');
-                if ($this.is(':checked')) {
-                    $this.prop('checked', false);
-                } else {
-                    $this.prop('checked', true);
-                }
-            });
-        }
-*/
-        {# 법정 시도 지역 조회 후 세팅 #}
-        var set_law_sid_areas = function(input_type) {
-            $.ajax({
-                method: 'GET',
-                url: '{{ url_for("common.get_law_areas") }}',
-                data: { },
-                dataType: 'json'
-            }).done(function(data) {
-                var results = [];
-                results.push('<div class="list-group">');
-                $.each(data.items, function(i, item) {
-                    results.push('<a href="#" class="list-group-item" onclick="set_law_sgg_areas(\''+input_type+'\', \''+item.sid_cd+'\');"> '+item.sid_ko_nm+'<input id="sid-cd.'+item.sid_cd+'" name="'+input_type+'-area" type="'+input_type+'" class="pull-right" value="'+item.sid_cd+'" onclick="do_bounce(ol.proj.fromLonLat(['+item.coordinates+']), view, function() {}); update_params(\''+item.layers+'\', \''+item.featureid+'\');"></a>');
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+
+        /*   {# 남쪽 패널에 jqGrid 출력 #}
+           $('#jqGrid').jqGrid({
+               url: '{{ url_for("situation.srch_trnstn_situtn") }}',
+               mtype: 'POST',
+               styleUI: 'Bootstrap',
+               datatype: 'json',
+               postData: $('#frm-west-3').serialize(),
+               colModel: [
+                   { label: '측정년도', name: 'srvy_yyyymm' },
+                   { label: '시도', name: 'sid' },
+                   { label: '시군구', name: 'sgg' },
+                   { label: '읍면동', name: 'emd' },
+                   { label: '연령대', name: 'age_grp' },
+                   { label: '남자수', name: 'man_num' },
+                   { label: '여자수', name: 'woman_num' },
+                   { label: '총인구수', name: 'total_num' },
+               ],
+               viewrecords: true,
+               width: '100%',
+               height: '100%',
+               rowNum: 50,
+               pager: "#jqGridPager"
+           });  */
+    }
+
+//    {# 콤마 찍기 #}
+    function set_comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+
+//    {# 선택한 지역을 검색조건으로 세팅 #}
+    function set_areas(name_prefix, target_id) {
+        var results = [];
+        $('#div-sid-area').find('input[name$=-area]:checked').each(function () {
+            results.push('<input type="hidden" name="' + name_prefix + 'sid_cd" value="' + $(this).val() + '">');
+            results.push('<span class="label label-success" style="display: inline-block;">' + $(this).parent().text() + '</span>\n');
+        });
+        $('#div-sgg-area').find('input[name$=-area]:checked').each(function () {
+            results.push('<input type="hidden" name="' + name_prefix + 'sgg_cd" value="' + $(this).val() + '">');
+            results.push('<span class="label label-success" style="display: inline-block;">' + $(this).parent().text() + '</span>\n');
+        });
+        $('#div-emd-area').find('input[name$=-area]:checked').each(function () {
+            results.push('<input type="hidden" name="' + name_prefix + 'emd_cd" value="' + $(this).val() + '">');
+            results.push('<span class="label label-success" style="display: inline-block;">' + $(this).parent().text() + '</span>\n');
+        });
+        $('#' + target_id).html(results.join(''));
+//        {# 실행 후 반드시 클릭 이벤트 오프를 해줌 #}
+        $('#btn-area').button().off('click');
+    }
+    /*
+            var check_input = function() {
+                $('[type=checkbox]').click(function(e) {
+                    e.stopPropagation();
                 });
-                results.push('</div>');
-                $('#div-sid-area').html(results.join(''));
-            }).fail(function(data) {
-                console.log(data.msg);
-            });
-            {# 호출될 때마다 시군구, 읍면동 초기화 #}
-            $('#div-sgg-area').html('');
-            $('#div-emd-area').html('');
-        }
-        {# 시도 코드로 법정 시군구 지역 조회 후 세팅 #}
-        var set_law_sgg_areas = function(input_type, sid_cd) {
-            $.ajax({
-                method: 'GET',
-                url: '{{ url_for("common.get_law_areas") }}',
-                data: { sid_cd: sid_cd },
-                dataType: 'json'
-            }).done(function(data) {
-                var results = [];
-                results.push('<div class="list-group">');
-                $.each(data.items, function(i, item) {
-                    results.push('<a href="#" class="list-group-item" onclick="set_law_emd_areas(\''+input_type+'\', \''+item.sgg_cd+'\');"> '+item.sgg_ko_nm+'<input id="sgg-cd.'+item.sgg_cd+'" name="'+input_type+'-area" type="'+input_type+'" class="pull-right" value="'+item.sgg_cd+'" onclick="do_bounce(ol.proj.fromLonLat(['+item.coordinates+']), view, function() {}); update_params(\''+item.layers+'\', \''+item.featureid+'\');"></a>');
+                $('[type=radio]').click(function(e) {
+                    e.stopPropagation();
                 });
-                results.push('</div>');
-                $('#div-sgg-area').html(results.join(''));
-            }).fail(function(data) {
-                console.log(data.msg);
-            });
-        }
-        {# 시군구 코드로 법정 읍면동 지역 조회 후 세팅 #}
-        var set_law_emd_areas = function(input_type, sgg_cd) {
-            $.ajax({
-                method: 'GET',
-                url: '{{ url_for("common.get_law_areas") }}',
-                data: { sgg_cd: sgg_cd },
-                dataType: 'json'
-            }).done(function(data) {
-                var results = [];
-                results.push('<div class="list-group">');
-                $.each(data.items, function(i, item) {
-                    results.push('<a href="#" class="list-group-item"> '+item.emd_ko_nm+'<input id="emd-cd.'+item.emd_cd+'" name="'+input_type+'-area" type="'+input_type+'" class="pull-right" value="'+item.emd_cd+'" onclick="do_bounce(ol.proj.fromLonLat(['+item.coordinates+']), view, function() {}); update_params(\''+item.layers+'\', \''+item.featureid+'\');"></a>');
+                $('.list-group a').click(function(e) {
+                    e.stopPropagation();
+                    var $this;
+                    $this = $(this).find('[type=checkbox]');
+                    if ($this.is(':checked')) {
+                        $this.prop('checked', false);
+                    } else {
+                        $this.prop('checked', true);
+                    }
+                    $this = $(this).find('[type=radio]');
+                    if ($this.is(':checked')) {
+                        $this.prop('checked', false);
+                    } else {
+                        $this.prop('checked', true);
+                    }
                 });
-                results.push('</div>');
-                $('#div-emd-area').html(results.join(''));
-            }).fail(function(data) {
-                console.log(data.msg);
+            }
+    */
+//    {# 법정 시도 지역 조회 후 세팅 #}
+    function set_law_sid_areas(input_type) {
+        $.ajax({
+            method: 'GET',
+            url: '{{ url_for("common.get_law_areas") }}',
+            data: {},
+            dataType: 'json'
+        }).done(function (data) {
+            var results = [];
+            results.push('<div class="list-group">');
+            $.each(data.items, function (i, item) {
+                results.push('<a href="#" class="list-group-item" onclick="set_law_sgg_areas(\'' + input_type + '\', \'' + item.sid_cd + '\');"> ' + item.sid_ko_nm + '<input id="sid-cd.' + item.sid_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.sid_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
             });
-        }
-    </script>
+            results.push('</div>');
+            $('#div-sid-area').html(results.join(''));
+        }).fail(function (data) {
+            console.log(data.msg);
+        });
+//        {# 호출될 때마다 시군구, 읍면동 초기화 #}
+        $('#div-sgg-area').html('');
+        $('#div-emd-area').html('');
+    }
+//    {# 시도 코드로 법정 시군구 지역 조회 후 세팅 #}
+    function set_law_sgg_areas(input_type, sid_cd) {
+        $.ajax({
+            method: 'GET',
+            url: '{{ url_for("common.get_law_areas") }}',
+            data: {sid_cd: sid_cd},
+            dataType: 'json'
+        }).done(function (data) {
+            var results = [];
+            results.push('<div class="list-group">');
+            $.each(data.items, function (i, item) {
+                results.push('<a href="#" class="list-group-item" onclick="set_law_emd_areas(\'' + input_type + '\', \'' + item.sgg_cd + '\');"> ' + item.sgg_ko_nm + '<input id="sgg-cd.' + item.sgg_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.sgg_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
+            });
+            results.push('</div>');
+            $('#div-sgg-area').html(results.join(''));
+        }).fail(function (data) {
+            console.log(data.msg);
+        });
+    }
+//    {# 시군구 코드로 법정 읍면동 지역 조회 후 세팅 #}
+    function set_law_emd_areas(input_type, sgg_cd) {
+        $.ajax({
+            method: 'GET',
+            url: '{{ url_for("common.get_law_areas") }}',
+            data: {sgg_cd: sgg_cd},
+            dataType: 'json'
+        }).done(function (data) {
+            var results = [];
+            results.push('<div class="list-group">');
+            $.each(data.items, function (i, item) {
+                results.push('<a href="#" class="list-group-item"> ' + item.emd_ko_nm + '<input id="emd-cd.' + item.emd_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.emd_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
+            });
+            results.push('</div>');
+            $('#div-emd-area').html(results.join(''));
+        }).fail(function (data) {
+            console.log(data.msg);
+        });
+    }
+
+</script>
 
 {% endblock %}

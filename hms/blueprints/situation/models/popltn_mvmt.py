@@ -27,7 +27,7 @@ class PopltnMvmt(db.Model):
     out_emd_cd = db.Column(db.String(10), nullable=False)  # 전출읍면동코드
     mv_reasn_cd = db.Column(db.String(20), nullable=False)  # 이동사유코드
     aplcnt_clsftn_cd = db.Column(db.String(20), nullable=False)  # 신청인구분코드
-    aplcnt_age = db.Column(db.Integer)  # 신청인나이
+    aplcnt_age_cd = db.Column(db.Integer)  # 신청인나이
     aplcnt_sex_cd = db.Column(db.String(20), nullable=False)  # 신청인성별코드
     fmly_num = db.Column(db.Integer, nullable=False)  # 세대수
 
@@ -37,7 +37,7 @@ class PopltnMvmt(db.Model):
 
     @classmethod
     def find_by_filter_for_map(cls, out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd, in_emd_cd,
-                               mv_reasn_cds, aplcnt_ages, aplcnt_sex_cds, fmly_nums, st_yyyymm, ed_yyyymm):
+                               mv_reasn_cds, aplcnt_age_cds, aplcnt_sex_cds, fmly_nums, st_yyyymm, ed_yyyymm):
         # 서브 쿼리
         geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(LawSidArea.geom)).label('geojson')). \
             filter(LawSidArea.sid_cd == cls.in_sid_cd).limit(1).label('geojson')
@@ -48,7 +48,7 @@ class PopltnMvmt(db.Model):
             filter(or_(cls.out_sid_cd.in_(out_sid_cds),
                        cls.out_sgg_cd.in_(out_sgg_cds),
                        cls.out_emd_cd.in_(out_emd_cds))). \
-            filter(cls.aplcnt_age.in_(aplcnt_ages)). \
+            filter(cls.aplcnt_age_cd.in_(aplcnt_age_cds)). \
             filter(cls.aplcnt_sex_cd.in_(aplcnt_sex_cds)). \
             filter(cls.mv_reasn_cd.in_(mv_reasn_cds)). \
             filter(cls.fmly_num.in_(fmly_nums)). \
@@ -63,7 +63,7 @@ class PopltnMvmt(db.Model):
 
     @classmethod
     def find_by_filter_for_grid(cls, out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd, in_emd_cd,
-                                mv_reasn_cds, aplcnt_ages, aplcnt_sex_cds, fmly_nums, st_yyyymm, ed_yyyymm):
+                                mv_reasn_cds, aplcnt_age_cds, aplcnt_sex_cds, fmly_nums, st_yyyymm, ed_yyyymm):
         results = db.session.query(cls.in_yyyymm,
                                    db.session.query(LawSidArea.sid_ko_nm).
                                    filter(LawSidArea.sid_cd == cls.in_sid_cd).limit(1).label('in_sid'),
@@ -83,7 +83,9 @@ class PopltnMvmt(db.Model):
                                    db.session.query(Code.name).
                                    filter(and_(Code.code == cls.aplcnt_clsftn_cd,
                                                Code.group_code == 'aplcnt_clsftn')).limit(1).label('aplcnt_clsftn'),
-                                   cls.aplcnt_age,
+                                   db.session.query(Code.name).
+                                   filter(and_(Code.code == cls.aplcnt_age_cd,
+                                               Code.group_code == 'aplcnt_age')).limit(1).label('aplcnt_age'),
                                    db.session.query(Code.name).
                                    filter(and_(Code.code == cls.aplcnt_sex_cd,
                                                Code.group_code == 'aplcnt_sex')).limit(1).label('aplcnt_sex'),
@@ -91,7 +93,7 @@ class PopltnMvmt(db.Model):
             filter(or_(cls.out_sid_cd.in_(out_sid_cds),
                        cls.out_sgg_cd.in_(out_sgg_cds),
                        cls.out_emd_cd.in_(out_emd_cds))). \
-            filter(cls.aplcnt_age.in_(aplcnt_ages)). \
+            filter(cls.aplcnt_age_cd.in_(aplcnt_age_cds)). \
             filter(cls.aplcnt_sex_cd.in_(aplcnt_sex_cds)). \
             filter(cls.mv_reasn_cd.in_(mv_reasn_cds)). \
             filter(cls.fmly_num.in_(fmly_nums)). \
@@ -103,3 +105,5 @@ class PopltnMvmt(db.Model):
             order_by(desc(cls.in_yyyymm))
 
         return results
+
+

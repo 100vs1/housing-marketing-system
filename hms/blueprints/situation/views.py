@@ -28,8 +28,8 @@ def index():
 
 
 @situation.route('/srch_popltn_mvmt', methods=['POST'])
+# 인구이동 검색
 def srch_popltn_mvmt():
-    # 인구이동 검색
     out_sid_cds = request.form.getlist('out_sid_cd')
     out_sgg_cds = request.form.getlist('out_sgg_cd')
     out_emd_cds = request.form.getlist('out_emd_cd')
@@ -37,7 +37,7 @@ def srch_popltn_mvmt():
     in_sgg_cd = request.form.get('in_sgg_cd')
     in_emd_cd = request.form.get('in_emd_cd')
     mv_reasn_cds = request.form.getlist('mv_reasn_cd')
-    aplcnt_ages = request.form.getlist('aplcnt_age', type=int)
+    aplcnt_age_cds = request.form.getlist('aplcnt_age_cd', type=int)
     aplcnt_sex_cds = request.form.getlist('aplcnt_sex_cd')
     fmly_nums = request.form.getlist('fmly_num', type=int)
     st_yyyymm = request.form.get('st_year') + request.form.get('st_month')
@@ -47,7 +47,7 @@ def srch_popltn_mvmt():
     if request.form.get('req_type') == 'map':
         items = PopltnMvmt.find_by_filter_for_map(out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd,
                                                   in_emd_cd,
-                                                  mv_reasn_cds, aplcnt_ages, aplcnt_sex_cds, fmly_nums, st_yyyymm,
+                                                  mv_reasn_cds, aplcnt_age_cds, aplcnt_sex_cds, fmly_nums, st_yyyymm,
                                                   ed_yyyymm)
 
         return render_json(200, rows=[{
@@ -58,8 +58,8 @@ def srch_popltn_mvmt():
 
     # 그리드 출력
     items = PopltnMvmt.find_by_filter_for_grid(out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd,
-                                               in_emd_cd, mv_reasn_cds, aplcnt_ages, aplcnt_sex_cds, fmly_nums,
-                                               st_yyyymm, ed_yyyymm)
+                                           in_emd_cd, mv_reasn_cds, aplcnt_age_cds, aplcnt_sex_cds, fmly_nums,
+                                           st_yyyymm, ed_yyyymm)
 
     return jsonify({
         'rows': [{
@@ -76,12 +76,13 @@ def srch_popltn_mvmt():
             'aplcnt_sex': item.aplcnt_sex,
             'fmly_num': item.fmly_num
         } for item in items]
+
     })
 
 
 @situation.route('/srch_hshold_stats', methods=['POST'])
+# 세대통계 검색
 def srch_hshold_stats():
-    # 세대통계 검색
     sid_cds = request.form.getlist('sid_cd')
     sgg_cds = request.form.getlist('sgg_cd')
     rsdnc_clsftn_cds = request.form.getlist('rsdnc_clsftn_cd')
@@ -118,50 +119,112 @@ def srch_hshold_stats():
 
 
 @situation.route('/srch_popltn_stats', methods=['POST'])
+# 인구통계 검색
 def srch_popltn_stats():
-    # 인구통계 검색
-    sido_cds = request.form.getlist('ps-sido')
-    sigu_cds = request.form.getlist('ps-sigu')
-    emd_cds = request.form.getlist('ps-emd')
-    age_cds = request.form.getlist('ps-age')
-    sex_cds = request.form.getlist('ps-sex')
-    syear = request.form.get('ps-syear')
-    smonth = request.form.get('ps-smonth')
-    eyear = request.form.get('ps-eyear')
-    emonth = request.form.get('ps-emonth')
+    sid_cd = request.form.get('sid_cd')
+    sgg_cd = request.form.get('sgg_cd')
+    emd_cd = request.form.get('emd_cd')
+    age_grp_cds = request.form.getlist('age_grp_cd')
+    # ps_sex_cds = request.form.getlist('ps-sex', type=int)
+    # total_num = request.form.get('total_num', type=int)
+    st_yyyymm = request.form.get('ps-syear') + request.form.get('ps-smonth')
+    ed_yyyymm = request.form.get('ps-eyear') + request.form.get('ps-emonth')
 
-    rs = PopltnStats.select_all(sido_cds, sigu_cds, emd_cds, age_cds, syear, smonth, eyear, emonth)
+    # 지도 출력
+    if request.form.get('req_type') == 'map':
+        items = PopltnStats.find_by_filter_for_map(sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
+                                                   ed_yyyymm)
 
-    if rs is None:
-        return render_json(401, {'msg': '검색 중 오류가 발생하였습니다.'})
+        return render_json(200, rows=[{
+            'coordinates': json.loads(item.geojson)['coordinates'],
+            # 'local_name': item.local_name,
+            # 'man_num': item.man_num,
+            # 'woman_num': item.woman_num,
+            'total_num': item.total_num
+        } for item in items])
 
-    return render_json(200, items=[{
-        'area_nm': item.area_nm,
-        'man_sum': item.man_sum,
-        'woman_sum': item.woman_sum,
-        'total_sum': item.total_sum
-    } for item in rs])
+    # 그리드 출력
+
+    items = PopltnStats.find_by_filter_for_grid(sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
+                                                ed_yyyymm)
+
+    return jsonify({
+        'rows': [{
+            'srvy_yyyymm': item.srvy_yyyymm,
+            'sid': item.sid,
+            'sgg': item.sgg,
+            'emd': item.emd,
+            'age_grp': item.age_grp,
+            'man_num': item.man_num,
+            'woman_num': item.woman_num,
+            'total_num': item.total_num,
+        } for item in items]
+
+    })
+
+    # rs = PopltnStats.select_all(sido_cds, sigu_cds, emd_cds, age_cds, syear, smonth, eyear, emonth)
+    #
+    # if rs is None:
+    #     return render_json(401, {'msg': '검색 중 오류가 발생하였습니다.'})
+
+    # return render_json(200, items=[{
+    #     'area_nm': item.area_nm,
+    #     'man_num': item.man_num,
+    #     'woman_num': item.woman_num,
+    #     'total_num': item.total_num
+    # } for item in rs])
 
 
 @situation.route('/srch_trnstn_situtn', methods=['POST'])
+# 실거래가 검색
 def srch_trnstn_situtn():
-    # 실거래가 검색
-    dong_cd = request.args.get('dong_cd')
+    sid_cd = request.form.get('sid_cd')
+    sgg_cd = request.form.get('sgg_cd')
+    emd_cd = request.form.get('emd_cd')
+    trnstn_clsftn_cd = request.form.get('mp-trans-type')
+    house_clsftn_cd = request.form.get('mp-house-kind')
+    st_sale_price = request.form.get('mp-ssale')
+    ed_sale_price = request.form.get('mp-esale')
+    st_deposit = request.form.get('mp-sdeposit')
+    ed_deposit = request.form.get('mp-edeposit')
+    st_mnthly_rent = request.form.get('mp-srent')
+    ed_mnthly_rent = request.form.get('mp-erent')
+    st_exclsv_area = request.form.get('mp-sexarea')
+    ed_exclsv_area = request.form.get('mp-eexarea')
+    st_decrepit = request.form.get('mp-sdecrepit')
+    ed_decrepit = request.form.get('mp-edecrepit')
+    st_yyyymm = request.form.get('mp-syear')+request.form.get('mp-smonth')
+    ed_yyyymm = request.form.get('mp-eyear')+request.form.get('mp-emonth')
 
-    prices = TrnstnSitutn.query.filter(TrnstnSitutn.dong_cd == dong_cd)
+    # 지도 출력
+    if request.form.get('req_type') == 'map':
 
-    return render_json(200, items=[{
-        'dong_cd': item.dong_cd,
-        'zone_main': item.zone_main,
-        'zone_sub': item.zone_sub,
-        'dong_kor': item.dong_kor,
-        'doro_addre': item.doro_addre,
-        'building_k': item.building_k,
-        'cl': item.cl,
-        'year_build': item.year_build,
-        'floor': item.floor,
-        'issue': item.issue,
-        'date_contr': item.date_contr,
-        'using_area': item.using_area,
-        'price': item.price
-    } for item in prices])
+
+        items = TrnstnSitutn.find_by_filter_for_map(sid_cd, sgg_cd, emd_cd, trnstn_clsftn_cd, house_clsftn_cd,
+                                                    st_sale_price, ed_sale_price, st_deposit, ed_deposit,
+                                                    st_mnthly_rent, ed_mnthly_rent,st_exclsv_area, ed_exclsv_area,
+                                                    st_decrepit, ed_decrepit, st_yyyymm, ed_yyyymm)
+
+        return render_json(200, rows=[{
+            'coordinates': json.loads(item.geojsonForBuild)['coordinates'],
+            'id': item.id
+        } for item in items])
+
+    # 그리드 출력
+
+    # items = TrnstnSitutn.find_by_filter_for_grid(sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
+    #                                             ed_yyyymm)
+    #
+    # return jsonify({
+    #     'rows': [{
+    #         'srvy_yyyymm': item.srvy_yyyymm,
+    #         'sid': item.sid,
+    #         'sgg': item.sgg,
+    #         'emd': item.emd,
+    #         'age_grp': item.age_grp,
+    #         'man_num': item.man_num,
+    #         'woman_num': item.woman_num,
+    #         'total_num': item.total_num,
+    #     } for item in items]
+    #
+    # })
