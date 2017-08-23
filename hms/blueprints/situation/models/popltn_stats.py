@@ -65,6 +65,9 @@ class PopltnStats(db.Model):
             filter(cls.age_grp_cd.in_(age_grp_cds)). \
             filter(cls.srvy_yyyymm == ed_yyyymm). \
             group_by(cls.sid_cd)
+        print("*" * 100)
+        print(results)
+        print("*" * 100)
 
         return results
 
@@ -91,6 +94,16 @@ class PopltnStats(db.Model):
             filter(and_(cls.srvy_yyyymm >= st_yyyymm,
                         cls.srvy_yyyymm <= ed_yyyymm)). \
             order_by(desc(cls.srvy_yyyymm))
+
+        print("*" * 100)
+        print(sid_cd)
+        print(sgg_cd)
+        print(emd_cd)
+        print(age_grp_cds)
+        print(st_yyyymm)
+        print(ed_yyyymm)
+        print(results)
+        print("*" * 100)
 
         return results
 

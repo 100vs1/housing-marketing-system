@@ -212,91 +212,17 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 {# 차트 모달 #}
-<div id="mdl-chart" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-label">
+<div id="mdl-chart-radar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-radar-label">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="mdl-chart-label">차트</h4>
+                <h4 class="modal-title" id="mdl-chart-radar-label">차트</h4>
             </div>
-            <div class="modal-body">
-                <canvas id="cnv-chart"></canvas>
-                <script>
-                    var ctx = document.getElementById("cnv-chart").getContext("2d");
-                    var chart;
-                    var config = {
-                        type: 'polarArea',
-                        data: {
-                            labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
-                            datasets: [{
-                                label: '남자',
-                                backgroundColor: [
-                                    '#3e95cd',
-                                    '#3e95cd',
-                                    '#3e95cd',
-                                    '#3e95cd',
-                                    '#3e95cd'
-                                ],
-                                data: [
-                                    2478,
-                                    526,
-                                    734,
-                                    784,
-                                    433
-                                ]
-                            }, {
-                                label: '여자',
-                                backgroundColor: [
-                                    '#3e9500',
-                                    '#3e9500',
-                                    '#3e9500',
-                                    '#3e9500',
-                                    '#3e9500'
-                                ],
-                                data: [
-                                    247,
-                                    5263,
-                                    7355,
-                                    1823,
-                                    1333
-                                ]
-                            }, {
-                                label: '합계',
-                                backgroundColor: [
-                                    '#3ecc00',
-                                    '#3ecc00',
-                                    '#3ecc00',
-                                    '#3ecc00',
-                                    '#3ecc00'
-                                ],
-                                data: [
-                                    247,
-                                    5263,
-                                    7355,
-                                    1823,
-                                    1333
-                                ]
-                            }]
-                        },
-                        options: {
-                            legend: {
-                                display: true
-                            },
-                            title: {
-                                display: false,
-                                text: '인구통계'
-                            }
-                        }
-                    };
-
-                    function create_chart(chart_type) {
-                        chart = new Chart(ctx, config);
-                        chart.type = chart_type;
-                        chart.update();
-                    }
-                </script>
+            <div id="div-chart-radar" class="modal-body">
+                <canvas id="cnv-chart-radar"></canvas>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
@@ -304,6 +230,439 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
     </div>
 </div>
+<div id="mdl-chart-bar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-bar-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-chart-bar-label">차트</h4>
+            </div>
+            <div id="div-chart-bar" class="modal-body">
+                <canvas id="cnv-chart-bar"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mdl-chart-horizontalBar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-horizontalBar-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-chart-horizontalBar-label">차트</h4>
+            </div>
+            <div id="div-chart-horizontalBar" class="modal-body">
+                <canvas id="cnv-chart-horizontalBar"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mdl-chart-area" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-area-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-chart-area-label">차트</h4>
+            </div>
+            <div id="div-chart-area" class="modal-body">
+                <canvas id="cnv-chart-area"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mdl-chart-line" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-line-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-chart-line-label">차트</h4>
+            </div>
+            <div id="div-chart-line" class="modal-body">
+                <canvas id="cnv-chart-line"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mdl-chart-pie" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-pie-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-chart-pie-label">차트</h4>
+            </div>
+            <div id="div-chart-pie" class="modal-body">
+                <canvas id="cnv-chart-pie"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+//    var ctx = document.getElementById("cnv-chart").getContext("2d");
+
+    // TODO : canvas 부분 객체로 받아오는 거 아닌지 확인 한 번 해보고 canvas에 대한 객체 initialize
+    var codeStyle;
+    var gridData = [];
+    var config = {
+        type: '',
+        data: {
+            labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
+            datasets: [{
+                label: '남자',
+                backgroundColor: ['#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5'],
+                borderWidth: 1,
+                data: [2478,526,734,784,433]
+            }, {
+                label: '여자',
+                backgroundColor: ['#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1'],
+                borderWidth: 1,
+                data: [247,5263,7355,1823,1333]
+            }, {
+                label: '합계',
+                backgroundColor: ['#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA'],
+                borderWidth: 1,
+                data: [247,5263,7355,1823,1333]
+            }]
+        },
+        options: {
+            legend: {
+                display: true
+            },
+            title: {
+                display: false,
+                text: '인구통계'
+            }
+        }
+    };
+
+    var radarConfig = {
+        type: 'radar',
+        data: {
+            labels: [["Eating", "Dinner"], ["Drinking", "Water"], "Sleeping", ["Designing", "Graphics"], "Coding", "Cycling", "Running"],
+            datasets: [{
+                label: 'My First dataset',
+                backgroundColor: '#9AD0F5',
+                borderWidth: 1,
+                data: [2478,526,734,784,433]
+            }, {
+                label: 'My Second dataset',
+                backgroundColor: '#FFB1C1',
+                borderWidth: 1,
+                data: [247,5263,7355,1823,1333]
+            }]
+        },
+        options: {
+            legend: {
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: 'Chart.js Radar Chart'
+            },
+            scale: {
+                ticks: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    var barConfig = {
+        type: 'bar',
+        data: {
+            labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
+            datasets: [{
+                label: '남자',
+                backgroundColor: ['#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5'],
+                borderWidth: 1,
+                data: [2478,526,734,784,433]
+            }, {
+                label: '여자',
+                backgroundColor: ['#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1'],
+                borderWidth: 1,
+                data: [247,5263,7355,1823,1333]
+            }, {
+                label: '합계',
+                backgroundColor: ['#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA'],
+                borderWidth: 1,
+                data: [247,5263,7355,1823,1333]
+            }]
+        },
+        options: {
+            legend: {
+                display: true
+            },
+            title: {
+                display: false,
+                text: '인구통계'
+            }
+        }
+    };
+
+    var horizontalBarConfig = {
+        type: 'horizontalBar',
+        data: {
+            labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
+            datasets: [{
+                label: '남자',
+                backgroundColor: ['#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5'],
+                borderWidth: 1,
+                data: [2478,526,734,784,433]
+            }, {
+                label: '여자',
+                backgroundColor: ['#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1'],
+                borderWidth: 1,
+                data: [247,5263,7355,1823,1333]
+            }, {
+                label: '합계',
+                backgroundColor: ['#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA'],
+                borderWidth: 1,
+                data: [247,5263,7355,1823,1333]
+            }]
+        },
+        options: {
+            legend: {
+                display: true
+            },
+            title: {
+                display: false,
+                text: '인구통계'
+            }
+        }
+    };
+
+    var radarChart;
+    var barChart;
+    var horizontalBarChart;
+    var areaChart;
+    var lineChart;
+    var pieChart;
+
+    //TODO : 데이터 타입을 좀 변경하고 싶긴한데...
+    // ex) radar isUeable : [코드 배열]
+
+//    var acceptableTarget = {
+//        radar : {
+//            popltn_stats : false,
+//            hshold_stats : false,
+//            popltn_mvmt : true,
+//            trnstn_situtn : false,
+//            idnfln_bldng : true,
+//            busins_situtn : false
+//        },
+//        bar : {
+//            popltn_stats : true,
+//            hshold_stats : false,
+//            popltn_mvmt : true,
+//            trnstn_situtn : true,
+//            idnfln_bldng : false,
+//            busins_situtn : false
+//        },
+//        area : {
+//            popltn_stats : false,
+//            hshold_stats : false,
+//            popltn_mvmt : false,
+//            trnstn_situtn : false,
+//            idnfln_bldng : false,
+//            busins_situtn : false
+//        },
+//        line : {
+//            popltn_stats : true,
+//            hshold_stats : true,
+//            popltn_mvmt : true,
+//            trnstn_situtn : true,
+//            idnfln_bldng : true,
+//            busins_situtn : true
+//        },
+//        pie : {
+//            popltn_stats : true,
+//            hshold_stats : true,
+//            popltn_mvmt : false,
+//            trnstn_situtn : true,
+//            idnfln_bldng : false,
+//            busins_situtn : true
+//        }
+//    }
+
+        var acceptableTarget = {
+        radar : {
+            popltn_stats : true,
+            hshold_stats : true,
+            popltn_mvmt : true,
+            trnstn_situtn : true,
+            idnfln_bldng : true,
+            busins_situtn : true
+        },
+        bar : {
+            popltn_stats : true,
+            hshold_stats : true,
+            popltn_mvmt : true,
+            trnstn_situtn : true,
+            idnfln_bldng : true,
+            busins_situtn : true
+        },
+        area : {
+            popltn_stats : true,
+            hshold_stats : true,
+            popltn_mvmt : true,
+            trnstn_situtn : true,
+            idnfln_bldng : true,
+            busins_situtn : true
+        },
+        line : {
+            popltn_stats : true,
+            hshold_stats : true,
+            popltn_mvmt : true,
+            trnstn_situtn : true,
+            idnfln_bldng : true,
+            busins_situtn : true
+        },
+        pie : {
+            popltn_stats : true,
+            hshold_stats : true,
+            popltn_mvmt : true,
+            trnstn_situtn : true,
+            idnfln_bldng : true,
+            busins_situtn : true
+        }
+    }
+
+    function initChart() {
+        if($('#cnv-chart') !== undefined || $('#cnv-chart') !== null) {
+            $('#cnv-chart').remove();
+            $('#chart_div').html("<canvas id=\"cnv-chart\"></canvas>");
+        }
+    }
+
+    function createChartForRadar() {
+//        // 초기화
+//        initChart();
+        var ctx = document.getElementById("cnv-chart-radar").getContext("2d");
+        alert(acceptableTarget.bar[codeStyle]);
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.radar[codeStyle]) {
+            // TODO : 모달도 안뜨게 할 것
+            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+        } else {
+            dataParseForRadar();
+            console.dir(config);
+            config.type = 'radar';
+            radarChart = new Chart(ctx, radarConfig);
+            radarChart.update();
+        }
+    }
+
+    var radarChartData = {}
+    function dataParseForRadar() {
+        var chartData = {};
+
+        if(gridData.length === 0) {
+            alert("데이터 검색을 먼저해주세요.");
+        } else {
+            console.dir(gridData);
+        }
+
+        alert(chartData);
+        return chartData;
+    }
+
+    function createChartForBar() {
+//        initChart();
+        var ctx = document.getElementById("cnv-chart-bar").getContext("2d");
+
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.radar[codeStyle]) {
+            // TODO : 모달도 안뜨게 할 것
+            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+        } else {
+            config.type = 'bar';
+            barChart = new Chart(ctx, barConfig);
+            barChart.update();
+        }
+    }
+
+    function dataParseForBar() {
+        var chartData = {};
+
+        if(!gridData) {
+            alert("데이터 검색을 먼저해주세요.");
+        } else {
+            gridData
+            console.dir(gridData);
+        }
+    }
+
+    function createChartForHorizontalBar() {
+//        initChart();
+        var ctx = document.getElementById("cnv-chart-horizontalBar").getContext("2d");
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.radar[codeStyle]) {
+            // TODO : 모달도 안뜨게 할 것
+            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+        } else {
+            config.type = 'horizontalBar';
+            horizontalBarChart = new Chart(ctx, horizontalBarConfig);
+            horizontalBarChart.update();
+        }
+    }
+
+    function createChartForArea() {
+        initChart();
+        var ctx = document.getElementById("cnv-chart").getContext("2d");
+
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.area[codeStyle]) {
+            // TODO : 모달도 안뜨게 할 것
+            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+        } else {
+            config.type = 'area';
+            areaChart = new Chart(ctx, config);
+            areaChart.update();
+        }
+    }
+
+    function createChartForLine() {
+        initChart();
+        var ctx = document.getElementById("cnv-chart").getContext("2d");
+
+        config.type = 'line';
+        lineChart = new Chart(ctx, config);
+        lineChart.update();
+    }
+
+    function createChartForPie() {
+        initChart();
+        var ctx = document.getElementById("cnv-chart").getContext("2d");
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.pie[codeStyle]) {
+            // TODO : 모달도 안뜨게 할 것
+            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+        } else {
+            config.type = 'pie';
+            pieChart = new Chart(ctx, config);
+            pieChart.update();
+        }
+    }
+</script>
 <div class="ui-layout-center">
     <!--<div>빈값</div>-->
 </div>
@@ -316,7 +675,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     <div id="west-accordion">
         <h3><a href="#">인구통계</a></h3>
         <div>
-            <form id="frm-west-2" class="form-horizontal">
+            <form id="frm-west-ps" class="form-horizontal">
                 <!--templates/macros/form.html에 form의 action이 정의되어 있음. -->
                 <div class="form-group">
                     <button id="btn-ps-area" type="button" class="btn btn-default" data-toggle="modal"
@@ -339,25 +698,25 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 <!--</select>-->
                 <!--</div>-->
                 <div class="form-group">
-                    <select name="ps-syear" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                    <select id="ps_syear" name="ps_syear" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2012, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select name="ps-smonth" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
+                    <select id="ps_smonth" name="ps_smonth" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="ps-eyear" name="ps-eyear" class="selectpicker" title="종료년" data-actions-box="true"
+                    <select id="ps_eyear" name="ps_eyear" class="selectpicker" title="종료년" data-actions-box="true"
                             data-width="fit">
                         {% for year in range(now.year, 2012, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select id="ps-emonth" name="ps-emonth" class="selectpicker" title="종료월" data-actions-box="true"
+                    <select id="ps_emonth" name="ps_emonth" class="selectpicker" title="종료월" data-actions-box="true"
                             data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
@@ -373,7 +732,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">세대통계</a></h3>
         <div>
-            <form id="frm-west-1" class="form-horizontal">
+            <form id="frm-west-hs" class="form-horizontal">
                 <div class="form-group">
                     <button id="btn-hs-a" type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#mdl-area">지역선택 +
@@ -396,14 +755,14 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="st_year" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                    <select id="st_year" name="st_year" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2001, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="ed_year" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
+                    <select id="ed_year" name="ed_year" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2001, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
@@ -416,7 +775,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">인구이동</a></h3>
         <div>
-            <form id="frm-west-0" class="form-horizontal">
+            <form id="frm-west-pm" class="form-horizontal">
                 <div class="form-group">
                     <button id="btn-pm-oa" type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#mdl-area">전출지 선택 +
@@ -480,7 +839,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">실거래가</a></h3>
         <div>
-            <form id="frm-west-3" class="form-horizontal">
+            <form id="frm-west-ts" class="form-horizontal">
                 <div class="form-group">
                     <button id="btn-mp-area" type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#mdl-area">지역선택 +
@@ -608,7 +967,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 </button>
             </form>
             <script type="text/javascript">
-                $('#frm-west-3 .selectpicker').on('change', function () {
+                $('#frm-west-ts .selectpicker').on('change', function () {
                     var slecteditem = $(this).find("option:selected").val();
                     if (slecteditem != "") {
                         $(this).parent().next().val(slecteditem);
@@ -632,13 +991,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">건물현황</a></h3>
         <div>
-            <form id="frm-west-4" class="form-horizontal">
-                <div class="form-group">
-                    <button id="btn-bs-area" type="button" class="btn btn-default" data-toggle="modal"
-                            data-target="#mdl-mp-area">지역/건물선택 +
-                    </button>
-                    <input type="hidden" name="bs-area-sido" value="11">
-                </div>
+            <form id="frm-west-id" class="form-horizontal">
                 <div class="form-group">
                     <select id="bs-use" name="bs-use" class="selectpicker" multiple title="건물용도"
                             data-actions-box="true">
@@ -688,24 +1041,29 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     </select>
                 </div>
             </form>
-            <button id="btn-bs-search" class="btn btn-default pull-right" type="button">검색</button>
+            <!--<button id="btn-bs-search" class="btn btn-default pull-right" type="button">검색</button>-->
         </div>
         <h3><a href="#">업종현황</a></h3>
         <div>
-            <form id="frm-west-5" class="form-horizontal">
+            <form id="frm-west-bs" class="form-horizontal">
                 <div class="form-group">
-                    <button id="btn-is-area" type="button" class="btn btn-default" data-toggle="modal"
-                            data-target="#mdl-is-area">지역선택 +
+                    <button id="btn-bs-area" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-area"> 지역선택 +
                     </button>
-                    <input type="hidden" name="is-sido" value="11">
+                    <p><span id="spn-bs-area"></span></p>
                 </div>
                 <div class="form-group">
-                    <button id="btn-is-class" type="button" class="btn btn-default" data-toggle="modal"
-                            data-target="#mdl-is-class">업종선택 +
-                    </button>
-                    <input type="hidden" name="is-class" value="00">
+                    <select name="busins_clsftn_cd" class="selectpicker" multiple title="업종선택"
+                            data-actions-box="true">
+                        {% for i in range(5, 95, 5) %}
+                        <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </form>
+            <button id="btn-bs-search" class="btn btn-default pull-right" type="button" onclick="srch_busins_situtn()">
+                검색
+            </button>
         </div>
     </div>
 </div>
@@ -714,15 +1072,15 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         <h3>
             <a href="#">즐겨찾기</a>
             <button id="btn-bookmark-edit" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
-                    onclick="edit_bookmark();">
+                    onclick="edit_bookmark();" title="북마크 수정">
                 <i class="fa fa-pencil text-primary text-primary-bookmark" aria-hidden="true"></i>
             </button>
             <button id="btn-bookmark-delete" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
-                    onclick="delete_bookmark();">
+                    onclick="delete_bookmark();" title="북마크 삭제">
                 <i class="fa fa-trash text-primary text-primary-bookmark" aria-hidden="true"></i>
             </button>
             <button id="btn-bookmark-add" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
-                    onclick="add_bookmark();" data-toggle="modal" data-target="#mdl-bookmark">
+                    onclick="add_bookmark();" data-toggle="modal" data-target="#mdl-bookmark" title="북마크 추가">
                 <i class="fa fa-file-text text-primary text-primary-bookmark" aria-hidden="true"></i>
             </button>
         </h3>
@@ -846,23 +1204,27 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">차트</a></h3>
         <div>
-            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart" onclick="create_chart('radar');">
+            <a class="btn btn-default btn-block" data-toggle="modal" data-target="#mdl-chart-radar" onclick="createChartForRadar();">
                 <i class="fa fa-area-chart fa-lg text-info"></i> 레이더
             </a>
-            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart"
-               onclick="create_chart('horizontalBar');">
-                <i class="fa fa-bar-chart fa-lg text-info"></i> 가로막대
-            </a>
-            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart">
+            <br>
+            <a class="btn btn-default btn-block" data-toggle="modal" data-target="#mdl-chart-bar" onclick="createChartForBar()">
                 <i class="fa fa-bar-chart fa-lg text-info"></i> 세로막대
             </a>
-            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart">
+            <br>
+            <a class="btn btn-default btn-block" data-toggle="modal" data-target="#mdl-chart-horizontalBar" onclick="createChartForHorizontalBar();">
+                <i class="fa fa-bar-chart fa-lg text-info"></i> 가로막대
+            </a>
+            <br>
+            <a class="btn btn-default btn-block" data-toggle="modal" data-target="#mdl-chart-area" onclick="createChartForArea()">
                 <i class="fa fa-area-chart fa-lg text-info"></i> 영역
             </a>
-            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart" onclick="create_chart('line');">
+            <br>
+            <a class="btn btn-default btn-block" data-toggle="modal" data-target="#mdl-chart-line" onclick="createChartForLine();">
                 <i class="fa fa-line-chart fa-lg text-info"></i> 라인
             </a>
-            <a class="btn btn-default" data-toggle="modal" data-target="#mdl-chart" onclick="create_chart('pie');">
+            <br>
+            <a class="btn btn-default btn-block" data-toggle="modal" data-target="#mdl-chart-pie" onclick="createChartForPie();">
                 <i class="fa fa-pie-chart fa-lg text-info"></i> 파이
             </a>
         </div>
@@ -963,8 +1325,32 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 <div class="ui-layout-south">
-    <table id="jqGrid"></table>
-    <div id="jqGridPager"></div>
+    <table id="dataTables">
+                <thead>
+            <tr>
+                <th>srvy_yyyymm</th>
+                <th>sid</th>
+                <th>sgg</th>
+                <th>emd</th>
+                <th>age_grp</th>
+                <th>man_num</th>
+                <th>woman_num</th>
+                <th>total_num</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>srvy_yyyymm</th>
+                <th>sid</th>
+                <th>sgg</th>
+                <th>emd</th>
+                <th>age_grp</th>
+                <th>man_num</th>
+                <th>woman_num</th>
+                <th>total_num</th>
+            </tr>
+        </tfoot>
+    </table>
 </div>
 
 <script type="text/javascript">
@@ -1014,6 +1400,14 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 set_areas('', 'spn-mp-area');
             });
         });
+//        {# 지역현황 > 업종현황 > 지역선택 #}
+        $('#btn-bs-area').button().on('click', function () {
+            set_law_sid_areas('radio');
+            $('#btn-area').button().on('click'), function() {
+                set_areas('', 'spn-bs-area');
+            }
+        });
+
 //        {# 각 아코디언 탭에 들어가는 검색조건인 셀렉트박스에 코드를 로딩 시 세팅 #}
 //        {# 지역현황 > 인구이동 #}
         set_codes_for_selectpicker('aplcnt_age', 'aplcnt_age');
@@ -1060,7 +1454,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 $('input:radio[name=rdo-control-ovmap][value=false]').prop('checked', true);
             }
         });
-        console.dir(fullScreenControl.getKeys());
+
         $('input:radio[name=rdo-control-zbutton]').click(function () {
             $(this).val() === 'true' ? $('.ol-zoom').show() : $('.ol-zoom').hide();
         });
@@ -1352,12 +1746,205 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             $('#' + element_id).html(results.join('')).selectpicker('refresh');
         });
     }
-//    {# 인구이동 검색 #}
+
+    //    {# 인구통계 검색 #}
+    function srch_popltn_stats() {
+        var year = $('#ps_eyear').val();
+        var month = $('#ps_emonth').val();
+        var selected_area = $('#spn-ps-area').text();
+        $.ajax({
+            url: '{{ url_for("situation.srch_popltn_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-ps').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = '<span class="label label-success" style="display: inline-block;">' + selected_area +
+                    '</span><br>' + year + '년 ' + month + '월, 선택 연령대 인구수: ' + set_comma(item.total_num) + '(명)';
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
+            });
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+
+//        var datatable;
+//        if ($.fn.DataTable.isDataTable('#dataTables')) {
+//            alert('뭐타니? 1');
+//            $('#dataTables').DataTable().ajax.reload(null, false);
+//        } else {
+//            alert('뭐타니? 2');
+//            datatable = $('#dataTables').DataTable({
+//                pageLength: 3,
+//                bPaginate: true,
+//                bLengthChange: true,
+//                lengthMenu : [ [ 3, 5, 10, -1 ], [ 3, 5, 10, "All" ] ],
+//                bAutoWidth: false,
+//                processing: true,
+//                ordering: true,
+//                serverSide: false,
+//                searching: true,
+//            });
+//        }
+//
+//        var data = $.ajax({
+//            url: '{{ url_for("situation.srch_popltn_stats") }}',
+//            method: 'POST',
+//            data: $('#frm-west-ps').serialize(),
+//            dataType: 'json'
+//        });
+//
+//        datatable.clear().draw();
+//        datatable.rows.add(data);
+//        datatable.columns.adjust().draw();
+//
+//        function getFormData($form){
+//            var unindexed_array = $form.serializeArray();
+//            var indexed_array = {};
+//
+//            $.map(unindexed_array, function(n, i){
+//                indexed_array[n['name']] = n['value'];
+//            });
+//
+//            return indexed_array;
+//        }
+
+
+
+
+
+//        {# 남쪽 패널에 jqGrid 출력 #}
+//        $('#jqGrid').jqGrid({
+//            url: '{{ url_for("situation.srch_popltn_stats") }}',
+//            mtype: 'POST',
+//            styleUI: 'Bootstrap',
+//            datatype: 'json',
+//            postData: $('#frm-west-ps').serialize(),
+//            colModel: [
+//                {label: '측정년도', name: 'srvy_yyyymm'},
+//                {label: '시도', name: 'sid'},
+//                {label: '시군구', name: 'sgg'},
+//                {label: '읍면동', name: 'emd'},
+//                {label: '연령대', name: 'age_grp'},
+//                {label: '남자수', name: 'man_num'},
+//                {label: '여자수', name: 'woman_num'},
+//                {label: '총인구수', name: 'total_num'},
+//            ],
+//            viewrecords: true,
+//            width: '100%',
+//            height: '100%',
+//            rowNum: 50,
+//            pager: "#jqGridPager"
+//        });
+    }
+
+//    {# 세대통계 검색 #}
+    function srch_hshold_stats() {
+        codeStyle = 'hshold_stats';
+
+        alert($('#frm-west-hs').serialize());
+        var year = $('#ed_year').val();
+        var selected_area = $('#spn-hs-a').text();
+        $.ajax({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-hs').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = '<span class="label label-success" style="display: inline-block;">' + selected_area +
+                    '</span><br>' + year + '년, 총 세대수: ' + set_comma(item.hshold_sum) + '(명)';
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
+            });
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+
+        $.ajax({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-hs').serialize(),
+            dataType: 'json'
+        }).done(function (data){
+            $.each(data.data, function (i, item){
+                gridData.push(item);
+            });
+        }).fail(function(data){
+            alert(data.msg);
+        });
+
+//        {# 남쪽 패널에 jqGrid 출력 #}
+        $('#jqGrid').jqGrid({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            mtype: 'POST',
+            styleUI: 'Bootstrap',
+            datatype: 'json',
+            postData: $('#frm-west-hs').serialize(),
+            colModel: [
+                {label: '측정년도', name: 'srvy_year'},
+                {label: '시도', name: 'sid'},
+                {label: '시군구', name: 'sgg'},
+                {label: '주거유형', name: 'rsdnc_clsftn'},
+                {label: '세대원수', name: 'fmly_num'},
+                {label: '방개수', name: 'room_num'},
+                {label: '세대수', name: 'hshold_num'},
+            ],
+            viewrecords: true,
+            width: '100%',
+            height: '100%',
+            rowNum: 100,
+            loadonce: true,
+            pager: '#jqGridPager'
+        });
+    }
+
+//    {# 실거래가 검색 #}
+    function srch_trnstn_situtn() {
+        $.ajax({
+            url: '{{ url_for("situation.srch_trnstn_situtn") }}',
+            method: 'POST',
+            data: $('#frm-west-ts').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            alert(1);
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = item.id;
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
+            });
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+
+        /*   {# 남쪽 패널에 jqGrid 출력 #}
+           $('#jqGrid').jqGrid({
+               url: '{{ url_for("situation.srch_trnstn_situtn") }}',
+               mtype: 'POST',
+               styleUI: 'Bootstrap',
+               datatype: 'json',
+               postData: $('#frm-west-ts').serialize(),
+               colModel: [
+                   { label: '측정년도', name: 'srvy_yyyymm' },
+                   { label: '시도', name: 'sid' },
+                   { label: '시군구', name: 'sgg' },
+                   { label: '읍면동', name: 'emd' },
+                   { label: '연령대', name: 'age_grp' },
+                   { label: '남자수', name: 'man_num' },
+                   { label: '여자수', name: 'woman_num' },
+                   { label: '총인구수', name: 'total_num' },
+               ],
+               viewrecords: true,
+               width: '100%',
+               height: '100%',
+               rowNum: 50,
+               pager: "#jqGridPager"
+           });  */
+    }
+
+    //    {# 인구이동 검색 #}
     function srch_popltn_mvmt() {
         $.ajax({
             url: '{{ url_for("situation.srch_popltn_mvmt") }}',
             method: 'POST',
-            data: $('#frm-west-0').serialize() + '&req_type=map',
+            data: $('#frm-west-pm').serialize() + '&req_type=map',
             dataType: 'json'
         }).done(function (data) {
             $.each(data.rows, function (i, item) {
@@ -1373,7 +1960,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             mtype: 'POST',
             styleUI: 'Bootstrap',
             datatype: 'json',
-            postData: $('#frm-west-0').serialize(),
+            postData: $('#frm-west-pm').serialize(),
             colModel: [
                 {label: '전입시기', name: 'in_yyyymm'},
                 {label: '전입시도', name: 'in_sid'},
@@ -1396,28 +1983,32 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             pager: '#jqGridPager'
         });
     }
-//    {# 세대통계 검색 #}
-    function srch_hshold_stats() {
+
+//    {# 업종 현황 검색 #}
+    function srch_busins_situtn() {
+        codeStyle = 'busins_situtn';
+
+//        var year = $('#ed_year').val();
+//        var selected_area = $('#spn-hs-a').text();
         $.ajax({
-            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            url: '{{ url_for("situation.srch_busins_situtn") }}',
             method: 'POST',
-            data: $('#frm-west-1').serialize() + '&req_type=map',
+            data: $('#frm-west-bs').serialize() + '&req_type=map',
             dataType: 'json'
         }).done(function (data) {
             $.each(data.rows, function (i, item) {
-                content.innerHTML = '총 세대수: ' + item.hshold_sum;
-                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
             });
         }).fail(function (data) {
             alert(data.msg);
         });
+
 //        {# 남쪽 패널에 jqGrid 출력 #}
         $('#jqGrid').jqGrid({
             url: '{{ url_for("situation.srch_hshold_stats") }}',
             mtype: 'POST',
             styleUI: 'Bootstrap',
             datatype: 'json',
-            postData: $('#frm-west-1').serialize(),
+            postData: $('#frm-west-hs').serialize(),
             colModel: [
                 {label: '측정년도', name: 'srvy_year'},
                 {label: '시도', name: 'sid'},
@@ -1434,92 +2025,6 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             loadonce: true,
             pager: '#jqGridPager'
         });
-    }
-//    {# 인구통계 검색 #}
-    function srch_popltn_stats() {
-        var year = $('#ps-eyear').val();
-        var month = $('#ps-emonth').val();
-        var selected_area = $('#spn-ps-area').text();
-        $.ajax({
-            url: '{{ url_for("situation.srch_popltn_stats") }}',
-            method: 'POST',
-            data: $('#frm-west-2').serialize() + '&req_type=map',
-            dataType: 'json'
-        }).done(function (data) {
-            $.each(data.rows, function (i, item) {
-                content.innerHTML = '<span class="label label-success" style="display: inline-block;">' + selected_area +
-                    '</span><br>' + year + '년 ' + month + '월 선택 연령대 인구수: ' + set_comma(item.total_num) + '(명)';
-                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
-            });
-        }).fail(function (data) {
-            alert(data.msg);
-        });
-
-//        {# 남쪽 패널에 jqGrid 출력 #}
-        $('#jqGrid').jqGrid({
-            url: '{{ url_for("situation.srch_popltn_stats") }}',
-            mtype: 'POST',
-            styleUI: 'Bootstrap',
-            datatype: 'json',
-            postData: $('#frm-west-2').serialize(),
-            colModel: [
-                {label: '측정년도', name: 'srvy_yyyymm'},
-                {label: '시도', name: 'sid'},
-                {label: '시군구', name: 'sgg'},
-                {label: '읍면동', name: 'emd'},
-                {label: '연령대', name: 'age_grp'},
-                {label: '남자수', name: 'man_num'},
-                {label: '여자수', name: 'woman_num'},
-                {label: '총인구수', name: 'total_num'},
-            ],
-            viewrecords: true,
-            width: '100%',
-            height: '100%',
-            rowNum: 50,
-            pager: "#jqGridPager"
-        });
-    }
-
-//    {# 실거래가 검색 #}
-    function srch_trnstn_situtn() {
-        $.ajax({
-            url: '{{ url_for("situation.srch_trnstn_situtn") }}',
-            method: 'POST',
-            data: $('#frm-west-3').serialize() + '&req_type=map',
-            dataType: 'json'
-        }).done(function (data) {
-            alert(1);
-            $.each(data.rows, function (i, item) {
-                content.innerHTML = item.id;
-                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
-            });
-        }).fail(function (data) {
-            alert(data.msg);
-        });
-
-        /*   {# 남쪽 패널에 jqGrid 출력 #}
-           $('#jqGrid').jqGrid({
-               url: '{{ url_for("situation.srch_trnstn_situtn") }}',
-               mtype: 'POST',
-               styleUI: 'Bootstrap',
-               datatype: 'json',
-               postData: $('#frm-west-3').serialize(),
-               colModel: [
-                   { label: '측정년도', name: 'srvy_yyyymm' },
-                   { label: '시도', name: 'sid' },
-                   { label: '시군구', name: 'sgg' },
-                   { label: '읍면동', name: 'emd' },
-                   { label: '연령대', name: 'age_grp' },
-                   { label: '남자수', name: 'man_num' },
-                   { label: '여자수', name: 'woman_num' },
-                   { label: '총인구수', name: 'total_num' },
-               ],
-               viewrecords: true,
-               width: '100%',
-               height: '100%',
-               rowNum: 50,
-               pager: "#jqGridPager"
-           });  */
     }
 
 //    {# 콤마 찍기 #}

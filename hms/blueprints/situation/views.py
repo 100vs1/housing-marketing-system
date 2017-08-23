@@ -79,56 +79,28 @@ def srch_popltn_mvmt():
 
     })
 
-
-@situation.route('/srch_hshold_stats', methods=['POST'])
-# 세대통계 검색
-def srch_hshold_stats():
-    sid_cds = request.form.getlist('sid_cd')
-    sgg_cds = request.form.getlist('sgg_cd')
-    rsdnc_clsftn_cds = request.form.getlist('rsdnc_clsftn_cd')
-    fmly_num_cds = request.form.getlist('fmly_num_cd')
-    room_num_cds = request.form.getlist('room_num_cd')
-    st_year = request.form.get('st_year')
-    ed_year = request.form.get('ed_year')
-
-    # 지도 출력
-    if request.form.get('req_type') == 'map':
-        items = HsholdStats.find_by_filter_for_map(sid_cds, sgg_cds, rsdnc_clsftn_cds,
-                                                   fmly_num_cds, room_num_cds, st_year, ed_year)
-
-        return render_json(200, rows=[{
-            'coordinates': json.loads(item.geojson)['coordinates'],
-            'hshold_sum': item.hshold_sum
-        } for item in items])
-
-    # 그리드 출력
-    items = PopltnMvmt.find_by_filter_for_grid(sid_cds, sgg_cds, rsdnc_clsftn_cds,
-                                               fmly_num_cds, room_num_cds, st_year, ed_year)
-
-    return jsonify({
-        'rows': [{
-            'srvy_year': item.srvy_year,
-            'sid': item.sid,
-            'sgg': item.sgg,
-            'rsdnc_clsftn': item.rsdnc_clsftn,
-            'fmly_num': item.fmly_num,
-            'room_num': item.room_num,
-            'hshold_num': item.hshold_num
-        } for item in items]
-    })
-
-
 @situation.route('/srch_popltn_stats', methods=['POST'])
 # 인구통계 검색
 def srch_popltn_stats():
+    print("*" * 100)
+    print(request.form.get('sid_cd'))
+    print(request.form.get('sgg_cd'))
+    print(request.form.get('emd_cd'))
+    print(request.form.getlist('age_grp_cd'))
+    print(request.form.get('ps_syear'))
+    print(request.form.get('ps_smonth'))
+    print(request.form.get('ps_eyear'))
+    print(request.form.get('ps_emonth'))
+    print("*" * 100)
+
     sid_cd = request.form.get('sid_cd')
     sgg_cd = request.form.get('sgg_cd')
     emd_cd = request.form.get('emd_cd')
     age_grp_cds = request.form.getlist('age_grp_cd')
     # ps_sex_cds = request.form.getlist('ps-sex', type=int)
     # total_num = request.form.get('total_num', type=int)
-    st_yyyymm = request.form.get('ps-syear') + request.form.get('ps-smonth')
-    ed_yyyymm = request.form.get('ps-eyear') + request.form.get('ps-emonth')
+    st_yyyymm = request.form.get('ps_syear') + request.form.get('ps_smonth')
+    ed_yyyymm = request.form.get('ps_eyear') + request.form.get('ps_emonth')
 
     # 지도 출력
     if request.form.get('req_type') == 'map':
@@ -147,19 +119,21 @@ def srch_popltn_stats():
 
     items = PopltnStats.find_by_filter_for_grid(sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
                                                 ed_yyyymm)
+    print("*" * 100)
+    print(items)
+    print("*" * 100)
 
     return jsonify({
-        'rows': [{
-            'srvy_yyyymm': item.srvy_yyyymm,
-            'sid': item.sid,
-            'sgg': item.sgg,
-            'emd': item.emd,
-            'age_grp': item.age_grp,
-            'man_num': item.man_num,
-            'woman_num': item.woman_num,
-            'total_num': item.total_num,
-        } for item in items]
-
+        'data': [[
+            item.srvy_yyyymm,
+            item.sid,
+            item.sgg,
+            item.emd,
+            item.age_grp,
+            item.man_num,
+            item.woman_num,
+            item.total_num,
+        ] for item in items]
     })
 
     # rs = PopltnStats.select_all(sido_cds, sigu_cds, emd_cds, age_cds, syear, smonth, eyear, emonth)
@@ -173,6 +147,63 @@ def srch_popltn_stats():
     #     'woman_num': item.woman_num,
     #     'total_num': item.total_num
     # } for item in rs])
+
+# 세대통계 검색
+@situation.route('/srch_hshold_stats', methods=['POST'])
+def srch_hshold_stats():
+    sid_cds = request.form.getlist('sid_cd')
+    sgg_cds = request.form.getlist('sgg_cd')
+    rsdnc_clsftn_cds = request.form.getlist('rsdnc_clsftn_cd')
+    fmly_num_cds = request.form.getlist('fmly_num_cd')
+    room_num_cds = request.form.getlist('room_num_cd')
+    st_year = request.form.get('st_year')
+    ed_year = request.form.get('ed_year')
+
+    print("*" * 100)
+    print(sid_cds)
+    print(sgg_cds)
+    print(rsdnc_clsftn_cds)
+    print(fmly_num_cds)
+    print(room_num_cds)
+    print(st_year)
+    print(ed_year)
+    print("*" * 100)
+
+    # 지도 출력
+    if request.form.get('req_type') == 'map':
+        items = HsholdStats.find_by_filter_for_map(sid_cds, sgg_cds, rsdnc_clsftn_cds,
+                                                   fmly_num_cds, room_num_cds, st_year, ed_year)
+
+        for item in items:
+            print("*" * 100)
+            print('ssssssssssssssssssssssssss')
+            print(item)
+            print("*" * 100)
+
+        return render_json(200, rows=[{
+            'coordinates': json.loads(item.geojson)['coordinates'],
+            'hshold_sum': item.hshold_sum
+        } for item in items])
+
+    # 그리드 출력
+    items = HsholdStats.find_by_filter_for_grid(sid_cds, sgg_cds, rsdnc_clsftn_cds,
+                                               fmly_num_cds, room_num_cds, st_year, ed_year)
+
+    for item in items:
+        print("*" * 100)
+        print(item)
+        print("*" * 100)
+
+    return jsonify({
+        'data': [{
+            'srvy_year': item.srvy_year,
+            'sid': item.sid_cd,
+            'sgg': item.sgg_cd,
+            'rsdnc_clsftn': item.rsdnc_clsftn_cd,
+            'fmly_num': item.fmly_num_cd,
+            'room_num': item.room_num_cd,
+        } for item in items]
+    })
 
 
 @situation.route('/srch_trnstn_situtn', methods=['POST'])
@@ -228,3 +259,18 @@ def srch_trnstn_situtn():
     #     } for item in items]
     #
     # })
+
+@situation.route('/srch_busins_situtn', methods=['POST'])
+def srch_busins_situtn():
+    sid_cd = request.form.get('sid_cd')
+    sgg_cd = request.form.get('sgg_cd')
+    emd_cd = request.form.get('emd_cd')
+    busins_clsftn_cd = request.form.getlist('busins_clsftn_cd')
+
+    print("8" * 20)
+    print(sid_cd)
+    print(sgg_cd)
+    print(emd_cd)
+    print(busins_clsftn_cd)
+    print("8" * 20)
+
