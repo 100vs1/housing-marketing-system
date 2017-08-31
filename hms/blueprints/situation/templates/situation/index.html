@@ -146,6 +146,15 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         border : 0;
         margin-right: 2px;
     }
+
+    .modal-chart-bar .modal-chart-horizontalBar .modal-chart-area .modal-chart-line {
+        width: 80%;
+    }
+
+    .modal-chart-radar .modal-chart-pie {
+        width: 50%;
+    }
+
     /**** hms ****/
 </style>
 {# 공통 지역선택 모달 #}
@@ -213,7 +222,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 </div>
 {# 차트 모달 #}
 <div id="mdl-chart-radar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-radar-label">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-chart-radar" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -231,7 +240,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 <div id="mdl-chart-bar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-bar-label">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-chart-bar" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -249,7 +258,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 <div id="mdl-chart-horizontalBar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-horizontalBar-label">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-chart-horizontalBar" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -267,7 +276,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 <div id="mdl-chart-area" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-area-label">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-chart-area" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -285,7 +294,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 <div id="mdl-chart-line" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-line-label">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-chart-line" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -303,7 +312,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 <div id="mdl-chart-pie" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-chart-pie-label">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-chart-pie" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -324,7 +333,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 <script>
 //    var ctx = document.getElementById("cnv-chart").getContext("2d");
 
-    // TODO : canvas 부분 객체로 받아오는 거 아닌지 확인 한 번 해보고 canvas에 대한 객체 initialize
+    // TODO : 차트 모듈은 차트별로 우선 모든 기능을 분류하고 나중에 리펙토링을 통해서 하나의 통합 모듈로 바꾸도록 한다.
     var codeStyle;
     var gridData = [];
     var config = {
@@ -357,6 +366,15 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 text: '인구통계'
             }
         }
+    };
+
+    var canAppened = {
+        radar: true,
+        bar: true,
+        horizontalBar: true,
+        area: true,
+        line: true,
+        pie: true
     };
 
     var radarConfig = {
@@ -394,23 +412,25 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     var barConfig = {
         type: 'bar',
         data: {
-            labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
-            datasets: [{
-                label: '남자',
-                backgroundColor: ['#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5','#9AD0F5'],
-                borderWidth: 1,
-                data: [2478,526,734,784,433]
-            }, {
-                label: '여자',
-                backgroundColor: ['#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1','#FFB1C1'],
-                borderWidth: 1,
-                data: [247,5263,7355,1823,1333]
-            }, {
-                label: '합계',
-                backgroundColor: ['#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA','#FFE6AA'],
-                borderWidth: 1,
-                data: [247,5263,7355,1823,1333]
-            }]
+            labels: [],
+            datasets: []
+        },
+        options: {
+            legend: {
+                display: true
+            },
+            title: {
+                display: true,
+                text: ''
+            }
+        }
+    };
+
+    var horizontalBarConfig = {
+        type: 'horizontalBar',
+        data: {
+            labels: [],
+            datasets: []
         },
         options: {
             legend: {
@@ -423,8 +443,8 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         }
     };
 
-    var horizontalBarConfig = {
-        type: 'horizontalBar',
+    var areaConfig = {
+        type: 'area',
         data: {
             labels: ['서울특별시', '부산광역시', '종로구', '서구', '남동'],
             datasets: [{
@@ -454,6 +474,64 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             }
         }
     };
+    var lineConfig = {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: []
+        },
+        options: {
+            responsive : true,
+            title: {
+                display: true,
+                text: ''
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: false
+            },
+            scales: {
+                xAxes:[{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: ''
+                    }
+                }],
+                yAxes:[{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: ''
+                    }
+                }]
+            }
+        }
+    };
+
+    var pieConfig = {
+        type: 'pie',
+        data: {
+            labels: [],
+            datasets: []
+        },
+        options: {
+            responsive: true,
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            title: {
+                display: true,
+                position: 'top',
+                text: ''
+            }
+        }
+    };
 
     var radarChart;
     var barChart;
@@ -465,73 +543,30 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     //TODO : 데이터 타입을 좀 변경하고 싶긴한데...
     // ex) radar isUeable : [코드 배열]
 
-//    var acceptableTarget = {
-//        radar : {
-//            popltn_stats : false,
-//            hshold_stats : false,
-//            popltn_mvmt : true,
-//            trnstn_situtn : false,
-//            idnfln_bldng : true,
-//            busins_situtn : false
-//        },
-//        bar : {
-//            popltn_stats : true,
-//            hshold_stats : false,
-//            popltn_mvmt : true,
-//            trnstn_situtn : true,
-//            idnfln_bldng : false,
-//            busins_situtn : false
-//        },
-//        area : {
-//            popltn_stats : false,
-//            hshold_stats : false,
-//            popltn_mvmt : false,
-//            trnstn_situtn : false,
-//            idnfln_bldng : false,
-//            busins_situtn : false
-//        },
-//        line : {
-//            popltn_stats : true,
-//            hshold_stats : true,
-//            popltn_mvmt : true,
-//            trnstn_situtn : true,
-//            idnfln_bldng : true,
-//            busins_situtn : true
-//        },
-//        pie : {
-//            popltn_stats : true,
-//            hshold_stats : true,
-//            popltn_mvmt : false,
-//            trnstn_situtn : true,
-//            idnfln_bldng : false,
-//            busins_situtn : true
-//        }
-//    }
-
-        var acceptableTarget = {
+    var acceptableTarget = {
         radar : {
-            popltn_stats : true,
-            hshold_stats : true,
+            popltn_stats : false,
+            hshold_stats : false,
             popltn_mvmt : true,
-            trnstn_situtn : true,
+            trnstn_situtn : false,
             idnfln_bldng : true,
-            busins_situtn : true
+            busins_situtn : false
         },
         bar : {
             popltn_stats : true,
             hshold_stats : true,
-            popltn_mvmt : true,
-            trnstn_situtn : true,
+            popltn_mvmt : false,
+            trnstn_situtn : false,
             idnfln_bldng : true,
             busins_situtn : true
         },
         area : {
-            popltn_stats : true,
-            hshold_stats : true,
-            popltn_mvmt : true,
-            trnstn_situtn : true,
-            idnfln_bldng : true,
-            busins_situtn : true
+            popltn_stats : false,
+            hshold_stats : false,
+            popltn_mvmt : false,
+            trnstn_situtn : false,
+            idnfln_bldng : false,
+            busins_situtn : false
         },
         line : {
             popltn_stats : true,
@@ -544,123 +579,417 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         pie : {
             popltn_stats : true,
             hshold_stats : true,
-            popltn_mvmt : true,
+            popltn_mvmt : false,
             trnstn_situtn : true,
-            idnfln_bldng : true,
-            busins_situtn : true
+            idnfln_bldng : false,
+            busins_situtn : false
         }
-    }
+    };
 
-    function initChart() {
-        if($('#cnv-chart') !== undefined || $('#cnv-chart') !== null) {
-            $('#cnv-chart').remove();
-            $('#chart_div').html("<canvas id=\"cnv-chart\"></canvas>");
-        }
-    }
+//    function initChart() {
+//        if($('#cnv-chart') !== undefined || $('#cnv-chart') !== null) {
+//            $('#cnv-chart').remove();
+//            $('#chart_div').html("<canvas id=\"cnv-chart\"></canvas>");
+//        }
+//    }
 
+    <!--레이더 차트-->
     function createChartForRadar() {
-//        // 초기화
-//        initChart();
         var ctx = document.getElementById("cnv-chart-radar").getContext("2d");
-        alert(acceptableTarget.bar[codeStyle]);
+
         if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.radar[codeStyle]) {
-            // TODO : 모달도 안뜨게 할 것
             alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
         } else {
-            dataParseForRadar();
-            console.dir(config);
-            config.type = 'radar';
-            radarChart = new Chart(ctx, radarConfig);
-            radarChart.update();
+            if(dataParseForRadar()){
+                radarChart = new Chart(ctx, radarConfig);
+                radarChart.update();
+            }
         }
     }
 
-    var radarChartData = {}
     function dataParseForRadar() {
-        var chartData = {};
-
         if(gridData.length === 0) {
             alert("데이터 검색을 먼저해주세요.");
+            return false
         } else {
+            if (canAppened.radar) {
+
+            }
             console.dir(gridData);
+
+            canAppened.radar = false;
+            return true;
         }
-
-        alert(chartData);
-        return chartData;
     }
+    <!--레이더 차트-->
 
+    <!--세로막대 차트-->
     function createChartForBar() {
-//        initChart();
         var ctx = document.getElementById("cnv-chart-bar").getContext("2d");
 
-        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.radar[codeStyle]) {
-            // TODO : 모달도 안뜨게 할 것
-            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.bar[codeStyle]) {
+            alert("본 검색 결과에서는 세로 막대 그래프를 지원하지 않습니다.");
         } else {
-            config.type = 'bar';
-            barChart = new Chart(ctx, barConfig);
-            barChart.update();
+            if(dataParseForBar()){
+                barChart = new Chart(ctx, barConfig);
+                barChart.update();
+            }
         }
     }
 
     function dataParseForBar() {
-        var chartData = {};
-
-        if(!gridData) {
+        var label = [];
+        var data = [];
+        var backgroundColor = [];
+        console.dir(gridData);
+        if(gridData.length === 0) {
             alert("데이터 검색을 먼저해주세요.");
+            return false
         } else {
-            gridData
-            console.dir(gridData);
+            if (canAppened.bar) {
+                if (codeStyle === 'popltn_stats') {
+                    alert('타긴 함?');
+                    $.each(gridData, function(k, v){
+                        var locationStr = '';
+                        // TODO : 년도별로 쪼개야함
+                        if (!isNull(v['sid'])) {locationStr += v['sid'] + '';}
+                        if (!isNull(v['sgg'])) {locationStr += v['sgg'] + '';}
+                        if (!isNull(v['emd'])) {locationStr += v['emd'] + '';}
+
+                        label.push(locationStr);
+                        data.push(v['total_num']);
+                        backgroundColor.push(getRandomHexColor());
+                    });
+                    var datasets = {
+                        label: '인구수',
+                        backgroundColor: backgroundColor,
+                        data: data
+                    };
+
+                    barConfig.options.title.text = "인구통계 세로막대 차트";
+                    barConfig.data.labels = label;
+                    barConfig.data.datasets.push(datasets);
+                    console.log(barConfig);
+                }
+
+                if (codeStyle === 'hshold_stats') {
+                    $.each(gridData, function(k, v){
+                        var locationStr = '';
+                        // TODO : 년도별로 쪼개야함
+                        if (!isNull(v['sid'])) {locationStr += v['sid'] + '';}
+                        if (!isNull(v['sgg'])) {locationStr += v['sgg'] + '';}
+                        if (!isNull(v['emd'])) {locationStr += v['emd'] + '';}
+
+                        label.push(locationStr);
+                        data.push(v['hshold_num']);
+                        backgroundColor.push(getRandomHexColor());
+                    });
+                    var datasets = {
+                        label: '인구수',
+                        backgroundColor: backgroundColor,
+                        data: data
+                    };
+
+                    barConfig.options.title.text = "세대통계 세로막대 차트";
+                    barConfig.data.labels = label;
+                    barConfig.data.datasets.push(datasets);
+                }
+            }
+            canAppened.bar = false;
+            return true
         }
     }
+    <!--세로막대 차트-->
 
+    <!--가로막대 차트-->
     function createChartForHorizontalBar() {
-//        initChart();
         var ctx = document.getElementById("cnv-chart-horizontalBar").getContext("2d");
-        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.radar[codeStyle]) {
-            // TODO : 모달도 안뜨게 할 것
-            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.bar[codeStyle]) {
+            alert("본 검색 결과에서는 가로 막대 그래프를 지원하지 않습니다.");
         } else {
-            config.type = 'horizontalBar';
-            horizontalBarChart = new Chart(ctx, horizontalBarConfig);
-            horizontalBarChart.update();
+            if(dataParseForHorizontalBar()){
+                horizontalBarChart = new Chart(ctx, horizontalBarConfig);
+                horizontalBarChart.update();
+            }
         }
     }
 
+    function dataParseForHorizontalBar() {
+        var label = [];
+        var data = [];
+        var backgroundColor = [];
+
+        if(gridData.length === 0) {
+            alert("데이터 검색을 먼저해주세요.");
+            return false
+        } else {
+            if (canAppened.horizontalBar) {
+                if (codeStyle === 'popltn_stats') {
+                    $.each(gridData, function (k, v) {
+                        var locationStr = '';
+                        if (!isNull(v['sid'])) {
+                            locationStr += v['sid'] + '';
+                        }
+                        if (!isNull(v['sgg'])) {
+                            locationStr += v['sgg'] + '';
+                        }
+                        if (!isNull(v['emd'])) {
+                            locationStr += v['emd'] + '';
+                        }
+
+                        label.push(locationStr);
+                        data.push(v['total_num']);
+                        backgroundColor.push(getRandomHexColor);
+                    });
+
+                    var datasets = {
+                        label: '인구수',
+                        backgroundColor: backgroundColor,
+                        data: data
+                    };
+
+                    barConfig.options.title.text = "인구통계 가로막대 차트";
+                    horizontalBarConfig.data.labels = label;
+                    horizontalBarConfig.data.datasets.push(datasets);
+                }
+                alert(codeStyle);
+                if (codeStyle === 'hshold_stats') {
+                    console.dir(gridData);
+                    $.each(gridData, function (k, v) {
+                        var locationStr = '';
+                        if (!isNull(v['sid'])) {
+                            locationStr += v['sid'] + '';
+                        }
+                        if (!isNull(v['sgg'])) {
+                            locationStr += v['sgg'] + '';
+                        }
+                        if (!isNull(v['emd'])) {
+                            locationStr += v['emd'] + '';
+                        }
+
+                        label.push(locationStr);
+                        data.push(v['hshold_num']);
+                        backgroundColor.push(getRandomHexColor);
+                    });
+
+                    var datasets = {
+                        label: '인구수',
+                        backgroundColor: backgroundColor,
+                        data: data
+                    };
+
+                    barConfig.options.title.text = "세대통계 가로막대 차트";
+                    horizontalBarConfig.data.labels = label;
+                    horizontalBarConfig.data.datasets.push(datasets);
+                }
+            }
+
+            canAppened.horizontalBar = false;
+            return true
+        }
+    }
+    <!--가로막대 차트-->
+
+    <!--영역 차트-->
     function createChartForArea() {
-        initChart();
-        var ctx = document.getElementById("cnv-chart").getContext("2d");
+        var ctx = document.getElementById("cnv-chart-area").getContext("2d");
 
         if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.area[codeStyle]) {
-            // TODO : 모달도 안뜨게 할 것
-            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+            alert("본 검색 결과에서는 영역 그래프를 지원하지 않습니다.");
         } else {
-            config.type = 'area';
-            areaChart = new Chart(ctx, config);
+            areaChart = new Chart(ctx, areaConfig);
             areaChart.update();
         }
     }
+    <!--영역 차트-->
 
+    <!--라인 차트-->
     function createChartForLine() {
-        initChart();
-        var ctx = document.getElementById("cnv-chart").getContext("2d");
+        var ctx = document.getElementById("cnv-chart-line").getContext("2d");
 
-        config.type = 'line';
-        lineChart = new Chart(ctx, config);
-        lineChart.update();
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.line[codeStyle]){
+            alert("본 검색 결과에서는 라인 그래프를 지원하지 않습니다.");
+        } else {
+            dataParseForLine();
+            lineChart = new Chart(ctx, lineConfig);
+            lineChart.update();
+        }
     }
 
-    function createChartForPie() {
-        initChart();
-        var ctx = document.getElementById("cnv-chart").getContext("2d");
-        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.pie[codeStyle]) {
-            // TODO : 모달도 안뜨게 할 것
-            alert("본 검색 결과에서는 레이더 그래프를 지원하지 않습니다.");
+    function dataParseForLine() {
+        var label = [];
+        var data = [];
+
+        if(gridData.length === 0) {
+            alert("데이터 검색을 먼저해주세요.");
+            console.log(lineConfig);
+            return false;
         } else {
-            config.type = 'pie';
-            pieChart = new Chart(ctx, config);
-            pieChart.update();
+            if (canAppened.line) {
+                if (codeStyle === 'poptln_stats') {
+                    console.dir(gridData);
+                    $.each(gridData, function (k, v) {
+                        label.push(v['sgg']);
+                        data.push(v['total_num']);
+                    });
+
+                    var datasets = {
+                        backgroundColor: getRandomHexColor(),
+                        data: data,
+                        fill: false
+                    };
+
+                    lineConfig.options.title = "인구통계 라인 차트";
+                    lineConfig.options.scales.xAxes.scaleLabel = 'Year';
+                    lineConfig.options.scales.yAxes.scaleLabel = '인구수';
+//                lineConfig.data.labels = label;
+                    lineConfig.data.datasets.push(datasets);
+                }
+
+                if (codeStyle === 'hshold_stats') {
+                    console.dir(gridData);
+                    $.each(gridData, function (k, v) {
+                        var locationStr = '';
+                        if (!isNull(v['sid'])) {
+                            locationStr += v['sid'] + '';
+                        }
+                        if (!isNull(v['sgg'])) {
+                            locationStr += v['sgg'] + '';
+                        }
+                        if (!isNull(v['emd'])) {
+                            locationStr += v['emd'] + '';
+                        }
+
+                        label.push(locationStr);
+                        data.push(v['hshold_num']);
+                    });
+
+                    console.dir(label);
+                    console.dir(data);
+
+                    var datasets = {
+                        backgroundColor: getRandomHexColor(),
+                        data: data,
+                        fill: false
+                    };
+
+                    lineConfig.options.title = "세대통계 파이 차트";
+                    lineConfig.options.scales.xAxes.scaleLabel = 'Year';
+                    lineConfig.options.scales.yAxes.scaleLabel = '세대수';
+                    lineConfig.data.labels = label;
+                    lineConfig.data.datasets.push(datasets);
+                }
+            }
         }
+
+        canAppened.line = false;
+        return true;
+    }
+    <!--라인 차트-->
+
+    <!--파이 차트-->
+    function createChartForPie() {
+        var ctx = document.getElementById("cnv-chart-pie").getContext("2d");
+        if(typeof(codeStyle) !== 'undefined' && !acceptableTarget.pie[codeStyle]) {
+            alert("본 검색 결과에서는 파이 그래프를 지원하지 않습니다.");
+        } else {
+            if(dataParseForPie()) {
+                pieChart = new Chart(ctx, pieConfig);
+                pieChart.update();
+            }
+        }
+    }
+
+    function dataParseForPie() {
+        var label = [];
+        var data = [];
+        var backgroundColor = [];
+
+        console.dir(gridData);
+        if(gridData.length === 0) {
+            alert("데이터 검색을 먼저해주세요.");
+            return false;
+        } else {
+            if(canAppened.pie){
+                if (codeStyle === 'popltn_stats') {
+                    var chartData = {};
+                    $.each(gridData, function(k, v){
+                        var locationStr = '';
+                        if (!isNull(v['sid'])) {locationStr += v['sid'] + '';}
+                        if (!isNull(v['sgg'])) {locationStr += v['sgg'] + '';}
+                        if (!isNull(v['emd'])) {locationStr += v['emd'] + '';}
+
+                        var year = v['srvy_yyyymm'].substring(v['srvy_yyyymm'].length, v['srvy_yyyymm'].length-2);
+                        chartData.depth = {
+                            key : {
+                                year : year,
+                                age_grp : '5~9세',
+                            }
+                        };
+
+                        data.push(v['total_num']);
+                        backgroundColor.push(getRandomHexColor());
+                    });
+
+                    var datasets = {
+                        backgroundColor: backgroundColor,
+                        data: data
+                    };
+
+                    console.dir(pieConfig);
+                    pieConfig.options.title = "인구통계 파이 차트";
+                    pieConfig.data.labels = label;
+                    pieConfig.data.datasets.push(datasets);
+                }
+
+                if (codeStyle === 'hshold_stats') {
+                    console.dir(gridData);
+                    $.each(gridData, function(k, v){
+                        var locationStr = '';
+                        if (!isNull(v['sid'])) {locationStr += v['sid'] + '';}
+                        if (!isNull(v['sgg'])) {locationStr += v['sgg'] + '';}
+                        if (!isNull(v['emd'])) {locationStr += v['emd'] + '';}
+
+                        data.push(v['hshold_num']);
+                        backgroundColor.push(getRandomHexColor());
+                    });
+
+                    var datasets = {
+                        backgroundColor: backgroundColor,
+                        data: data
+                    };
+
+                    pieConfig.options.title = "세대통계 파이 차트";
+                    pieConfig.data.labels = label;
+                    pieConfig.data.datasets.push(datasets);
+                }
+            }
+        }
+        canAppened.pie = false;
+        return true;
+    }
+    <!--파이 차트-->
+
+    function getRandomHexColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    function isNull(obj) {
+        return !(typeof obj !== "undefined" && obj !== null && obj !== "");
+    }
+
+    function setAppendedAll(bool) {
+        canAppened.radar = bool;
+        canAppened.bar = bool;
+        canAppened.horizontalBar = bool;
+        canAppened.area = bool;
+        canAppened.line = bool;
+        canAppened.pie = bool;
     }
 </script>
 <div class="ui-layout-center">
@@ -675,7 +1004,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     <div id="west-accordion">
         <h3><a href="#">인구통계</a></h3>
         <div>
-            <form id="frm-west-ps" class="form-horizontal">
+            <form id="frm-west-0" class="form-horizontal">
                 <!--templates/macros/form.html에 form의 action이 정의되어 있음. -->
                 <div class="form-group">
                     <button id="btn-ps-area" type="button" class="btn btn-default" data-toggle="modal"
@@ -685,7 +1014,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 </div>
                 <div class="form-group">
                     <select id="age_grp" name="age_grp_cd" class="selectpicker" multiple title="연령대"
-                            data-actions-box="true">
+                            data-size="5" data-actions-box="true">
                         <!--{% for i in range(5, 95, 5) %}-->
                         <!--<option value="{{i}}">{{i}}세</option>-->
                         <!--{% endfor %}-->
@@ -698,25 +1027,25 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 <!--</select>-->
                 <!--</div>-->
                 <div class="form-group">
-                    <select id="ps_syear" name="ps_syear" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                    <select id="ps_syear" name="ps_syear" class="selectpicker" title="시작년" data-size="5" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2012, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select id="ps_smonth" name="ps_smonth" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
+                    <select id="ps_smonth" name="ps_smonth" class="selectpicker" title="시작월" data-size="5" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="ps_eyear" name="ps_eyear" class="selectpicker" title="종료년" data-actions-box="true"
+                    <select id="ps_eyear" name="ps_eyear" class="selectpicker" title="종료년" data-size="5" data-actions-box="true"
                             data-width="fit">
                         {% for year in range(now.year, 2012, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select id="ps_emonth" name="ps_emonth" class="selectpicker" title="종료월" data-actions-box="true"
+                    <select id="ps_emonth" name="ps_emonth" class="selectpicker" title="종료월" data-size="5" data-actions-box="true"
                             data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
@@ -732,7 +1061,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">세대통계</a></h3>
         <div>
-            <form id="frm-west-hs" class="form-horizontal">
+            <form id="frm-west-1" class="form-horizontal">
                 <div class="form-group">
                     <button id="btn-hs-a" type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#mdl-area">지역선택 +
@@ -755,15 +1084,15 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="st_year" name="st_year" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
-                        {% for year in range(now.year, 2001, -1) %}
+                    <select id="st_year" name="st_year" class="selectpicker" title="시작년" data-size="5" data-actions-box="true" data-width="fit">
+                        {% for year in range(2010, 1999, -5) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="ed_year" name="ed_year" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
-                        {% for year in range(now.year, 2001, -1) %}
+                    <select id="ed_year" name="ed_year" class="selectpicker" title="종료년" data-size="5" data-actions-box="true" data-width="fit">
+                        {% for year in range(2010, 1999, -5) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
@@ -775,7 +1104,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">인구이동</a></h3>
         <div>
-            <form id="frm-west-pm" class="form-horizontal">
+            <form id="frm-west-2" class="form-horizontal">
                 <div class="form-group">
                     <button id="btn-pm-oa" type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#mdl-area">전출지 선택 +
@@ -790,7 +1119,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 </div>
                 <div class="form-group">
                     <select id='aplcnt_age' name="aplcnt_age_cd" class="selectpicker" multiple title="연령대"
-                            data-actions-box="true">
+                            data-size="5" data-actions-box="true">
                     </select>
                 </div>
                 <div class="form-group">
@@ -804,31 +1133,31 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="fmly_num" class="selectpicker" multiple title="세대원수" data-actions-box="true">
+                    <select name="fmly_num" class="selectpicker" multiple title="세대원수" data-size="5" data-actions-box="true">
                         {% for i in range(1, 11) %}
                         <option value="{{i}}">{{i}}명</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="st_year" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                    <select name="st_year" class="selectpicker" title="시작년" data-size="5" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2001, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select name="st_month" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
+                    <select name="st_month" class="selectpicker" title="시작월" data-size="5" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="ed_year" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
+                    <select name="ed_year" class="selectpicker" title="종료년" data-size="5" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2001, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select name="ed_month" class="selectpicker" title="종료월" data-actions-box="true" data-width="fit">
+                    <select name="ed_month" class="selectpicker" title="종료월" data-size="5" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
@@ -839,7 +1168,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">실거래가</a></h3>
         <div>
-            <form id="frm-west-ts" class="form-horizontal">
+            <form id="frm-west-3" class="form-horizontal">
                 <div class="form-group">
                     <button id="btn-mp-area" type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#mdl-area">지역선택 +
@@ -861,14 +1190,14 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 </div>
 
                 <div id="sale_form" class="form-group">
-                    <select id="mp-ss" name="mp-ss" class="selectpicker" title="매매가" data-actions-box="true">
+                    <select id="mp-ss" name="mp-ss" class="selectpicker" title="매매가" data-size="5" data-actions-box="true">
                         {% for p in range(0, 195000, 5000) %}
                         <option value="{{p}}">{{p}}만원</option>
                         {% endfor %}
                     </select>
                     <input type="text" name="mp-ssale" value="">
                     ~
-                    <select id="mp-es" name="mp-es" class="selectpicker" title="매매가" data-actions-box="true">
+                    <select id="mp-es" name="mp-es" class="selectpicker" title="매매가" data-size="5" data-actions-box="true">
                         {% for p in range(5000, 200000, 5000) %}
                         <option value="{{p}}">{{p}}만원</option>
                         {% endfor %}
@@ -909,14 +1238,14 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     </div>
                 </div>
                 <div class="form-group">
-                    <select id="mp-sarea" name="mp-sarea" class="selectpicker" title="면적" data-actions-box="true">
+                    <select id="mp-sarea" name="mp-sarea" class="selectpicker" title="면적" data-size="5" data-actions-box="true">
                         {% for p in range(0, 450, 50) %}
                         <option value="{{p}}">{{p}}㎡</option>
                         {% endfor %}
                     </select>
                     <input type="text" name="mp-sexarea">
                     ~
-                    <select id="mp-earea" name="mp-earea" class="selectpicker" title="면적" data-actions-box="true">
+                    <select id="mp-earea" name="mp-earea" class="selectpicker" title="면적" data-size="5" data-actions-box="true">
                         {% for p in range(50, 500, 50) %}
                         <option value="{{p}}">{{p}}㎡</option>
                         {% endfor %}
@@ -924,14 +1253,14 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     <input type="text" name="mp-eexarea"> ㎡
                 </div>
                 <div class="form-group">
-                    <select id="mp-sdec" name="mp-sdec" class="selectpicker" title="노후도" data-actions-box="true">
+                    <select id="mp-sdec" name="mp-sdec" class="selectpicker" title="노후도" data-size="5" data-actions-box="true">
                         {% for p in range(0, 45, 5) %}
                         <option value="{{p}}">{{p}}년</option>
                         {% endfor %}
                     </select>
                     <input type="text" name="mp-sdecrepit">
                     ~
-                    <select id="mp-edec" name="mp-edec" class="selectpicker" title="노후도" data-actions-box="true">
+                    <select id="mp-edec" name="mp-edec" class="selectpicker" title="노후도" data-size="5" data-actions-box="true">
                         {% for p in range(5, 50, 5) %}
                         <option value="{{p}}">{{p}}년</option>
                         {% endfor %}
@@ -939,24 +1268,24 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     <input type="text" name="mp-edecrepit"> 년
                 </div>
                 <div class="form-group">
-                    <select name="mp-syear" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                    <select name="mp-syear" class="selectpicker" title="시작년" data-size="5" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2005, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select name="mp-smonth" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
+                    <select name="mp-smonth" class="selectpicker" title="시작월" data-size="5" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="mp-eyear" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
+                    <select name="mp-eyear" class="selectpicker" title="종료년" data-size="5" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2005, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select name="mp-emonth" class="selectpicker" title="종료월" data-actions-box="true" data-width="fit">
+                    <select name="mp-emonth" class="selectpicker" title="종료월" data-size="5" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
@@ -967,7 +1296,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 </button>
             </form>
             <script type="text/javascript">
-                $('#frm-west-ts .selectpicker').on('change', function () {
+                $('#frm-west-3 .selectpicker').on('change', function () {
                     var slecteditem = $(this).find("option:selected").val();
                     if (slecteditem != "") {
                         $(this).parent().next().val(slecteditem);
@@ -991,61 +1320,96 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         </div>
         <h3><a href="#">건물현황</a></h3>
         <div>
-            <form id="frm-west-id" class="form-horizontal">
+            <form id="frm-west-4" class="form-horizontal">
                 <div class="form-group">
-                    <select id="bs-use" name="bs-use" class="selectpicker" multiple title="건물용도"
+                    <button id="btn-ib-area" type="button" class="btn btn-default" data-toggle="modal"
+                            data-target="#mdl-area"> 지역선택 +
+                    </button>
+                    <p><span id="spn-ib-area"></span></p>
+                </div>
+                <div class="form-group">
+                    <select id="ib-use" name="ib-use" class="selectpicker" multiple title="건물용도"
                             data-actions-box="true">
+                        <option value="단독주택">단독주택</option>
+                        <option value="창고시설">창고시설</option>
+                        <option value="제2종근린생활시설">제2종근린생활시설</option>
+                        <option value="업무시설">업무시설</option>
                     </select>
-                    <select id="bs-common" name="bs-common" class="selectpicker" multiple title="전유/공용"
+                    <select id="ib-common" name="ib-common" class="selectpicker" multiple title="전유/공용"
                             data-actions-box="true">
+                        <option value="전유">전유</option>
+                        <option value="공용">공용</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <select id="bs-extent" name="bs-extent" class="selectpicker" multiple title="면적"
-                            data-actions-box="true">
+                    <select id="ib-sarea" name="ib-sarea" class="selectpicker" title="면적" data-size="5" data-actions-box="true">
+                        {% for p in range(0, 450, 50) %}
+                        <option value="{{p}}">{{p}}㎡</option>
+                        {% endfor %}
                     </select>
-                    <input type="text" name="mp-sextent">
-                    -
-                    <input type="text" name="mp-eextent"> ㎡
+                    <input type="text" name="ib-sexarea">
+                    ~
+                    <select id="ib-earea" name="ib-earea" class="selectpicker" title="면적" data-size="5" data-actions-box="true">
+                        {% for p in range(50, 500, 50) %}
+                        <option value="{{p}}">{{p}}㎡</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="ib-eexarea"> ㎡
                 </div>
                 <div class="form-group">
-                    <select id="bs-decrepit" name="mp-decrepit" class="selectpicker" multiple title="노후도"
-                            data-actions-box="true">
+                    <select id="ib-sdec" name="ib-sdec" class="selectpicker" title="노후도" data-size="5" data-actions-box="true">
+                        {% for p in range(0, 45, 5) %}
+                        <option value="{{p}}">{{p}}년</option>
+                        {% endfor %}
                     </select>
-                    <input type="text" name="bs-sdecrepit">
-                    -
-                    <input type="text" name="bs-edecrepit"> 년
+                    <input type="text" name="ib-sdecrepit">
+                    ~
+                    <select id="ib-edec" name="ib-edec" class="selectpicker" title="노후도" data-size="5" data-actions-box="true">
+                        {% for p in range(5, 50, 5) %}
+                        <option value="{{p}}">{{p}}년</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="ib-edecrepit"> 년
+                    <script type="text/javascript">
+                        $('#frm-west-4 .selectpicker').on('change', function () {
+                            var slecteditem = $(this).find("option:selected").val();
+                            if (slecteditem != "") {
+                                $(this).parent().next().val(slecteditem);
+                            }
+                        });
+
+                    </script>
                 </div>
                 <div class="form-group">
-                    <select name="bs-syear" class="selectpicker" title="시작년" data-actions-box="true" data-width="fit">
+                    <select name="ib-syear" class="selectpicker" title="시작년" data-size="5" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2001, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select name="bs-smonth" class="selectpicker" title="시작월" data-actions-box="true" data-width="fit">
+                    <select name="ib-smonth" class="selectpicker" title="시작월" data-size="5" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <select name="bs-eyear" class="selectpicker" title="종료년" data-actions-box="true" data-width="fit">
+                    <select name="ib-eyear" class="selectpicker" title="종료년" data-size="5" data-actions-box="true" data-width="fit">
                         {% for year in range(now.year, 2001, -1) %}
                         <option value="{{year}}">{{year}}</option>
                         {% endfor %}
                     </select>
-                    <select name="bs-emonth" class="selectpicker" title="종료월" data-actions-box="true" data-width="fit">
+                    <select name="ib-emonth" class="selectpicker" title="종료월" data-size="5" data-actions-box="true" data-width="fit">
                         {% for month in range(1, 13) %}
                         <option value="{{(month|string).rjust(2, '0')}}">{{(month|string).rjust(2, '0')}}</option>
                         {% endfor %}
                     </select>
                 </div>
             </form>
-            <!--<button id="btn-bs-search" class="btn btn-default pull-right" type="button">검색</button>-->
+            <button id="btn-ib-search" class="btn btn-default pull-right" type="button" onclick="srch_idnfln_bldng()">검색</button>
         </div>
         <h3><a href="#">업종현황</a></h3>
         <div>
-            <form id="frm-west-bs" class="form-horizontal">
+            <form id="frm-west-5" class="form-horizontal">
                 <div class="form-group">
                     <button id="btn-bs-area" type="button" class="btn btn-default" data-toggle="modal"
                             data-target="#mdl-area"> 지역선택 +
@@ -1054,7 +1418,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 </div>
                 <div class="form-group">
                     <select name="busins_clsftn_cd" class="selectpicker" multiple title="업종선택"
-                            data-actions-box="true">
+                            data-size="5" data-actions-box="true">
                         {% for i in range(5, 95, 5) %}
                         <option value="{{i}}">{{i}}</option>
                         {% endfor %}
@@ -1071,18 +1435,6 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     <div id="east-accordion">
         <h3>
             <a href="#">즐겨찾기</a>
-            <button id="btn-bookmark-edit" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
-                    onclick="edit_bookmark();" title="북마크 수정">
-                <i class="fa fa-pencil text-primary text-primary-bookmark" aria-hidden="true"></i>
-            </button>
-            <button id="btn-bookmark-delete" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
-                    onclick="delete_bookmark();" title="북마크 삭제">
-                <i class="fa fa-trash text-primary text-primary-bookmark" aria-hidden="true"></i>
-            </button>
-            <button id="btn-bookmark-add" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
-                    onclick="add_bookmark();" data-toggle="modal" data-target="#mdl-bookmark" title="북마크 추가">
-                <i class="fa fa-file-text text-primary text-primary-bookmark" aria-hidden="true"></i>
-            </button>
         </h3>
         <div>
             <script>
@@ -1115,6 +1467,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 function execute_bookmark(target, parameter) {
                     $('#west-accordion').accordion('option', 'active', target);
                     var $parameter = decodeURIComponent(parameter);
+
                     $.each($parameter.split('&'), function (i, param) {
                         $pairs = param.split('=');
                         $('input[name=' + $pairs[0] + ']').val($pairs[1]);
@@ -1125,6 +1478,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                     var $name_obj = $('input[name=txt-bookmark-name]');
                     var $target = $('#west-accordion').accordion('option', 'active');
                     var $parameter = $('#frm-west-' + $target).serialize();
+                    alert($parameter);
                     if ($name_obj.val() == '') {
                         alert('검색 명칭을 입력해주세요.');
                         $name_obj.focus();
@@ -1189,6 +1543,22 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             </script>
             <table id="tbl-bookmark" class="table">
                 <thead>
+                <tr>
+                    <td>
+                        <button id="btn-bookmark-edit" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
+                                onclick="edit_bookmark();" title="즐겨찾기 수정">
+                            <i class="fa fa-pencil text-primary text-primary-bookmark" aria-hidden="true"></i>
+                        </button>
+                        <button id="btn-bookmark-delete" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
+                                onclick="delete_bookmark();" title="즐겨찾기 삭제">
+                            <i class="fa fa-trash text-primary text-primary-bookmark" aria-hidden="true"></i>
+                        </button>
+                        <button id="btn-bookmark-add" class="btn btn-default btn-xs pull-right btn-bookmark" type="button"
+                                onclick="add_bookmark();" data-toggle="modal" data-target="#mdl-bookmark" title="즐겨찾기 추가">
+                            <i class="fa fa-file-text text-primary text-primary-bookmark" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <form class="form-inline">
@@ -1325,32 +1695,8 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
     </div>
 </div>
 <div class="ui-layout-south">
-    <table id="dataTables">
-                <thead>
-            <tr>
-                <th>srvy_yyyymm</th>
-                <th>sid</th>
-                <th>sgg</th>
-                <th>emd</th>
-                <th>age_grp</th>
-                <th>man_num</th>
-                <th>woman_num</th>
-                <th>total_num</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th>srvy_yyyymm</th>
-                <th>sid</th>
-                <th>sgg</th>
-                <th>emd</th>
-                <th>age_grp</th>
-                <th>man_num</th>
-                <th>woman_num</th>
-                <th>total_num</th>
-            </tr>
-        </tfoot>
-    </table>
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
 </div>
 
 <script type="text/javascript">
@@ -1365,7 +1711,21 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 
     $(document).ready(function () {
         resizeMap();
-//        {# 지역현황 > 인구이동 > 전출지 선택 # }
+//        {# 지역현황 > 인구통계 > 지역선택 #}
+        $('#btn-ps-area').button().on('click', function () {
+            set_law_sid_areas('radio');
+            $('#btn-area').button().on('click', function () {
+                set_areas('', 'spn-ps-area');
+            });
+        });
+//        {# 지역현황 > 세대통계 > 지역선택 #}
+        $('#btn-hs-a').button().on('click', function () {
+            set_law_sid_areas('checkbox');
+            $('#btn-area').button().on('click', function () {
+                set_areas('', 'spn-hs-a');
+            });
+        });
+//        {# 지역현황 > 인구이동 > 전출지 선택 #}
         $("#btn-pm-oa").button().on('click', function () {
             set_law_sid_areas('checkbox');
             $('#btn-area').button().on('click', function () {
@@ -1379,20 +1739,6 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 set_areas('in_', 'spn-pm-ia');
             });
         });
-//        {# 지역현황 > 세대통계 > 지역선택 #}
-        $('#btn-hs-a').button().on('click', function () {
-            set_law_sid_areas('checkbox');
-            $('#btn-area').button().on('click', function () {
-                set_areas('', 'spn-hs-a');
-            });
-        });
-//        {# 지역현황 > 인구통계 > 지역선택 #}
-        $('#btn-ps-area').button().on('click', function () {
-            set_law_sid_areas('radio');
-            $('#btn-area').button().on('click', function () {
-                set_areas('', 'spn-ps-area');
-            });
-        });
 //        {# 지역현황 > 실거래가 > 지역선택 #}
         $('#btn-mp-area').button().on('click', function () {
             set_law_sid_areas('radio');
@@ -1400,12 +1746,19 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
                 set_areas('', 'spn-mp-area');
             });
         });
+//        {# 지역현황 > 건물현황 > 지역선택 #}
+        $('#btn-ib-area').button().on('click', function () {
+            set_law_sid_areas('radio');
+            $('#btn-area').button().on('click', function () {
+                set_areas('', 'spn-ib-area');
+            });
+        });
 //        {# 지역현황 > 업종현황 > 지역선택 #}
         $('#btn-bs-area').button().on('click', function () {
             set_law_sid_areas('radio');
-            $('#btn-area').button().on('click'), function() {
+            $('#btn-area').button().on('click', function () {
                 set_areas('', 'spn-bs-area');
-            }
+            });
         });
 
 //        {# 각 아코디언 탭에 들어가는 검색조건인 셀렉트박스에 코드를 로딩 시 세팅 #}
@@ -1630,7 +1983,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         view: view
     });
 //    {# geoserver url은 설정(settings.py) 에서 가져오도록 수정해야 함 #}
-    var url = 'http://183.109.124.94:8080/geoserver/hms/wms';
+    var url = 'http://183.109.124.94:9090/geoserver/hms/wms';
     var mvmt_layer = new ol.layer.Tile({
         title: '',//오버레이 그룹에 나오지 않도록 하기 위해 타이틀 없앰
         source: new ol.source.TileWMS({
@@ -1640,16 +1993,22 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
         })
     });
     var update_params = function (layers, featureid) {
+        console.log(layers);
+        console.log(featureid);
         mvmt_layer.getSource().updateParams({
             'layers': layers,
             'featureid': featureid
+            // TODO : featureID  여러개 넣어서 테스트 해볼 것
+            // TODO : 'featureid': featureid
         });
-    }
+    };
+
     overlayGroup.getLayers().push(mvmt_layer);
     //layerSwitcherControl.showPanel();//자꾸 떠서 걸리적거림...ㅡㅡ;
 
+
 //    {# 지도 좌표 이동 애니메이션 #}
-    var do_bounce = function (location, view, done) {
+    var do_bounce = function (location, view, done, location_type) {
         var duration = 1000;
         var zoom = view.getZoom();
         var parts = 2;
@@ -1666,18 +2025,24 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             }
         }
 
+        var bounceAfterZoom = {
+            sid : 11,
+            sgg : 13,
+            emd : 15
+        };
+
         view.animate({
             center: location,
             duration: duration
         }, callback);
         view.animate({
-            zoom: zoom - 1,
+            zoom: zoom - 3,
             duration: duration / 2
         }, {
-            zoom: zoom,
+            zoom: bounceAfterZoom[location_type],
             duration: duration / 2
         }, callback);
-    }
+    };
     /*
             map.on('singleclick', function(e) {
                 var coordinate = e.coordinate;
@@ -1749,23 +2114,40 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 
     //    {# 인구통계 검색 #}
     function srch_popltn_stats() {
+        codeStyle = 'popltn_stats';
+        gridData = [];
+
         var year = $('#ps_eyear').val();
         var month = $('#ps_emonth').val();
         var selected_area = $('#spn-ps-area').text();
+
         $.ajax({
             url: '{{ url_for("situation.srch_popltn_stats") }}',
             method: 'POST',
-            data: $('#frm-west-ps').serialize() + '&req_type=map',
+            data: $('#frm-west-0').serialize(),
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                gridData.push(item);
+            });
+        });
+
+        $.ajax({
+            url: '{{ url_for("situation.srch_popltn_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-0').serialize() + '&req_type=map',
             dataType: 'json'
         }).done(function (data) {
             $.each(data.rows, function (i, item) {
                 content.innerHTML = '<span class="label label-success" style="display: inline-block;">' + selected_area +
-                    '</span><br>' + year + '년 ' + month + '월, 선택 연령대 인구수: ' + set_comma(item.total_num) + '(명)';
+                    '</span><br>' + year + '년 ' + month + '월, 선택 연령대 인구수: ' + set_comma(item.total_num) + '(세대)';
                 overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
             });
         }).fail(function (data) {
             alert(data.msg);
         });
+
+        setAppendedAll(true);
 
 //        var datatable;
 //        if ($.fn.DataTable.isDataTable('#dataTables')) {
@@ -1789,7 +2171,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 //        var data = $.ajax({
 //            url: '{{ url_for("situation.srch_popltn_stats") }}',
 //            method: 'POST',
-//            data: $('#frm-west-ps').serialize(),
+//            data: $('#frm-west-0').serialize(),
 //            dataType: 'json'
 //        });
 //
@@ -1808,17 +2190,179 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 //            return indexed_array;
 //        }
 
+//        {# 남쪽 패널에 jqGrid 출력 #}
+        $('#jqGrid').jqGrid({
+            url: '{{ url_for("situation.srch_popltn_stats") }}',
+            mtype: 'POST',
+            styleUI: 'Bootstrap',
+            datatype: 'json',
+            postData: $('#frm-west-0').serialize(),
+            colModel: [
+                {label: '측정년도', name: 'srvy_yyyymm'},
+                {label: '시도', name: 'sid'},
+                {label: '시군구', name: 'sgg'},
+                {label: '읍면동', name: 'emd'},
+                {label: '연령대', name: 'age_grp'},
+                {label: '남자수', name: 'man_num'},
+                {label: '여자수', name: 'woman_num'},
+                {label: '총인구수', name: 'total_num'},
+            ],
+            viewrecords: true,
+            width: '100%',
+            height: '100%',
+            rowNum: 50,
+            pager: "#jqGridPager"
+        });
+    }
 
+//    {# 세대통계 검색 #}
+    function srch_hshold_stats() {
+        codeStyle = 'hshold_stats';
+        gridData = [];
 
+        var year = $('#ed_year').val();
+        var selected_area = $('#spn-hs-a').text();
+        $.ajax({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-1').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = '<span class="label label-success" style="display: inline-block;">' + selected_area +
+                    '</span><br>' + year + '년, 총 세대수: ' + set_comma(item.hshold_sum) + '(세대)';
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
+            });
+        }).fail(function (data) {
+            alert(data.msg);
+        });
 
+        $.ajax({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            method: 'POST',
+            data: $('#frm-west-1').serialize(),
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                gridData.push(item);
+            });
+        });
 
 //        {# 남쪽 패널에 jqGrid 출력 #}
+        $('#jqGrid').jqGrid({
+            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            mtype: 'POST',
+            styleUI: 'Bootstrap',
+            datatype: 'json',
+            postData: $('#frm-west-1').serialize(),
+            colModel: [
+                {label: '측정년도', name: 'srvy_year'},
+                {label: '시도', name: 'sid'},
+                {label: '시군구', name: 'sgg'},
+                {label: '주거유형', name: 'rsdnc_clsftn'},
+                {label: '세대원수', name: 'fmly_num'},
+                {label: '방개수', name: 'room_num'},
+                {label: '세대수', name: 'hshold_num'},
+            ],
+            viewrecords: true,
+            width: '100%',
+            height: '100%',
+            rowNum: 100,
+            loadonce: true,
+            pager: '#jqGridPager'
+        });
+
+        setAppendedAll(true);
+    }
+
+    //    {# 인구이동 검색 #}
+    function srch_popltn_mvmt() {
+        codeStyle = 'popltn_mvmt';
+        gridData = [];
+
+        $.ajax({
+            url: '{{ url_for("situation.srch_popltn_mvmt") }}',
+            method: 'POST',
+            data: $('#frm-west-2').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = '총 전입자수: ' + item.fmly_sum + '<br>(총 전입세대수: ' + item.hshold_cnt + ')';
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
+            });
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+//        {# 남쪽 패널에 jqGrid 출력 #}
+        $('#jqGrid').jqGrid({
+            url: '{{ url_for("situation.srch_popltn_mvmt") }}',
+            mtype: 'POST',
+            styleUI: 'Bootstrap',
+            datatype: 'json',
+            postData: $('#frm-west-2').serialize(),
+            colModel: [
+                {label: '전입시기', name: 'in_yyyymm'},
+                {label: '전입시도', name: 'in_sid'},
+                {label: '전입시군구', name: 'in_sgg'},
+                {label: '전입읍면동', name: 'in_emd'},
+                {label: '전출시도', name: 'out_sid'},
+                {label: '전출시군구', name: 'out_sgg'},
+                {label: '전출읍면동', name: 'out_emd'},
+                {label: '이동사유', name: 'mv_reasn'},
+                {label: '신고자유형', name: 'aplcnt_clsftn'},
+                {label: '신고자나이', name: 'aplcnt_age'},
+                {label: '신고자성별', name: 'aplcnt_sex'},
+                {label: '이동가구원수', name: 'fmly_num'}
+            ],
+            viewrecords: true,
+            width: '100%',
+            height: '100%',
+            rowNum: 100,
+            loadonce: true,
+            pager: '#jqGridPager'
+        });
+
+        setAppendedAll(true);
+    }
+
+    //    {# 실거래가 검색 #}
+    function srch_trnstn_situtn() {
+        codeStyle = 'trnstn_situtn';
+        gridData = [];
+
+        $.ajax({
+            url: '{{ url_for("situation.srch_trnstn_situtn") }}',
+            method: 'POST',
+            data: $('#frm-west-3').serialize() + '&req_type=map',
+            dataType: 'json'
+        }).done(function (data) {
+            alert(1);
+            $.each(data.rows, function (i, item) {
+                content.innerHTML = item.id;
+                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
+            });
+        }).fail(function (data) {
+            alert(data.msg);
+        });
+
+//        $.ajax({
+//            url: '{{ url_for("situation.srch_trnstn_situtn") }}',
+//            method: 'POST',
+//            data: $('#frm-west-3').serialize(),
+//            dataType: 'json'
+//        }).done(function (data) {
+//            $.each(data.rows, function (i, item) {
+//                gridData.push(item);
+//            });
+//        });
+
+////        {# 남쪽 패널에 jqGrid 출력 #}
 //        $('#jqGrid').jqGrid({
-//            url: '{{ url_for("situation.srch_popltn_stats") }}',
+//            url: '{{ url_for("situation.srch_trnstn_situtn") }}',
 //            mtype: 'POST',
 //            styleUI: 'Bootstrap',
 //            datatype: 'json',
-//            postData: $('#frm-west-ps').serialize(),
+//            postData: $('#frm-west-3').serialize(),
 //            colModel: [
 //                {label: '측정년도', name: 'srvy_yyyymm'},
 //                {label: '시도', name: 'sid'},
@@ -1835,58 +2379,52 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
 //            rowNum: 50,
 //            pager: "#jqGridPager"
 //        });
+
+        setAppendedAll(true);
     }
 
-//    {# 세대통계 검색 #}
-    function srch_hshold_stats() {
-        codeStyle = 'hshold_stats';
+    //    {# 건물현황 검색 #}
+    function srch_idnfln_bldng() {
+        codeStyle = 'idnfln_bldng';
+        gridData = [];
 
-        alert($('#frm-west-hs').serialize());
-        var year = $('#ed_year').val();
-        var selected_area = $('#spn-hs-a').text();
+        console.log($('#frm-west-4').serialize());
+
         $.ajax({
-            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            url: '{{ url_for("situation.srch_idnfln_bldng") }}',
             method: 'POST',
-            data: $('#frm-west-hs').serialize() + '&req_type=map',
+            data: $('#frm-west-4').serialize() + '&req_type=map',
             dataType: 'json'
         }).done(function (data) {
-            $.each(data.rows, function (i, item) {
-                content.innerHTML = '<span class="label label-success" style="display: inline-block;">' + selected_area +
-                    '</span><br>' + year + '년, 총 세대수: ' + set_comma(item.hshold_sum) + '(명)';
-                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
-            });
+            alert(data);
         }).fail(function (data) {
             alert(data.msg);
         });
 
         $.ajax({
-            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            url: '{{ url_for("situation.srch_idnfln_bldng") }}',
             method: 'POST',
-            data: $('#frm-west-hs').serialize(),
+            data: $('#frm-west-4').serialize(),
             dataType: 'json'
-        }).done(function (data){
-            $.each(data.data, function (i, item){
+        }).done(function (data) {
+            $.each(data.rows, function (i, item) {
                 gridData.push(item);
             });
-        }).fail(function(data){
-            alert(data.msg);
         });
 
 //        {# 남쪽 패널에 jqGrid 출력 #}
         $('#jqGrid').jqGrid({
-            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            url: '{{ url_for("situation.srch_idnfln_bldng") }}',
             mtype: 'POST',
             styleUI: 'Bootstrap',
             datatype: 'json',
-            postData: $('#frm-west-hs').serialize(),
+            postData: $('#frm-west-4').serialize(),
             colModel: [
-                {label: '측정년도', name: 'srvy_year'},
-                {label: '시도', name: 'sid'},
-                {label: '시군구', name: 'sgg'},
-                {label: '주거유형', name: 'rsdnc_clsftn'},
-                {label: '세대원수', name: 'fmly_num'},
-                {label: '방개수', name: 'room_num'},
-                {label: '세대수', name: 'hshold_num'},
+                {label: '시도', name: 'sid_cd'},
+                {label: '시군구', name: 'sgg_cd'},
+                {label: '읍면동', name: 'emd_cd'},
+                {label: '주거유형', name: 'prcl_addrs'},
+                {label: '세대원수', name: 'road_addrs'}
             ],
             viewrecords: true,
             width: '100%',
@@ -1895,105 +2433,31 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             loadonce: true,
             pager: '#jqGridPager'
         });
+
+        setAppendedAll(true);
     }
 
-//    {# 실거래가 검색 #}
-    function srch_trnstn_situtn() {
-        $.ajax({
-            url: '{{ url_for("situation.srch_trnstn_situtn") }}',
-            method: 'POST',
-            data: $('#frm-west-ts').serialize() + '&req_type=map',
-            dataType: 'json'
-        }).done(function (data) {
-            alert(1);
-            $.each(data.rows, function (i, item) {
-                content.innerHTML = item.id;
-                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
-            });
-        }).fail(function (data) {
-            alert(data.msg);
-        });
+    // Add slideDown animation to Bootstrap dropdown when expanding.
+    $('.dropdown').on('show.bs.dropdown', function() {
+    $(this).find('.dropdown-menu').first().stop(true, true).slideDown();
+    });
 
-        /*   {# 남쪽 패널에 jqGrid 출력 #}
-           $('#jqGrid').jqGrid({
-               url: '{{ url_for("situation.srch_trnstn_situtn") }}',
-               mtype: 'POST',
-               styleUI: 'Bootstrap',
-               datatype: 'json',
-               postData: $('#frm-west-ts').serialize(),
-               colModel: [
-                   { label: '측정년도', name: 'srvy_yyyymm' },
-                   { label: '시도', name: 'sid' },
-                   { label: '시군구', name: 'sgg' },
-                   { label: '읍면동', name: 'emd' },
-                   { label: '연령대', name: 'age_grp' },
-                   { label: '남자수', name: 'man_num' },
-                   { label: '여자수', name: 'woman_num' },
-                   { label: '총인구수', name: 'total_num' },
-               ],
-               viewrecords: true,
-               width: '100%',
-               height: '100%',
-               rowNum: 50,
-               pager: "#jqGridPager"
-           });  */
-    }
+    // Add slideUp animation to Bootstrap dropdown when collapsing.
+    $('.dropdown').on('hide.bs.dropdown', function() {
+    $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
+    });
 
-    //    {# 인구이동 검색 #}
-    function srch_popltn_mvmt() {
-        $.ajax({
-            url: '{{ url_for("situation.srch_popltn_mvmt") }}',
-            method: 'POST',
-            data: $('#frm-west-pm').serialize() + '&req_type=map',
-            dataType: 'json'
-        }).done(function (data) {
-            $.each(data.rows, function (i, item) {
-                content.innerHTML = '총 전입자수: ' + item.fmly_sum + '<br>(총 전입세대수: ' + item.hshold_cnt + ')';
-                overlay.setPosition(ol.proj.fromLonLat(item.coordinates));
-            });
-        }).fail(function (data) {
-            alert(data.msg);
-        });
-//        {# 남쪽 패널에 jqGrid 출력 #}
-        $('#jqGrid').jqGrid({
-            url: '{{ url_for("situation.srch_popltn_mvmt") }}',
-            mtype: 'POST',
-            styleUI: 'Bootstrap',
-            datatype: 'json',
-            postData: $('#frm-west-pm').serialize(),
-            colModel: [
-                {label: '전입시기', name: 'in_yyyymm'},
-                {label: '전입시도', name: 'in_sid'},
-                {label: '전입시군구', name: 'in_sgg'},
-                {label: '전입읍면동', name: 'in_emd'},
-                {label: '전출시도', name: 'out_sid'},
-                {label: '전출시군구', name: 'out_sgg'},
-                {label: '전출읍면동', name: 'out_emd'},
-                {label: '이동사유', name: 'mv_reasn'},
-                {label: '신고자유형', name: 'aplcnt_clsftn'},
-                {label: '신고자나이', name: 'aplcnt_age'},
-                {label: '신고자성별', name: 'aplcnt_sex'},
-                {label: '이동가구원수', name: 'fmly_num'},
-            ],
-            viewrecords: true,
-            width: '100%',
-            height: '100%',
-            rowNum: 100,
-            loadonce: true,
-            pager: '#jqGridPager'
-        });
-    }
-
-//    {# 업종 현황 검색 #}
+//    {# 업종현황 검색 #}
     function srch_busins_situtn() {
         codeStyle = 'busins_situtn';
+        gridData = [];
 
-//        var year = $('#ed_year').val();
-//        var selected_area = $('#spn-hs-a').text();
+        console.log($('#frm-west-5').serialize());
+
         $.ajax({
             url: '{{ url_for("situation.srch_busins_situtn") }}',
             method: 'POST',
-            data: $('#frm-west-bs').serialize() + '&req_type=map',
+            data: $('#frm-west-5').serialize() + '&req_type=map',
             dataType: 'json'
         }).done(function (data) {
             $.each(data.rows, function (i, item) {
@@ -2002,21 +2466,38 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             alert(data.msg);
         });
 
+        $.ajax({
+            url: '{{ url_for("situation.srch_busins_situtn") }}',
+            method: 'POST',
+            data: $('#frm-west-5').serialize(),
+            dataType: 'json'
+        }).done(function (data) {
+            console.log(data)
+            $.each(data.rows, function (i, item) {
+            });
+        });
+
 //        {# 남쪽 패널에 jqGrid 출력 #}
         $('#jqGrid').jqGrid({
-            url: '{{ url_for("situation.srch_hshold_stats") }}',
+            url: '{{ url_for("situation.srch_busins_situtn") }}',
             mtype: 'POST',
             styleUI: 'Bootstrap',
             datatype: 'json',
-            postData: $('#frm-west-hs').serialize(),
+            postData: $('#frm-west-5').serialize(),
             colModel: [
-                {label: '측정년도', name: 'srvy_year'},
                 {label: '시도', name: 'sid'},
                 {label: '시군구', name: 'sgg'},
-                {label: '주거유형', name: 'rsdnc_clsftn'},
-                {label: '세대원수', name: 'fmly_num'},
-                {label: '방개수', name: 'room_num'},
-                {label: '세대수', name: 'hshold_num'},
+                {label: '읍면동', name: 'emd'},
+                {label: '인가허가년월일', name: 'lcnsng_dt'},
+                {label: '업종분류코드', name: 'busins_clsftn_cd'},
+                {label: '영업상태', name: 'busins_condtn'},
+                {label: '소재지면적', name: 'loctn_area'},
+                {label: '업체명', name: 'compny_nm'},
+                {label: '지번우편번호', name: 'prcl_zipcd'},
+                {label: '지번주소', name: 'prcl_addrs'},
+                {label: '도로명우편번호', name: 'road_zipcd'},
+                {label: '도로명주소', name: 'road_addrs'},
+                {label: '소재지전화번호', name: 'loctn_phone'}
             ],
             viewrecords: true,
             width: '100%',
@@ -2024,7 +2505,10 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             rowNum: 100,
             loadonce: true,
             pager: '#jqGridPager'
-        });
+        }).trigger('reloadGrid');
+        console.log(jqGrid.postData);
+
+        setAppendedAll(true);
     }
 
 //    {# 콤마 찍기 #}
@@ -2089,7 +2573,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             var results = [];
             results.push('<div class="list-group">');
             $.each(data.items, function (i, item) {
-                results.push('<a href="#" class="list-group-item" onclick="set_law_sgg_areas(\'' + input_type + '\', \'' + item.sid_cd + '\');"> ' + item.sid_ko_nm + '<input id="sid-cd.' + item.sid_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.sid_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
+                results.push('<a href="#" class="list-group-item" onclick="set_law_sgg_areas(\'' + input_type + '\', \'' + item.sid_cd + '\');"> ' + item.sid_ko_nm + '<input id="sid-cd.' + item.sid_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.sid_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}, \'sid\'); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
             });
             results.push('</div>');
             $('#div-sid-area').html(results.join(''));
@@ -2111,7 +2595,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             var results = [];
             results.push('<div class="list-group">');
             $.each(data.items, function (i, item) {
-                results.push('<a href="#" class="list-group-item" onclick="set_law_emd_areas(\'' + input_type + '\', \'' + item.sgg_cd + '\');"> ' + item.sgg_ko_nm + '<input id="sgg-cd.' + item.sgg_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.sgg_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
+                results.push('<a href="#" class="list-group-item" onclick="set_law_emd_areas(\'' + input_type + '\', \'' + item.sgg_cd + '\');"> ' + item.sgg_ko_nm + '<input id="sgg-cd.' + item.sgg_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.sgg_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}, \'sgg\'); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
             });
             results.push('</div>');
             $('#div-sgg-area').html(results.join(''));
@@ -2130,7 +2614,7 @@ outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
             var results = [];
             results.push('<div class="list-group">');
             $.each(data.items, function (i, item) {
-                results.push('<a href="#" class="list-group-item"> ' + item.emd_ko_nm + '<input id="emd-cd.' + item.emd_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.emd_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
+                results.push('<a href="#" class="list-group-item"> ' + item.emd_ko_nm + '<input id="emd-cd.' + item.emd_cd + '" name="' + input_type + '-area" type="' + input_type + '" class="pull-right" value="' + item.emd_cd + '" onclick="do_bounce(ol.proj.fromLonLat([' + item.coordinates + ']), view, function() {}, \'emd\'); update_params(\'' + item.layers + '\', \'' + item.featureid + '\');"></a>');
             });
             results.push('</div>');
             $('#div-emd-area').html(results.join(''));

@@ -6,6 +6,8 @@ from hms.blueprints.situation.models.popltn_mvmt import PopltnMvmt
 from hms.blueprints.situation.models.hshold_stats import HsholdStats
 from hms.blueprints.situation.models.popltn_stats import PopltnStats
 from hms.blueprints.situation.models.trnstn_situtn import TrnstnSitutn
+from hms.blueprints.situation.models.idnftn_bldng import IdnftnBldng
+from hms.blueprints.situation.models.busins_situtn import BusinsSitutn
 from lib.util_json import render_json
 
 import datetime
@@ -70,7 +72,7 @@ def srch_popltn_mvmt():
             'out_sid': item.out_sid,
             'out_sgg': item.out_sgg,
             'out_emd': item.out_emd,
-            'mv_reasn': item.mv_reasn,
+            'mv_reasn': item.my_reasn,
             'aplcnt_clsftn': item.aplcnt_clsftn,
             'aplcnt_age': item.aplcnt_age,
             'aplcnt_sex': item.aplcnt_sex,
@@ -82,17 +84,6 @@ def srch_popltn_mvmt():
 @situation.route('/srch_popltn_stats', methods=['POST'])
 # 인구통계 검색
 def srch_popltn_stats():
-    print("*" * 100)
-    print(request.form.get('sid_cd'))
-    print(request.form.get('sgg_cd'))
-    print(request.form.get('emd_cd'))
-    print(request.form.getlist('age_grp_cd'))
-    print(request.form.get('ps_syear'))
-    print(request.form.get('ps_smonth'))
-    print(request.form.get('ps_eyear'))
-    print(request.form.get('ps_emonth'))
-    print("*" * 100)
-
     sid_cd = request.form.get('sid_cd')
     sgg_cd = request.form.get('sgg_cd')
     emd_cd = request.form.get('emd_cd')
@@ -119,21 +110,18 @@ def srch_popltn_stats():
 
     items = PopltnStats.find_by_filter_for_grid(sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
                                                 ed_yyyymm)
-    print("*" * 100)
-    print(items)
-    print("*" * 100)
 
     return jsonify({
-        'data': [[
-            item.srvy_yyyymm,
-            item.sid,
-            item.sgg,
-            item.emd,
-            item.age_grp,
-            item.man_num,
-            item.woman_num,
-            item.total_num,
-        ] for item in items]
+        'rows': [{
+            'srvy_yyyymm': item.srvy_yyyymm,
+            'sid': item.sid,
+            'sgg': item.sgg,
+            'emd': item.emd,
+            'age_grp': item.age_grp,
+            'man_num': item.man_num,
+            'woman_num': item.woman_num,
+            'total_num': item.total_num,
+       } for item in items]
     })
 
     # rs = PopltnStats.select_all(sido_cds, sigu_cds, emd_cds, age_cds, syear, smonth, eyear, emonth)
@@ -159,26 +147,10 @@ def srch_hshold_stats():
     st_year = request.form.get('st_year')
     ed_year = request.form.get('ed_year')
 
-    print("*" * 100)
-    print(sid_cds)
-    print(sgg_cds)
-    print(rsdnc_clsftn_cds)
-    print(fmly_num_cds)
-    print(room_num_cds)
-    print(st_year)
-    print(ed_year)
-    print("*" * 100)
-
     # 지도 출력
     if request.form.get('req_type') == 'map':
         items = HsholdStats.find_by_filter_for_map(sid_cds, sgg_cds, rsdnc_clsftn_cds,
                                                    fmly_num_cds, room_num_cds, st_year, ed_year)
-
-        for item in items:
-            print("*" * 100)
-            print('ssssssssssssssssssssssssss')
-            print(item)
-            print("*" * 100)
 
         return render_json(200, rows=[{
             'coordinates': json.loads(item.geojson)['coordinates'],
@@ -189,19 +161,20 @@ def srch_hshold_stats():
     items = HsholdStats.find_by_filter_for_grid(sid_cds, sgg_cds, rsdnc_clsftn_cds,
                                                fmly_num_cds, room_num_cds, st_year, ed_year)
 
-    for item in items:
-        print("*" * 100)
-        print(item)
-        print("*" * 100)
+    # for item in items:
+    #     print("*" * 100)
+    #     print(item)
+    #     print("*" * 100)
 
     return jsonify({
-        'data': [{
+        'rows': [{
             'srvy_year': item.srvy_year,
-            'sid': item.sid_cd,
-            'sgg': item.sgg_cd,
+            'sid': item.sid,
+            'sgg': item.sgg,
             'rsdnc_clsftn': item.rsdnc_clsftn_cd,
             'fmly_num': item.fmly_num_cd,
             'room_num': item.room_num_cd,
+            'hshold_num': item.hshold_num,
         } for item in items]
     })
 
@@ -209,56 +182,167 @@ def srch_hshold_stats():
 @situation.route('/srch_trnstn_situtn', methods=['POST'])
 # 실거래가 검색
 def srch_trnstn_situtn():
-    sid_cd = request.form.get('sid_cd')
-    sgg_cd = request.form.get('sgg_cd')
-    emd_cd = request.form.get('emd_cd')
-    trnstn_clsftn_cd = request.form.get('mp-trans-type')
-    house_clsftn_cd = request.form.get('mp-house-kind')
-    st_sale_price = request.form.get('mp-ssale')
-    ed_sale_price = request.form.get('mp-esale')
-    st_deposit = request.form.get('mp-sdeposit')
-    ed_deposit = request.form.get('mp-edeposit')
-    st_mnthly_rent = request.form.get('mp-srent')
-    ed_mnthly_rent = request.form.get('mp-erent')
-    st_exclsv_area = request.form.get('mp-sexarea')
-    ed_exclsv_area = request.form.get('mp-eexarea')
-    st_decrepit = request.form.get('mp-sdecrepit')
-    ed_decrepit = request.form.get('mp-edecrepit')
-    st_yyyymm = request.form.get('mp-syear')+request.form.get('mp-smonth')
-    ed_yyyymm = request.form.get('mp-eyear')+request.form.get('mp-emonth')
+    # TODO : 이거 네임 값이랑 변수 이름이랑 웬만하면 맞춰주자.!
+
+    sid_cd = request.form.get('sid_cd')                        #시도 코드
+    sgg_cd = request.form.get('sgg_cd')                         #시군구 코드
+    emd_cd = request.form.get('emd_cd')                        #읍면동 코드
+    mp_trans_type = request.form.get('mp-trans-type')           #전월세 매매 구분
+    mp_house_kind = request.form.get('mp-house-kind')           # 건물 종류
+
+    mp_ssale = ''
+    mp_esale = ''
+    mp_sexarea = ''
+    mp_eexarea = ''
+    mp_sdecrepit = ''
+    mp_edecrepit = ''
+    mp_sdeposit = ''
+    mp_edeposit = ''
+    mp_srent = ''
+    mp_erent = ''
+
+    #매매
+    if mp_trans_type == "1":
+        mp_ssale = request.form.get('mp-ssale')  # 매매가 시작
+        mp_esale = request.form.get('mp-esale')  # 매매가 종료
+        mp_sexarea = request.form.get('mp-sexarea')  # 면적 시작
+        mp_eexarea = request.form.get('mp-eexarea')  # 면적 종료
+        mp_sdecrepit = request.form.get('mp-sdecrepit')  # 노후도 시작
+        mp_edecrepit = request.form.get('mp-edecrepit')  # 노후도 종료
+    # 전월세
+    elif mp_trans_type == "2":
+        mp_sdeposit = request.form.get('mp-sdeposit')  # 보증금 시작
+        mp_edeposit = request.form.get('mp-edeposit')  # 보증금 종료
+        mp_srent = request.form.get('mp-srent')  # 월세 시작
+        mp_erent = request.form.get('mp-erent')  # 월세 종료
+        mp_sexarea = request.form.get('mp-sexarea')  # 면적 시작
+        mp_eexarea = request.form.get('mp-eexarea')  # 면적 종료
+        mp_sdecrepit = request.form.get('mp-sdecrepit')  # 노후도 시작
+        mp_edecrepit = request.form.get('mp-edecrepit')  # 노후도 종료
+
+    st_yyyymm = request.form.get('mp-syear') + request.form.get('mp-smonth')    #시작년,월
+    ed_yyyymm = request.form.get('mp-eyear') + request.form.get('mp-emonth')    #종료년, 월
+
+    # mp_ss = request.form.get('mp-ss')                        #매매가 시작       selectBox 값
+    # mp_es = request.form.get('mp-es')                        #매매가 종료       selectBox 값
+    # mp_sdep = request.form.get('mp-sdep')                     #보증금 시작      selectBox 값
+    # mp_edep = request.form.get('mp-edep')                     #보증금 종료      selectBox 값
+    # mp_sre = request.form.get('mp-sre')                         #월세 시작      selectBox 값
+    # mp_ere = request.form.get('mp-ere')                         #월세 종료      selectBox 값
+    # mp_sarea = request.form.get('mp-sarea')                     #면적 시작      selectBox 값
+    # mp_earea = request.form.get('mp-earea')                     #면적 종료      selectBox 값
+    # mp_sdec = request.form.get('mp-sdec')                       #노후도 시작 selectBox 값
+    # mp_edec = request.form.get('mp-edec')                       #노후도 종료 selectBox 값
+
+    # house_clsftn_cd = request.form.get('mp-house-kind')
+    # st_sale_price = request.form.get('mp-ssale')
+    # ed_sale_price = request.form.get('mp-esale')
+    # st_deposit = request.form.get('mp-sdeposit')
+    # ed_deposit = request.form.get('mp-edeposit')
+    # st_mnthly_rent = request.form.get('mp-srent')
+    # ed_mnthly_rent = request.form.get('mp-erent')
+    # st_exclsv_area = request.form.get('mp-sarea')
+    # ed_exclsv_area = request.form.get('mp-earea')
+    # st_decrepit = request.form.get('mp-sdecrepit')
+    # ed_decrepit = request.form.get('mp-edecrepit')
+    # st_yyyymm = request.form.get('mp-syear')+request.form.get('mp-smonth')
+    # ed_yyyymm = request.form.get('mp-eyear')+request.form.get('mp-emonth')
 
     # 지도 출력
     if request.form.get('req_type') == 'map':
 
-
-        items = TrnstnSitutn.find_by_filter_for_map(sid_cd, sgg_cd, emd_cd, trnstn_clsftn_cd, house_clsftn_cd,
-                                                    st_sale_price, ed_sale_price, st_deposit, ed_deposit,
-                                                    st_mnthly_rent, ed_mnthly_rent,st_exclsv_area, ed_exclsv_area,
-                                                    st_decrepit, ed_decrepit, st_yyyymm, ed_yyyymm)
+        if mp_trans_type == "1":
+            print('buy')
+            items = TrnstnSitutn.find_by_filter_for_buy_map(sid_cd, sgg_cd, emd_cd, mp_trans_type, mp_house_kind, mp_ssale, mp_esale,
+                                                            mp_sexarea, mp_eexarea, mp_sdecrepit, mp_edecrepit, st_yyyymm, ed_yyyymm)
+        else:
+            print('monthy_rent')
+            items = TrnstnSitutn.find_by_filter_for_rent_map(sid_cd, sgg_cd, emd_cd, mp_trans_type, mp_house_kind, mp_sdeposit, mp_edeposit,
+                                                             mp_srent, mp_erent, mp_sexarea, mp_eexarea, mp_sdecrepit, mp_edecrepit,
+                                                             st_yyyymm, ed_yyyymm)
 
         return render_json(200, rows=[{
-            'coordinates': json.loads(item.geojsonForBuild)['coordinates'],
-            'id': item.id
+            'trnstn_clsftn_cd': item.trnstn_clsftn_cd,
+            'sid_cd': item.sid_cd,
+            'sgg_cd': item.sgg_cd,
+            'emd_cd': item.emd_cd,
+            'lat': item.x,
+            'lan': item.y,
         } for item in items])
 
     # 그리드 출력
+    else:
+        if mp_trans_type == "1":
+            print('buy')
+            items = TrnstnSitutn.find_by_filter_for_buy_grid(sid_cd, sgg_cd, emd_cd, mp_trans_type, mp_house_kind,
+                                                            mp_ssale, mp_esale,
+                                                            mp_sexarea, mp_eexarea, mp_sdecrepit, mp_edecrepit,
+                                                            st_yyyymm, ed_yyyymm)
+        else:
+            items = TrnstnSitutn.find_by_filter_for_rent_grid(sid_cd, sgg_cd, emd_cd, mp_trans_type, mp_house_kind,
+                                                             mp_sdeposit, mp_edeposit,
+                                                             mp_srent, mp_erent, mp_sexarea, mp_eexarea, mp_sdecrepit,
+                                                             mp_edecrepit,
+                                                             st_yyyymm, ed_yyyymm)
+        for item in items:
+            print(item)
 
-    # items = TrnstnSitutn.find_by_filter_for_grid(sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
-    #                                             ed_yyyymm)
-    #
-    # return jsonify({
-    #     'rows': [{
-    #         'srvy_yyyymm': item.srvy_yyyymm,
-    #         'sid': item.sid,
-    #         'sgg': item.sgg,
-    #         'emd': item.emd,
-    #         'age_grp': item.age_grp,
-    #         'man_num': item.man_num,
-    #         'woman_num': item.woman_num,
-    #         'total_num': item.total_num,
-    #     } for item in items]
-    #
-    # })
+        return render_json(200, rows=[{
+            'trnstn_clsftn_cd': item.trnstn_clsftn_cd,
+            'sid': item.sid,
+            'sgg': item.sgg,
+            'emd': item.emd,
+            'lat': item.x,
+            'lan': item.y,
+        } for item in items])
+
+# 건물 현황 검색
+@situation.route('/srch_idnfln_bldng', methods=['POST'])
+def srch_idnfln_bldng():
+    sid_cd = request.form.get('sid_cd')
+    sgg_cd = request.form.get('sgg_cd')
+    emd_cd = request.form.get('emd_cd')
+    ib_use = request.form.getlist('ib-use')
+    ib_common = request.form.getlist('ib-common')
+    ib_sarea = request.form.get('ib-sarea')
+    ib_sexarea = request.form.get('ib-sexarea')
+    ib_earea = request.form.get('ib-earea')
+    ib_eexarea = request.form.get('ib-eexarea')
+    ib_sdec = request.form.get('ib-sdec')
+    ib_sdecrepit = request.form.get('ib-sdecrepit')
+    ib_edec = request.form.get('ib-edec')
+    ib_edecrepit = request.form.get('ib-edecrepit')
+    st_yyyymm = request.form.get('ib-syear') + request.form.get('ib-smonth')
+    ed_yyyymm = request.form.get('ib-eyear') + request.form.get('ib-emonth')
+
+    # 지도 출력
+    if request.form.get('req_type') == 'map':
+        items = IdnftnBldng.find_by_filter_for_map(sid_cd, sgg_cd, emd_cd, ib_use, ib_common, ib_sarea, ib_sexarea, ib_earea,
+                                                       ib_eexarea, ib_sdec, ib_sdecrepit, ib_edec, ib_edecrepit,
+                                                       st_yyyymm, ed_yyyymm)
+        for item in items :
+            print(item)
+
+        return render_json(200, rows=[{
+            'main_num': item.main_num,
+            'sid_cd': item.sid_cd,
+            'sgg_cd': item.sgg_cd,
+            'emd_cd': item.emd_cd,
+            'lat': item.x,
+            'lan': item.y,
+        } for item in items])
+
+    items = IdnftnBldng.find_by_filter_for_grid(sid_cd, sgg_cd, emd_cd, ib_use, ib_common, ib_sarea, ib_sexarea, ib_earea,
+                                                       ib_eexarea, ib_sdec, ib_sdecrepit, ib_edec, ib_edecrepit,
+                                                       st_yyyymm, ed_yyyymm)
+    return render_json(200, rows=[{
+        'sid_cd': item.sid_cd,
+        'sgg_cd': item.sgg_cd,
+        'emd_cd': item.emd_cd,
+        'prcl_addrs': item.prcl_addrs,
+        'road_addrs': item.road_addrs,
+    } for item in items])
+
 
 @situation.route('/srch_busins_situtn', methods=['POST'])
 def srch_busins_situtn():
@@ -267,10 +351,30 @@ def srch_busins_situtn():
     emd_cd = request.form.get('emd_cd')
     busins_clsftn_cd = request.form.getlist('busins_clsftn_cd')
 
-    print("8" * 20)
-    print(sid_cd)
-    print(sgg_cd)
-    print(emd_cd)
-    print(busins_clsftn_cd)
-    print("8" * 20)
+    if request.form.get('req_type') == 'map':
+        items = BusinsSitutn.find_by_filter_for_map(sid_cd, sgg_cd, emd_cd, busins_clsftn_cd)
+
+        return render_json(200, rows=[{
+            'coordinates': json.loads(item.geojson)['coordinates'],
+            'busins_clsftn_cd': item.busins_clsftn_cd
+        } for item in items])
+
+    items = BusinsSitutn.find_by_filter_for_grid(sid_cd, sgg_cd, emd_cd, busins_clsftn_cd)
+
+    return render_json(200, rows=[{
+        'sid': item.sid,
+        'sgg': item.sgg,
+        'emd': item.emd,
+        'lcnsng_dt': item.lcnsng_dt,
+        'busins_clsftn_cd': item.busins_clsftn_cd,
+        'busins_condtn': item.busins_condtn,
+        'loctn_area': item.loctn_area,
+        'compny_nm': item.compny_nm,
+        'prcl_zipcd': item.prcl_zipcd,
+        'prcl_addrs': item.prcl_addrs,
+        'road_zipcd': item.road_zipcd,
+        'road_addrs': item.road_addrs,
+        'loctn_phone': item.loctn_phone
+    } for item in items])
+
 

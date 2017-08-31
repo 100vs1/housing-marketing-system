@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-from sqlalchemy import func, and_, or_, desc
+from sqlalchemy import func, and_, or_, desc, cast, String, Integer
 from hms.extensions import db
 from hms.blueprints.common.models.code import Code
 from hms.blueprints.common.models.area import LawSidArea, LawSggArea, LawEmdArea
@@ -77,18 +77,22 @@ class PopltnMvmt(db.Model):
                                    filter(LawSggArea.sgg_cd == cls.out_sgg_cd).limit(1).label('out_sgg'),
                                    db.session.query(LawEmdArea.emd_ko_nm).
                                    filter(LawEmdArea.emd_cd == cls.out_emd_cd).limit(1).label('out_emd'),
-                                   db.session.query(Code.name).
-                                   filter(and_(Code.code == cls.mv_reasn_cd,
-                                               Code.group_code == 'mv_reasn')).limit(1).label('mv_reasn'),
-                                   db.session.query(Code.name).
-                                   filter(and_(Code.code == cls.aplcnt_clsftn_cd,
-                                               Code.group_code == 'aplcnt_clsftn')).limit(1).label('aplcnt_clsftn'),
-                                   db.session.query(Code.name).
-                                   filter(and_(Code.code == cls.aplcnt_age_cd,
-                                               Code.group_code == 'aplcnt_age')).limit(1).label('aplcnt_age'),
-                                   db.session.query(Code.name).
-                                   filter(and_(Code.code == cls.aplcnt_sex_cd,
-                                               Code.group_code == 'aplcnt_sex')).limit(1).label('aplcnt_sex'),
+                                   # db.session.query(Code.name).
+                                   # filter(and_(Code.code == cls.mv_reasn_cd,
+                                   #             Code.group_code == 'mv_reasn')).limit(1).label('mv_reasn'),
+                                   # db.session.query(Code.name).
+                                   # filter(and_(Code.code == cls.aplcnt_clsftn_cd,
+                                   #             Code.group_code == 'aplcnt_clsftn')).limit(1).label('aplcnt_clsftn'),
+                                   # db.session.query(Code.name).
+                                   # filter(and_(cast(Code.code, Integer) == cast(cls.aplcnt_age_cd, Integer),
+                                   #             Code.group_code == 'aplcnt_age')).limit(1).label('aplcnt_age'),
+                                   # db.session.query(Code.name).
+                                   # filter(and_(cast(Code.code, Integer) == cls.aplcnt_sex_cd,
+                                   #             Code.group_code == 'aplcnt_sex')).limit(1).label('aplcnt_sex'),
+                                   cls.mv_reasn_cd.label('my_reasn'),
+                                   cls.aplcnt_clsftn_cd.label('aplcnt_clsftn'),
+                                   cls.aplcnt_age_cd.label('aplcnt_age'),
+                                   cls.aplcnt_sex_cd.label('aplcnt_sex'),
                                    cls.fmly_num). \
             filter(or_(cls.out_sid_cd.in_(out_sid_cds),
                        cls.out_sgg_cd.in_(out_sgg_cds),

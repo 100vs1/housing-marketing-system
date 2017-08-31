@@ -32,16 +32,6 @@ class HsholdStats(db.Model):
 
     @classmethod
     def find_by_filter_for_map(cls, sid_cds, sgg_cds, rsdnc_clsftn_cds, fmly_num_cds, room_num_cds, st_year, ed_year):
-        print("--" * 100)
-        print(sid_cds)
-        print(sgg_cds)
-        print(rsdnc_clsftn_cds)
-        print(fmly_num_cds)
-        print(room_num_cds)
-        print(st_year)
-        print(ed_year)
-        print("--" * 100)
-
         # 서브 쿼리
         geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(LawSidArea.geom)).label('geojson')). \
             filter(LawSidArea.sid_cd == cls.sid_cd).limit(1).label('geojson')
@@ -57,16 +47,17 @@ class HsholdStats(db.Model):
                        cls.srvy_year <= ed_year)). \
             group_by(cls.sid_cd)
 
-        print("*" * 100)
-        print(results)
-        print("*" * 100)
-
         return results
 
     @classmethod
     def find_by_filter_for_grid(cls, sid_cds, sgg_cds, rsdnc_clsftn_cds, fmly_num_cds, room_num_cds, st_year, ed_year):
 
-        results = db.session.query(cls.sid_cd, cls.sgg_cd, cls.rsdnc_clsftn_cd, cls.fmly_num_cd, cls.room_num_cd, cls.srvy_year). \
+        results = db.session.query(
+            db.session.query(LawSidArea.sid_ko_nm).
+                filter(LawSidArea.sid_cd == cls.sid_cd).limit(1).label('sid'),
+            db.session.query(LawSggArea.sgg_ko_nm).
+                filter(LawSggArea.sgg_cd == cls.sgg_cd).limit(1).label('sgg'),
+            cls.rsdnc_clsftn_cd, cls.fmly_num_cd, cls.room_num_cd, cls.srvy_year, cls.hshold_num). \
             filter(or_(cls.sid_cd.in_(sid_cds),
                        cls.sgg_cd.in_(sgg_cds))). \
             filter(cls.rsdnc_clsftn_cd.in_(rsdnc_clsftn_cds)). \
@@ -74,30 +65,5 @@ class HsholdStats(db.Model):
             filter(cls.room_num_cd.in_(room_num_cds)). \
             filter(and_(cls.srvy_year >= st_year,
                        cls.srvy_year <= ed_year))
-
-        # results = db.session.query(cls.srvy_yyyy,
-        #                            db.session.query(LawSidArea.sid_ko_nm).
-        #                            filter(LawSidArea.sid_cd == cls.in_sid_cd).limit(1).label('sid'),
-        #                            db.session.query(LawSggArea.sgg_ko_nm).
-        #                            filter(LawSggArea.sgg_cd == cls.in_sgg_cd).limit(1).label('sgg'),
-        #                            db.session.query(Code.name).
-        #                            filter(and_(Code.code == cls.rsdnc_clsftn_cd,
-        #                                        Code.group_code == 'rsdnc_clsftn')).limit(1).label('rsdnc_clsftn'),
-        #                            db.session.query(Code.name).
-        #                            filter(and_(Code.code == cls.fmly_num_cd,
-        #                                        Code.group_code == 'fmly_num')).limit(1).label('fmly_num'),
-        #                            cls.aplcnt_age,
-        #                            db.session.query(Code.name).
-        #                            filter(and_(Code.code == cls.room_num_cd,
-        #                                        Code.group_code == 'room_num')).limit(1).label('room_num'),
-        #                            cls.hshold_num). \
-        #     filter(or_(cls.sid_cd.in_(sid_cds),
-        #                cls.sgg_cd.in_(sgg_cds))). \
-        #     filter(cls.rsdnc_clsftn_cd.in_(rsdnc_clsftn_cds)). \
-        #     filter(cls.fmly_num_cd.in_(fmly_num_cds)). \
-        #     filter(cls.room_num_cd.in_(room_num_cds)). \
-        #     filter(and_(cls.srvy_yyyy >= st_year,
-        #                 cls.srvy_year <= ed_yer)). \
-        #     order_by(desc(cls.srvy_yyyy, cls.sid_cd, cls.sgg_cd))
 
         return results

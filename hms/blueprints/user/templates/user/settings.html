@@ -3,97 +3,97 @@
 {% block title %}Account settings{% endblock %}
 
 {% block body %}
-  <div class="row">
+<div class="row">
     <div class="col-md-5">
-      <h2>설정</h2>
-      <h4 class="text-muted margin-bottom">{{ current_user.email }}</h4>
+        <h2>설정</h2>
+        <h4 class="text-muted margin-bottom">{{ current_user.email }}</h4>
 
-      <div class="list-group">
-        <a href="{{ url_for('user.update_credentials') }}"
-           class="list-group-item">
-          이메일과 패스워드를 입력하세요
-        </a>
-        <a href="{{ url_for('user.update_locale') }}"
-           class="list-group-item">
-          언어를 선택하세요
-        </a>
-        {% if current_user.username %}
-          <span class="list-group-item quarter-faded text-muted">
+        <div class="list-group">
+            <a href="{{ url_for('user.update_credentials') }}"
+               class="list-group-item">
+                이메일과 패스워드를 입력하세요
+            </a>
+            <a href="{{ url_for('user.update_locale') }}"
+               class="list-group-item">
+                언어를 선택하세요
+            </a>
+            {% if current_user.username %}
+            <span class="list-group-item quarter-faded text-muted">
             Your username is
             <strong>{{ current_user.username }}</strong>
           </span>
-        {% else %}
-          <a href="{{ url_for('user.welcome') }}"
-             class="list-group-item">
-            사용자 이름을 선택하세요
-          </a>
-        {% endif %}
-      </div>
+            {% else %}
+            <a href="{{ url_for('user.welcome') }}"
+               class="list-group-item">
+                사용자 이름을 선택하세요
+            </a>
+            {% endif %}
+        </div>
 
-      {#<h2>Betting</h2>
-      <div class="list-group">
-        <a href="{{ url_for('bet.history') }}" class="list-group-item">
-          Betting history
-        </a>
-        <span class="list-group-item quarter-faded text-warning">
+        {#<h2>Betting</h2>
+        <div class="list-group">
+            <a href="{{ url_for('bet.history') }}" class="list-group-item">
+                Betting history
+            </a>
+            <span class="list-group-item quarter-faded text-warning">
           You have
           <strong>{{ current_user.coins }}</strong> coins
         </span>
-      </div>
-      <a href="{{ url_for('billing.purchase_coins') }}"
-         class="btn btn-primary">Buy more coins</a>#}
+        </div>
+        <a href="{{ url_for('billing.purchase_coins') }}"
+           class="btn btn-primary">Buy more coins</a>#}
     </div>
     <div class="col-md-5 col-md-push-1 col-md-offset-1">
-      {% if current_user.subscription %}
+        {% if current_user.subscription %}
         <h2>{{ current_user.subscription.plan | title }}
-          subscription</h2>
+            subscription</h2>
         <h4 class="text-muted margin-bottom">
-          {{ current_user.credit_card.brand }}
-          ****{{ current_user.credit_card.last4 }}
-          ({{ current_user.credit_card.exp_date.strftime('%m/%Y') }})
+            {{ current_user.credit_card.brand }}
+            ****{{ current_user.credit_card.last4 }}
+            ({{ current_user.credit_card.exp_date.strftime('%m/%Y') }})
         </h4>
 
         <div class="list-group">
-          <a class="list-group-item"
-             href="{{ url_for('billing.update_payment_method') }}">
-            Update payment info
-          </a>
-          <a class="list-group-item"
-             href="{{ url_for('billing.billing_details') }}">
-            Billing details
-          </a>
-          <a class="list-group-item"
-             href="{{ url_for('billing.update') }}">
-            Change plan
-          </a>
-          <a class="list-group-item"
-             href="{{ url_for('billing.cancel') }}">
-            <span class="text-muted">Cancel subscription</span>
-          </a>
+            <a class="list-group-item"
+               href="{{ url_for('billing.update_payment_method') }}">
+                Update payment info
+            </a>
+            <a class="list-group-item"
+               href="{{ url_for('billing.billing_details') }}">
+                Billing details
+            </a>
+            <a class="list-group-item"
+               href="{{ url_for('billing.update') }}">
+                Change plan
+            </a>
+            <a class="list-group-item"
+               href="{{ url_for('billing.cancel') }}">
+                <span class="text-muted">Cancel subscription</span>
+            </a>
         </div>
-      {% else %}
+        {% else %}
         <h2>오늘 당장 등록하세요</h2>
         <h4 class="text-muted">
-          황금알을 낳는 거위를 찾고 싶나요? 지금 등록하세요! 
+            황금알을 낳는 거위를 찾고 싶나요? 지금 등록하세요!
         </h4>
 
         <p>
-          자, 이제 계정을 만드시고 오늘 등록만 하시면 놀라운 일이 벌어집니다. 
+            자, 이제 계정을 만드시고 오늘 등록만 하시면 놀라운 일이 벌어집니다.
         </p>
         {#<a href="{{ url_for('billing.pricing') }}"
-           class="btn btn-primary">더 상세히</a>#}
+             class="btn btn-primary">더 상세히</a>#}
 
         <hr/>
         {% if current_user.invoices %}
-          <h3>Previous subscription info</h3>
-          <div class="list-group">
+        <h3>Previous subscription info</h3>
+        <div class="list-group">
             <a class="list-group-item"
-              href="{{ url_for('billing.billing_details') }}">
-              Billing details
+               href="{{ url_for('billing.billing_details') }}">
+                Billing details
             </a>
-          </div>
+        </div>
         {% endif %}
-      {% endif %}
+        {% endif %}
     </div>
-  </div>
+</div>
 {% endblock %}
