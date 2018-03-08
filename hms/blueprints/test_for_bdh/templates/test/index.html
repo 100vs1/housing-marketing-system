@@ -1,0 +1,226 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Housing Marketing System{% endblock %}
+{% block meta_description %}Compete against yourself and others by guessing the
+outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
+
+{% block body %}
+<br>
+<br>
+<br>
+<br>
+<div id="timeSeries">
+
+</div>
+<div id="button">
+
+</div>
+<div id="pdf">
+
+</div>
+<div id="csv">
+
+</div>
+<div>
+
+    <button onclick="tableTest()">이벤트 테스트 BTN</button>
+</div>
+<div id="loading">
+
+</div>
+
+<div id="complete">
+
+</div>
+
+<div id="pivot-table">
+    <!--<table id="pivotTables"></table>-->
+</div>
+<script src="{{ url_for('static', filename='js/hms_new/situation/area.js') }}?version=0.0.2"></script>
+<script>
+    let testArr = [1, 4, 7, 10];
+    let data = 3;
+
+    // console.log('{{ url_for("common.get_law_area_ko_names") }}');
+    // console.log('{{ url_for("situation.get_categorys") }}');
+
+    // let situationArea = new area();
+    // let testColumn = {"cols": ["sid_ko_nm", "sgg_ko_nm", "201605", "201606", "201607", "201608", "201609", "201610", "201611", "201612", "201701", "201702", "201703", "201704", "201705"], "rows": [{"201605": null, "201606": 2248, "201607": null, "201608": 1140, "201609": null, "201610": 1, "201611": null, "201612": 864, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "서대문구                ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": 1053, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "동대문구                ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": 80, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": 252, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "도봉구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "성동구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "광진구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": 1310, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "관악구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": 464, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "종로구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": 657, "201612": null, "201701": 110, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "용산구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": 738, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "영등포구                ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": 534, "201607": 1340, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": 40, "201702": null, "201703": null, "201704": 626, "201705": null, "sgg_ko_nm": "강동구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": 20, "201606": null, "201607": null, "201608": 345, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "강남구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "중구                  ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": 1296, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "금천구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": 816, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": 712, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "양천구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": 24, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "노원구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": 1700, "201607": 1215, "201608": null, "201609": null, "201610": null, "201611": null, "201612": 2248, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "동작구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": 666, "201606": null, "201607": null, "201608": null, "201609": null, "201610": 3500, "201611": null, "201612": 1848, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "성북구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": 1872, "201704": null, "201705": null, "sgg_ko_nm": "강북구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": 75, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "중랑구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": 180, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": 822, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "강서구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": 876, "201607": null, "201608": 20, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": 1380, "201704": null, "201705": null, "sgg_ko_nm": "은평구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": 30, "201606": null, "201607": null, "201608": null, "201609": null, "201610": 436, "201611": null, "201612": 292, "201701": 288, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "서초구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": null, "201611": null, "201612": null, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "구로구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": 538, "201610": null, "201611": null, "201612": 276, "201701": 332, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "송파구                 ", "sid_ko_nm": "서울특별시               "}, {"201605": null, "201606": null, "201607": null, "201608": null, "201609": null, "201610": 2878, "201611": null, "201612": 2403, "201701": null, "201702": null, "201703": null, "201704": null, "201705": null, "sgg_ko_nm": "마포구                 ", "sid_ko_nm": "서울특별시               "}]};
+    // let hmsTable = new HmsSituationTable(testColumn, 'test');
+    // //
+    // let exceptions = {
+    //     'sid_ko_nm': '시도',
+    //     'sgg_ko_nm': '시군구',
+    //     'emd_ko_nm': '시도'
+    // };
+    // console.log(hmsTable.parseColNames(exceptions));
+    // console.log(hmsTable.parseColModel(exceptions));
+    // // let tableConfig = hmsTable.getTableConfig();
+    // // tableConfig.colNames = hmsTable.parseColNames(exceptions);
+    // //
+    // // hmsTable.setTableConfig(tableConfig);
+    // // console.log(hmsTable.getTableConfig());
+
+
+    function getDecimalCount(number) {
+        number = parseFloat(number);
+
+        let decimalIdx = String(number).indexOf('.');
+        if (decimalIdx !== -1) {
+            return String(number).substring(decimalIdx + 1, String(number).length).length
+        } else {
+            return 0;
+        }
+    }
+
+    console.log(getDecimalCount(123));
+    console.log(getDecimalCount(123.0123));
+    console.log(getDecimalCount(123.0123123));
+    console.log(getDecimalCount(123.0000));
+
+
+    function tableTest() {
+        let tableId = 'pivotTables';
+        let hmsTable;
+        $.ajax({
+            method: 'POST',
+            url: '{{ url_for("situation.srch_supply_present") }}',
+            data: 'sid_cd=11&sp_type=1&sp_sexarea=0&sp_eexarea=500&sp_syear=2016&sp_smonth=05&sp_eyear=2017&sp_emonth=05&req_type=grid',
+            dataType: 'json'
+        }).done(function (data) {
+            $('#pivot-table').html("<table id='pivotTables'></table>");
+            hmsTable = new HmsSituationTable('pivot-table', data.cols, data.rows, '분양현황')
+        }).complete(function () {
+            hmsTable.setTableData();
+            hmsTable.addDownload('button', 'btn-download', 'excel');
+            hmsTable.addDownload('pdf', 'pdf-download', 'pdf');
+            hmsTable.addDownload('csv', 'csv-download', 'csv');
+            hmsTable.addTimeseries('timeSeries');
+
+            $("#pivotTables").jqGrid().trigger('reloadGrid');
+
+            testTimeSeries('timeSeries', hmsTable);
+        })
+    }
+
+    tableTest();
+
+    testTimeSeries('timeSeries');
+
+    function testTimeSeries(targetId, tableObject) {
+        let CONFIG = [
+            {
+                "value": "yearly",
+                "text": "년 별",
+                "checked": false,
+                "standard": [1]
+            },
+            {
+                "value": "halfly",
+                "text": "반기 별",
+                "checked": false,
+                "standard": [1, 6]
+            },
+            {
+                "value": "quarterly",
+                "text": "분기 별",
+                "checked": false,
+                "standard": [1, 4, 7, 10]
+            },
+            {
+                "value": "monthly",
+                "text": "월 별",
+                "checked": true,
+                "standard": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            }
+        ];
+
+        let inputName = 'table-time-series';
+        let forLength = CONFIG.length;
+        let targetHtml = '<div class="form-group>';
+        for (let i = 0; i < forLength; i++) {
+            let item = CONFIG[i];
+
+            if (item.checked) {
+                targetHtml += `<label class="radio-inline"><input type="radio" name="${inputName}" value="${item.value}" checked="checked">${item.text}</label>`
+            } else {
+                targetHtml += `<label class="radio-inline"><input type="radio" name="${inputName}" value="${item.value}">${item.text}</label>`
+            }
+        }
+        targetHtml += '</div>';
+
+        $('#' + targetId).html(targetHtml);
+
+        $('input:radio[name="' + inputName + '"]').on('change', function () {
+
+            let targetValue = $(this).val();
+            let thisConfig = findByObjectByValue(targetValue);
+
+            // 데이터 파싱
+            let resetRows = [];
+            $.each(tableObject.rows, function (rowKey, rowValue) {
+                let tempObject = {};
+                $.each(rowValue, function (k, v) {
+                    if (isNaN(Number(k))) {
+                        tempObject[k] = v;
+                    } else {
+                        if ($.inArray(k % 100, thisConfig.standard) !== -1) {
+                            tempObject[k] = v;
+                        }
+                    }
+                });
+                resetRows.push(tempObject);
+            });
+
+            let resetCols = [];
+            $.each(tableObject.cols, function (colKey, colValue) {
+                if (isNaN(Number(colValue))) {
+                    resetCols.push(colValue);
+                } else {
+                    if ($.inArray(colValue % 100, thisConfig.standard) !== -1) {
+                        resetCols.push(colValue);
+                    }
+                }
+            });
+
+            $('#pivot-table').html("<table id='pivotTables'></table>");
+            let tempTable = new HmsSituationTable(tableObject.id, resetCols, resetRows, tableObject.title);
+
+            tempTable.setTableData();
+        });
+
+        function findByObjectByValue(value) {
+            for (let i = 0; i < forLength; i++) {
+                if (CONFIG[i].value === value) return CONFIG[i]
+            }
+        }
+    }
+
+    function testForConnection() {
+        depth = "sid";
+        cd = "11";
+        let ret = [];
+
+        $.ajax({
+            method: 'POST',
+            // url: '/situation/get_categorys',
+            url: '/common/get_law_area_ko_names',
+            data: {[depth]: cd},
+            // async: true,
+            beforeSend: function (data) {
+                let $loading = $('#loading');
+                $loading.html("보냈다");
+            },
+            complete: function () {
+                alert('데이터 완료');
+            }
+        }).complete(function (result) {
+            // return data;
+        })
+
+    }
+
+
+</script>
+
+{% endblock %}

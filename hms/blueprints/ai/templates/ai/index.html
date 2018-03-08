@@ -1,0 +1,81 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Data settings{% endblock %}
+
+{% block body %}
+
+<div class="ui-layout-west">
+    <div class="col-md-2">
+        <h3><a href="#">가격추세</a></h3>
+        <div>
+            <form id="frm-west-0" class="form-horizontal">
+                <select id="sid_cd" name="sid_cd" class="selectpicker" title="지역" data-size="5"
+                        data-actions-box="true" data-width="auto" data-container="body">
+                    <option value="11" aria-checked="true" selected>서울시</option>
+                </select>
+            </form>
+        </div>
+        <iframe src="http://183.111.230.251:8888/">
+
+        </iframe>
+        <div class="form-group">
+            <select id="ps_syear" name="ps_syear" class="selectpicker" title="시작년" data-size="5"
+                    data-actions-box="true" data-width="auto" data-container="body">
+                <option value="2013" selected>2013</option>
+            </select>
+            <select id="ps_smonth" name="ps_smonth" class="selectpicker" title="시작월" data-size="5"
+                    data-actions-box="true" data-width="auto" data-container="body">
+                <option value="01" selected>01</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select id="ps_eyear" name="ps_eyear" class="selectpicker" title="종료년" data-size="5"
+                    data-actions-box="true" data-width="auto" data-container="body">
+                <option value="2017" selected>2017</option>
+            </select>
+            <select id="ps_emonth" name="ps_emonth" class="selectpicker" title="종료월" data-size="5"
+                    data-actions-box="true" data-width="auto" data-container="body">
+                <option value="10" selected>10</option>
+            </select>
+        </div>
+        <button id="btn-ps-search" class="btn btn-default pull-right" type="button">
+            검색
+        </button>
+    </div>
+    <div class="col-md-10">
+        <h3>인공지능 결과값 : </h3>
+        <input id="sale" type="radio" name="mp-trans-type" value="1" checked="checked"> 추세
+        <input id="rent" type="radio" name="mp-trans-type" value="2"> 미래 예측
+        <br>
+        <div id="dump_img1"  style="display: none">
+            <div class="text-center">
+                <h4>추세</h4>
+                <img src="{{url_for('static', filename='images/marker/flatStyle/1.png') }}">
+            </div>
+        </div>
+        <div id="dump_img2"  style="display: none">
+            <div class="text-center">
+                <h4>미래 예측</h4>
+                <img src="{{url_for('static', filename='images/marker/flatStyle/2.png') }}">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#btn-ps-search').button().on('click', function(){
+        $('#dump_img1').show();
+//        $('#dump_img2').show();
+    });
+
+    $('input:radio[name="mp-trans-type"]').change(
+        function () {
+            if ($(this).val() == '1') {
+                $('#dump_img1').css("display", "block");
+                $('#dump_img2').css("display", "none");
+            } else {
+                $('#dump_img1').css("display", "none");
+                $('#dump_img2').css("display", "block");
+            }
+        });
+</script>
+{% endblock %}

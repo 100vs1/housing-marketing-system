@@ -78,7 +78,7 @@ class ResourceMixin(object):
 
         # Remove 1 or more items from the list, this could be useful in spots
         # where you may want to protect the current user from deleting themself
-        # when bulk deleting user accounts.
+        # when models deleting user accounts.
         if omit_ids:
             ids = [id for id in ids if id not in omit_ids]
 

@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+
 from sqlalchemy import func, and_, or_, desc
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.sql import compiler
+
 from hms.extensions import db
 from hms.blueprints.common.models.code import Code
-from hms.blueprints.common.models.area import LawSidArea, LawSggArea, LawEmdArea
+from hms.blueprints.common.models.area import LawSidArea, LawSggArea, LawEmdArea, AdmSidArea, AdmSggArea, \
+    AdmEmdArea
 
 
 class PopltnStats(db.Model):
@@ -14,141 +19,249 @@ class PopltnStats(db.Model):
     DB에서는 연 단위로 테이블 파티셔닝하여 사용한다.
     """
     __bind_key__ = 'gisdb'
-    __tablename__ = 'popltn_stats'  # 인구통계
+    __tablename__ = 'popltn_stats_new'  # 인구통계
 
     id = db.Column(db.Integer, primary_key=True)  # 시퀀스아이디
 
     sid_cd = db.Column(db.String(2), nullable=False)  # 시도코드
     sgg_cd = db.Column(db.String(5), nullable=False)  # 시군구코드
     emd_cd = db.Column(db.String(10), nullable=False)  # 읍면동코드
-    srvy_yyyymm = db.Column(db.String(6), nullable=False)  # 조사년월(yyyymm)
+    yyyymm = db.Column(db.String(6), nullable=False)  # 조사년월(yyyymm)
     age_grp_cd = db.Column(db.String(20), nullable=False)  # 연령대코드
-    man_num = db.Column(db.Integer, nullable=False)  # 남자수
-    woman_num = db.Column(db.Integer, nullable=False)  # 여자수
+    # man_num = db.Column(db.Integer, nullable=False)  # 남자수
+    # woman_num = db.Column(db.Integer, nullable=False)  # 여자수
     total_num = db.Column(db.Integer, nullable=False)  # 전체수
 
     def __init__(self, **kwargs):
         # Call Flask-SQLAlchemy's constructor.
         super(PopltnStats, self).__init__(**kwargs)
 
-    # @classmethod
-    # def find_by_identity(cls, identity):
-    #
-    #     return PopltnStats.query. \
-    #         filter(PopltnStats.id == identity).first()
+    @classmethod
+    def find_by_filter_for_check(cls, sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm, ed_yyyymm):
+        result = db.session.query(
+                func.count(cls.emd_cd).label('data_count')
+            ).\
+            filter(or_(cls.sid_cd == sid_cd,
+                       cls.sgg_cd == sgg_cd,
+                       cls.emd_cd == emd_cd)). \
+            filter(cls.age_grp_cd.in_(age_grp_cds)). \
+            filter(and_(cls.yyyymm >= st_yyyymm,
+                        cls.yyyymm <= ed_yyyymm))
+
+        return result[0][0]
 
     @classmethod
     def find_by_filter_for_map(cls, sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
                                ed_yyyymm):
-        # 서브 쿼리
-        geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(LawSidArea.geom)).label('geojson')). \
-            filter(LawSidArea.sid_cd == cls.sid_cd).limit(1).label('geojson')
-        # print("+++++++++++++++++++++++++++++++++++++++++++++++++++");
-        # print(geojson);
-        # print("+++++++++++++++++++++++++++++++++++++++++++++++++++");
-        # if sid_cd is not None:
-        #     local_name = db.session.query(LawSidArea.sid_ko_nm).\
-        #         filter(LawSidArea.sid_cd == cls.sid_cd).limit(1).label('local_name')
-        # elif sgg_cd is not None:
-        #     local_name = db.session.query(LawSggArea.sgg_ko_nm). \
-        #         filter(LawSggArea.sgg_cd == cls.sgg_cd).limit(1).label('local_name')
-        # else:
-        #     local_name = db.session.query(LawEmdArea.emd_ko_nm). \
-        #         filter(LawEmdArea.emd_cd == cls.emd_cd).limit(1).label('local_name')
 
-        results = db.session.query(geojson,
+        if sid_cd is not None:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmSidArea.geom)).label('geojson')). \
+                filter(AdmSidArea.sid_cd == sid_cd).limit(1).label('geojson')
+        elif sgg_cd is not None:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmSggArea.geom)).label('geojson')). \
+                filter(AdmSggArea.sgg_cd == sgg_cd).limit(1).label('geojson')
+        else:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+                filter(AdmEmdArea.emd_cd == emd_cd).limit(1).label('geojson')
+
+        result = db.session.query(geojson,
                                    # local_name,
                                    func.sum(cls.total_num).label('total_num')). \
             filter(or_(cls.sid_cd == sid_cd,
                    cls.sgg_cd == sgg_cd,
                    cls.emd_cd == emd_cd)). \
             filter(cls.age_grp_cd.in_(age_grp_cds)). \
-            filter(cls.srvy_yyyymm == ed_yyyymm). \
-            group_by(cls.sid_cd)
-        print("*" * 100)
-        print(results)
-        print("*" * 100)
+            filter(and_(cls.yyyymm >= st_yyyymm,
+                        cls.yyyymm <= ed_yyyymm)). \
+            group_by(cls.yyyymm).\
+            order_by(desc(cls.yyyymm)).limit(1)
+        print(result.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
 
-        return results
+        return result
 
     @classmethod
     def find_by_filter_for_grid(cls, sid_cd, sgg_cd, emd_cd, age_grp_cds, st_yyyymm,
                                                   ed_yyyymm):
-        results = db.session.query(cls.srvy_yyyymm,
-                                   db.session.query(LawSidArea.sid_ko_nm).
+        return db.session.query(cls.yyyymm,
+                                   db.session.query(AdmSidArea.sid_ko_nm).
                                    filter(LawSidArea.sid_cd == cls.sid_cd).limit(1).label('sid'),
-                                   db.session.query(LawSggArea.sgg_ko_nm).
+                                   db.session.query(AdmSggArea.sgg_ko_nm).
                                    filter(LawSggArea.sgg_cd == cls.sgg_cd).limit(1).label('sgg'),
-                                   db.session.query(LawEmdArea.emd_ko_nm).
+                                   db.session.query(AdmEmdArea.emd_ko_nm).
                                    filter(LawEmdArea.emd_cd == cls.emd_cd).limit(1).label('emd'),
                                    db.session.query(Code.name).
                                    filter(and_(Code.code == cls.age_grp_cd,
                                                Code.group_code == 'age_grp')).limit(1).label('age_grp'),
-                                   cls.man_num,
-                                   cls.woman_num,
+                                   # cls.man_num,
+                                   # cls.woman_num,
                                    cls.total_num). \
             filter(or_(cls.sid_cd == sid_cd,
                        cls.sgg_cd == sgg_cd,
                        cls.emd_cd == emd_cd)). \
             filter(cls.age_grp_cd.in_(age_grp_cds)). \
-            filter(and_(cls.srvy_yyyymm >= st_yyyymm,
-                        cls.srvy_yyyymm <= ed_yyyymm)). \
-            order_by(desc(cls.srvy_yyyymm))
+            filter(and_(cls.yyyymm >= st_yyyymm,
+                        cls.yyyymm <= ed_yyyymm)). \
+            order_by(desc(cls.yyyymm))
 
-        print("*" * 100)
-        print(sid_cd)
-        print(sgg_cd)
-        print(emd_cd)
-        print(age_grp_cds)
-        print(st_yyyymm)
-        print(ed_yyyymm)
-        print(results)
-        print("*" * 100)
+    @classmethod
+    def find_by_filter_for_bubble(cls, sid_cd, sgg_cd, emd_cd, yyyymm, age_grp_cds):
+        geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')).\
+            filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
 
-        return results
+        # 코드 분류는 필요하나 가독성 때문에 어쩔 수 없이 이렇게 개발해둠 sqlAlchemy ORM의 단점
+        if sid_cd:
+            result = db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+                                      filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+                                      geojson,
+                                      func.sum(cls.total_num).label('total_sum')).\
+                filter(cls.sid_cd == sid_cd).\
+                filter(cls.age_grp_cd.in_(age_grp_cds)).\
+                filter(cls.yyyymm == yyyymm).\
+                group_by(cls.emd_cd)
 
-        # def select_all(cls, sid_cds, sgg_cds, emd_cds, age_grp_cds, syear, smonth, eyear, emonth):
-        #     sid_nm = db.session.query(LawSidArea.sid_ko_nm). \
-        #         filter(LawSidArea.sid_cd == cls.sid_cd). \
-        #         limit(1).label('area_nm')
-        #     sgg_nm = db.session.query(LawSggArea.sgg_ko_nm). \
-        #         filter(LawSggArea.sgg_cd == cls.sgg_cd). \
-        #         limit(1).label('area_nm')
-        #     emd_nm = db.session.query(LawEmdArea.emd_ko_nm). \
-        #         filter(LawEmdArea.emd_cd == cls.emd_cd). \
-        #         limit(1).label('area_nm')
-        #
-        #     sid_ps = db.session.query(sid_nm,
-        #                           func.sum(PopltnStats.man_num).label('man_sum'),
-        #                           func.sum(PopltnStats.woman_num).label('woman_sum'),
-        #                           func.sum(PopltnStats.total_num).label('total_sum')). \
-        #         filter(and_(PopltnStats.sid_cd.in_(sid_cds),
-        #                     PopltnStats.age_grp_cd.in_(age_grp_cds),
-        #                     PopltnStats.srvy_yyyymm >= (syear + smonth),
-        #                     PopltnStats.srvy_yyyymm <= (eyear + emonth))). \
-        #         group_by(PopltnStats.sid_cd). \
-        #         order_by(PopltnStats.sid_cd)
-        #
-        #     sgg_ps = db.session.query(sgg_nm,
-        #                           func.sum(PopltnStats.man_num).label('man_sum'),
-        #                           func.sum(PopltnStats.woman_num).label('woman_sum'),
-        #                           func.sum(PopltnStats.total_num).label('total_sum')). \
-        #         filter(and_(PopltnStats.sigu_cd.in_(sgg_cds),
-        #                     PopltnStats.age_grp_cd.in_(age_grp_cds),
-        #                     PopltnStats.srvy_yyyymm >= (syear + smonth),
-        #                     PopltnStats.srvy_yyyymm <= (eyear + emonth))). \
-        #         group_by(PopltnStats.sgg_cd). \
-        #         order_by(PopltnStats.sgg_cd)
-        #
-        #     emd_ps = db.session.query(emd_nm,
-        #                           func.sum(PopltnStats.man_num).label('man_sum'),
-        #                           func.sum(PopltnStats.woman_num).label('woman_sum'),
-        #                           func.sum(PopltnStats.total_num).label('total_sum')). \
-        #         filter(and_(PopltnStats.emd_cd.in_(emd_cds),
-        #                     PopltnStats.age_cd.in_(age_grp_cds),
-        #                     PopltnStats.srvy_yyyymm >= (syear + smonth),
-        #                     PopltnStats.srvy_yyyymm <= (eyear + emonth))). \
-        #         group_by(PopltnStats.emd_cd). \
-        #         order_by(PopltnStats.emd_cd)
-        #
-        #     return sid_ps.union_all(sgg_ps, emd_ps)
+        if sgg_cd:
+            result = db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+                                      filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+                                      geojson,
+                                      func.sum(cls.total_num).label('total_sum')). \
+                filter(cls.sgg_cd == sgg_cd). \
+                filter(cls.age_grp_cd.in_(age_grp_cds)). \
+                filter(cls.yyyymm == yyyymm). \
+                group_by(cls.emd_cd)
+
+        if emd_cd:
+            result = db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+                                      filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+                                      geojson,
+                                      func.sum(cls.total_num).label('total_sum')). \
+                filter(cls.emd_cd == emd_cd). \
+                filter(cls.age_grp_cd.in_(age_grp_cds)). \
+                filter(cls.yyyymm == yyyymm). \
+                group_by(cls.emd_cd)
+
+        print(result.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+
+        return result
+
+    # @classmethod
+    # def find_by_filter_for_bubble(cls, sid_cd, sgg_cd, emd_cd, st_yyyymm, ed_yyyymm, age_grp_cds):
+    #     target_yyyymm = db.session.query(cls.yyyymm). \
+    #         filter(and_(cls.yyyymm >= st_yyyymm,
+    #                     cls.yyyymm <= ed_yyyymm)).\
+    #         order_by(desc(cls.yyyymm)).limit(1)
+    #
+    #     if sid_cd:
+    #         geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')).\
+    #             filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
+    #
+    #         result = db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+    #                                    filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+    #                                    geojson,
+    #                                    func.sum(cls.total_num).label('total_sum')). \
+    #             filter(cls.sid_cd == sid_cd). \
+    #             filter(cls.age_grp_cd.in_(age_grp_cds)).\
+    #             filter(cls.yyyymm == target_yyyymm).\
+    #             group_by(cls.emd_cd)
+    #
+    #         print(result.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+    #
+    #         return result
+    #
+    #     if sgg_cd:
+    #         geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+    #             filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
+    #         return db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+    #                                    filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+    #                                    geojson,
+    #                                    func.sum(cls.total_num).label('total_sum')). \
+    #             filter(cls.sgg_cd == sgg_cd). \
+    #             filter(cls.age_grp_cd.in_(age_grp_cds)). \
+    #             filter(cls.yyyymm == target_yyyymm). \
+    #             group_by(cls.emd_cd)
+    #
+    #     if emd_cd:
+    #         geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+    #             filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
+    #
+    #         return db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+    #                                    filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+    #                                    geojson,
+    #                                    func.sum(cls.total_num).label('total_sum')). \
+    #             filter(cls.emd_cd == emd_cd). \
+    #             filter(cls.age_grp_cd.in_(age_grp_cds)). \
+    #             filter(and_(cls.yyyymm >= st_yyyymm,
+    #                         cls.yyyymm <= ed_yyyymm)). \
+    #             group_by(cls.emd_cd)
+
+    @classmethod
+    def find_by_filter_for_bubbleF(cls, sid_cd, sgg_cd, emd_cd, st_yyyymm, ed_yyyymm, age_grp_cds):
+        target_yyyymm = db.session.query(cls.yyyymm). \
+            filter(and_(cls.yyyymm >= st_yyyymm,
+                        cls.yyyymm <= ed_yyyymm)). \
+            order_by(desc(cls.yyyymm)).limit(1)
+
+        if sid_cd:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+                filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
+
+            return db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+                                    filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+                                    geojson,
+                                    func.sum(cls.total_num).label('total_sum')). \
+                filter(cls.sid_cd == sid_cd). \
+                filter(cls.age_grp_cd.in_(age_grp_cds)). \
+                filter(cls.yyyymm == target_yyyymm). \
+                group_by(cls.emd_cd)
+
+        if sgg_cd:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+                filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
+            return db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+                                    filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+                                    geojson,
+                                    func.sum(cls.total_num).label('total_sum')). \
+                filter(cls.sgg_cd == sgg_cd). \
+                filter(cls.age_grp_cd.in_(age_grp_cds)). \
+                filter(cls.yyyymm == target_yyyymm). \
+                group_by(cls.emd_cd)
+
+        if emd_cd:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+                filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
+
+            return db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+                                    filter(AdmEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+                                    geojson,
+                                    func.sum(cls.total_num).label('total_sum')). \
+                filter(cls.emd_cd == emd_cd). \
+                filter(cls.age_grp_cd.in_(age_grp_cds)). \
+                filter(and_(cls.yyyymm >= st_yyyymm,
+                            cls.yyyymm <= ed_yyyymm)). \
+                group_by(cls.emd_cd)
+
+    @classmethod
+    def find_summary_by_geom(cls, geom):
+        target_yyyymm = db.session.query(func.max(cls.yyyymm)).limit(1)
+
+        target_emd = AdmEmdArea.find_emd_cds_by_geom(geom)
+
+        target_emd_kor_nm = AdmEmdArea.find_emd_kor_nms_by_geom(geom)
+
+        target_emd_kor_str = ''
+        for item in target_emd_kor_nm:
+            # target_emd_kor_str.append(item[0]);
+            target_emd_kor_str += item[0] + ','
+            # print(item[0])
+        # print(target_emd_kor_str)
+
+        popltn_sum = db.session.query(func.sum(cls.total_num)).\
+            filter(cls.emd_cd.in_(target_emd)).\
+            filter(cls.yyyymm == target_yyyymm).limit(1)
+
+        return {
+            'target_emd': target_emd_kor_nm,
+            'ps_yyyymm': target_yyyymm,
+            'popltn_sum': popltn_sum
+        }
+
+

@@ -1,3 +1,4 @@
+requests
 Flask==0.10.1
 
 # Application server for both development and production.
@@ -36,3 +37,6 @@ Flask-Mail==0.9.1
 Flask-Login==0.3.2
 Flask-Limiter==0.9.3
 Flask-Babel==0.9
+
+# DB Connector
+presto-python-client==0.4.1

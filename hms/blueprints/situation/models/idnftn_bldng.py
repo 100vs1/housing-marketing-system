@@ -1,190 +1,169 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-from sqlalchemy import func, and_, or_, desc
+
+from geoalchemy2 import Geometry
+from sqlalchemy import func, and_, or_, desc, asc, collate
+from sqlalchemy.dialects import postgresql
+
 from hms.extensions import db
-from hms.blueprints.common.models.code import Code
 from hms.blueprints.common.models.area import LawSidArea, LawSggArea, LawEmdArea
 
 
 class IdnftnBldng(db.Model):
     """
-    건물현황 모델 정의 클래스
-    건물현황 메뉴에서 사용하며
+    입주물량 모델 정의 클래스
+    입주물량 메뉴에서 사용하며
     해마다 대량으로 적재를 하기 때문에
     DB에서는 연 단위로 테이블 파티셔닝하여 사용한다.
     """
     __bind_key__ = 'gisdb'
-    # __table_name__ = 'idnftn_bldng'     # 건물현황
-    __tablename__ = 'pyoje_geo'  # 건물현황 임시
+    __tablename__ = 'idntfn_bldng'
 
-    # id = db.Column(db.Integer, primary_key=True)    # 시퀀스 아이디
-    #
-    # sid_cd = db.Column(db.String(2), nullable=True)         # 시도코드
-    # sgg_cd = db.Column(db.String(5), nullable=True)         # 시군구코드
-    # emd_cd = db.Column(db.String(10), nullable=True)        # 읍면동코드
-    # main_num = db.Column(db.Integer, nullable=True)         # 본번
-    # sub_num = db.Column(db.Integer, nullable=True)          # 부번
-    # prcl_addrs = db.Column(db.String(120), nullable=True)   # 지번주소
-    # road_addrs = db.Column(db.String(120), nullable=False)  # 도로명주소
-    # bldng_nm = db.Column(db.String(80), nullable=False)     # 건축물명
-    # block_nm = db.Column(db.String(60), nullable=False)     # 동명
-    # bldng_clsftn = db.Column(db.String(20), nullable=False) # 건축물분류
-    # land_area = db.Column(db.Float, nullable=False)         # 대지면적
-    # bldng_area = db.Column(db.Float, nullable=False)        # 건축면적
-    # bldng_covrg_rto = db.Column(db.Float, nullable=False)   # 건폐율
-    # exclsv_area = db.Column(db.Float, nullable=False)       # 연면적(전용면적)
-    # floor_exclsv_area = db.Column(db.Float, nullable=False) # 용적률산정연면적
-    # floor_area_rto = db.Column(db.Float, nullable=False)    # 용적률
-    # main_strctr = db.Column(db.String(30), nullable=False)  # 주요구조
-    # etc_strctr = db.Column(db.String(160), nullable=False)  # 기타구조
-    # main_use = db.Column(db.String(25), nullable=False)     # 주요용도
-    # etc_use = db.Column(db.String(150), nullable=False)     # 기타용도
-    # main_roof = db.Column(db.String(30), nullable=False)    # 주요지붕
-    # etc_roof = db.Column(db.String(250), nullable=False)    # 기타지붕
-    # fmly_num = db.Column(db.Integer, nullable=False)        # 세대수
-    # house_num = db.Column(db.Integer, nullable=False)       # 가구수
-    # bldng_height = db.Column(db.Integer, nullable=False)    # 건물높이
-    # grnd_floor_num = db.Column(db.Integer, nullable=False)  # 지상층수
-    # bsmt_floor_num = db.Column(db.Integer, nullable=False)  # 지하층수
-    # elevtr_num = db.Column(db.Integer, nullable=False)      # 승강기수
-    # emrg_elevtr_num = db.Column(db.Integer, nullable=False) # 비상용승강기수
-    # sub_bldng_num = db.Column(db.Integer, nullable=False)   # 부속건축물수
-    # total_block_area = db.Column(db.Float, nullable=False)  # 총동연면적
-    # indr_mecha_num = db.Column(db.Integer, nullable=False)  # 옥내기계식대수
-    # outdr_mecha_num = db.Column(db.Integer, nullable=False) # 옥외기계식대수
-    # indr_self_num = db.Column(db.Integer, nullable=False)   # 옥내자주식대수
-    # outdr_self_num = db.Column(db.Integer, nullable=False)  # 옥외자주식대수
-    # cnstrtn_permsn_dt = db.Column(db.String(8), nullable=False) # 건축허가년월일(yyyymmdd)
-    # begin_cnstrtn_dt = db.Column(db.String(8), nullable=False)  # 착공년월일(yyyymmdd)
-    # use_permsn_dt = db.Column(db.String(8), nullable=False)     # 사용승인년월일(yyyymmdd)
-    # permsn_year = db.Column(db.String(4), nullable=False)       # 허가연도
-    # total_house_num = db.Column(db.Integer, nullable=False)     # 총호수
-    # enrgy_efcncy_grade = db.Column(db.String(5), nullable=False)# 에너지효율등급
-    # enrgy_savng_rate = db.Column(db.Float, nullable=False)      # 에너지절감률
-    # epi_score = db.Column(db.Integer, nullable=False)           # 에너지성능지표점수
-    # eco_bldng_grade = db.Column(db.String(5), nullable=False)   # 친환경건축물등급
-    # eco_bldng_crtscr = db.Column(db.Integer, nullable=False)    # 친환경건축물인증점수
-    # int_bldng_grade = db.Column(db.String(5), nullable=False)   # 지능형건축물등급
-    # int_bldng_crtscr = db.Column(db.Integer, nullable=False)    # 지능형건축물인증점수
-    # srvy_dt = db.Column(db.String(8), nullable=True)            # 조사년월일(yyyymmdd)
+    id = db.Column(db.Integer, db.Sequence('idntfn_bldng_new_id_seq'), primary_key=True)
 
-    id = db.Column(db.Integer, primary_key=True)    # 시퀀스 아이디
-
-    address = db.Column(db.String, nullable=False)
-    sid_cd = db.Column(db.String, nullable=False)
-    sgg_cd = db.Column(db.String, nullable=False)
-    emd_cd = db.Column(db.String, nullable=False)
-    main_num = db.Column(db.Integer, nullable=False)
-    sub_num = db.Column(db.Integer, nullable=False)
-    prcl_addrs = db.Column(db.String, nullable=False)
-    road_addrs = db.Column(db.String)
-    bldng_nm = db.Column(db.String)
-    block_nm =  db.Column(db.String)
-    bldng_clsftn = db.Column(db.String)
-    land_area = db.Column(db.Float)
-    bldng_area = db.Column(db.Float)
-    bldng_covrg_rto = db.Column(db.Float)
-    exclsv_total_area = db.Column(db.Float)
-    floor_exclsv_area = db.Column(db.Float)
-    floor_area_rto = db.Column(db.Float)
-    main_strctr = db.Column(db.String)
-    etc_strctr = db.Column(db.String)
-    main_use = db.Column(db.String)
-    etc_use = db.Column(db.String)
-    main_roof = db.Column(db.String)
-    etc_roof = db.Column(db.String)
-    fmly_num =  db.Column(db.Integer)
-    house_num = db.Column(db.Integer)
-    bldng_height = db.Column(db.Integer)
-    grnd_floor_num = db.Column(db.Integer)
-    bsmt_floor_num = db.Column(db.Integer)
-    elevtr_num = db.Column(db.Integer)
-    emrg_elevtr_num = db.Column(db.Integer)
-    sub_bldng_num = db.Column(db.Integer)
-    total_block_area =db.Column(db.Float)
-    indr_mecha_num = db.Column(db.Integer)
-    outdr_mecha_num = db.Column(db.Integer)
-    indr_self_num = db.Column(db.Integer)
-    outdr_self_num = db.Column(db.Integer)
-    cnstrtn_permsn_dt = db.Column(db.String)
-    begin_cnstrtn_dt = db.Column(db.String)
-    use_permsn_dt = db.Column(db.String)
-    # permsn_year = db.Column(db.String)
-    # total_house_num = db.Column(db.Integer)
-    # enrgy_efcncy_grade = db.Column(db.String)
-    # enrgy_savng_rate = db.Column(db.Float)
-    # epi_score = db.Column(db.Integer)
-    # eco_bldng_grade = db.Column(db.String)
-    # eco_bldng_crtscr = db.Column(db.Integer)
-    # int_bldng_grade = db.Column(db.String)
-    # int_bldng_crtscr =  db.Column(db.Integer)
-    srvy_dt = db.Column(db.String)
-    exclsv_area = db.Column(db.Float)
-    bldng_exclsv_sep = db.Column(db.String)
-    X = db.Column(db.Float)
-    Y = db.Column(db.Float)
+    geom = db.Column(Geometry(geometry_type='POINT', srid=4326))
+    sid_cd = db.Column(db.String(2))
+    sgg_cd = db.Column(db.String(5))
+    emd_cd = db.Column(db.String(10))
+    area_location_kor = db.Column(db.String(80))
+    manage_building_paper = db.Column(db.String(16))
+    area_location_road_kor = db.Column(db.String(100))
+    building_kor = db.Column(db.String(80))
+    dong_kor = db.Column(db.String(80))
+    ho_kor = db.Column(db.String(80))
+    area_wide = db.Column(db.Float())
+    build_wide = db.Column(db.Float())
+    building_exist = db.Column(db.Float())
+    total_area = db.Column(db.Float())
+    adjust_area_per = db.Column(db.Float())
+    area_ratio = db.Column(db.Float())
+    main_build_code = db.Column(db.String(3))
+    count_family = db.Column(db.Integer())
+    count_house = db.Column(db.Integer())
+    a_floor = db.Column(db.String(10))
+    b_floor = db.Column(db.String(10))
+    total_building_area = db.Column(db.Float())
+    date_permission = db.Column(db.String(10))
+    date_build = db.Column(db.String(16))
+    permission_using_date = db.Column(db.String(16))
+    year_permission = db.Column(db.String(6))
+    house_in_building = db.Column(db.String(20))
+    parking_sum = db.Column(db.Integer())
+    ex_use = db.Column(db.String(80))
+    main_use_code = db.Column(db.String(5))
+    main_use_name = db.Column(db.String(80))
+    height = db.Column(db.Integer())
+    cnstrtn_area = db.Column(db.Float())
+    house_clsftn_code = db.Column(db.String(1))
+    house_count = db.Column(db.Integer())
+    house_count_per_exclsv = db.Column(db.Integer())
+    exclsv_area = db.Column(db.Float())
+    latitude = db.Column(db.Float())
+    longitude = db.Column(db.Float())
 
     def __init__(self, **kwargs):
         super(IdnftnBldng, self).__init__(**kwargs)
 
     @classmethod
-    def find_by_filter_for_map(cls, sid_cd, sgg_cd, emd_cd, ib_use, ib_common,
-                               ib_sarea, ib_sexarea, ib_earea, ib_eexarea, ib_sdec,
-                               ib_sdecrepit, ib_edec, ib_edecrepit, st_yyyymm, ed_yyyymm):
+    def find_by_filter_for_check(cls, sid_cd, sgg_cd, emd_cd,
+                                 ib_house_kind, ib_sexarea, ib_eexarea,
+                                 ib_syyyymm, ib_eyyyymm):
 
-        # results = db.session.query(
-        #     cls.main_num, cls.sid_cd, cls.sgg_cd, cls.emd_cd, cls.x, cls.y).\
-        #     filter(or_(cls.sid_cd == sid_cd,
-        #                cls.sgg_cd == sgg_cd,
-        #                cls.emd_cd == emd_cd)).\
-        #     filter(cls.ib_use.in_(ib_use)).\
-        #     filter(cls.ib_common.in_(ib_common)).\
-        #     filter(and_(cls.exclsv_area >= ib_sexarea,
-        #            cls.exclsv_area <= ib_eexarea)).\
-        #     filter(and_(cls.srvy_dt >= st_yyyymm,
-        #            cls.srvy_dt <= ed_yyyymm))
-
-        results = db.session.query(
-            cls.main_num, cls.sid_cd, cls.sgg_cd, cls.emd_cd, cls.X, cls.Y).\
+        result = db.session.query(
+            cls.emd_cd
+        ). \
             filter(or_(cls.sid_cd == sid_cd,
                        cls.sgg_cd == sgg_cd,
-                       cls.emd_cd == emd_cd)).\
-            filter(cls.main_use.in_(ib_use)).\
-            filter(cls.bldng_exclsv_sep.in_(ib_common)).\
+                       cls.emd_cd == emd_cd)). \
+            filter(cls.house_clsftn_code == ib_house_kind). \
             filter(and_(cls.exclsv_area >= ib_sexarea,
-                   cls.exclsv_area <= ib_eexarea)).\
-            filter(and_(cls.srvy_dt >= st_yyyymm,
-                   cls.srvy_dt <= ed_yyyymm))
+                        cls.exclsv_area <= ib_eexarea)). \
+            filter(and_(cls.year_permission >= ib_syyyymm,
+                        cls.year_permission <= ib_eyyyymm)). \
+            filter(cls.geom is not None).limit(1).first()
 
-        return results
+        return result is not None
 
     @classmethod
-    def find_by_filter_for_grid(cls, sid_cd, sgg_cd, emd_cd, ib_use, ib_common,
-                               ib_sarea, ib_sexarea, ib_earea, ib_eexarea, ib_sdec,
-                               ib_sdecrepit, ib_edec, ib_edecrepit, st_yyyymm, ed_yyyymm):
+    def find_by_filter_for_list(cls, sid_cd, sgg_cd, emd_cd,
+                                ib_house_kind, ib_sexarea, ib_eexarea,
+                                ib_syyyymm, ib_eyyyymm):
 
-        # results = db.session.query(
-        #     cls.main_num, cls.sid_cd, cls.sgg_cd, cls.emd_cd, cls.prcl_addrs, cls.road_addrs).\
-        #     filter(or_(cls.sid_cd == sid_cd,
-        #                cls.sgg_cd == sgg_cd,
-        #                cls.emd_cd == emd_cd)).\
-        #     filter(cls.ib_use.in_(ib_use)).\
-        #     filter(cls.ib_common.in_(ib_common)).\
-        #     filter(and_(cls.exclsv_area >= ib_sexarea,
-        #            cls.exclsv_area <= ib_eexarea)).\
-        #     filter(and_(cls.srvy_dt >= st_yyyymm,
-        #            cls.srvy_dt <= ed_yyyymm))
-
-        results = db.session.query(
-            cls.main_num, cls.sid_cd, cls.sgg_cd, cls.emd_cd, cls.prcl_addrs, cls.road_addrs).\
+        result = db.session.query(
+            func.ST_asGeoJSON(cls.geom).label('geojson'),
+            cls.area_location_kor,
+            cls.building_kor
+        ).\
             filter(or_(cls.sid_cd == sid_cd,
                        cls.sgg_cd == sgg_cd,
                        cls.emd_cd == emd_cd)).\
-            filter(cls.main_use.in_(ib_use)).\
-            filter(cls.bldng_exclsv_sep.in_(ib_common)).\
+            filter(cls.house_clsftn_code == ib_house_kind).\
             filter(and_(cls.exclsv_area >= ib_sexarea,
-                   cls.exclsv_area <= ib_eexarea)).\
-            filter(and_(cls.srvy_dt >= st_yyyymm,
-                   cls.srvy_dt <= ed_yyyymm))
+                        cls.exclsv_area <= ib_eexarea)).\
+            filter(and_(cls.year_permission >= ib_syyyymm,
+                        cls.year_permission <= ib_eyyyymm)).\
+            filter(cls.geom is not None).\
+            group_by('geojson', cls.area_location_kor, cls.building_kor).\
+            order_by(asc(collate(cls.building_kor, 'C')))
 
-        return results
+        print(result.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+        return result
+
+    @classmethod
+    def find_by_filter_for_map(cls, sid_cd, sgg_cd, emd_cd,
+                               ib_house_kind, ib_sexarea, ib_eexarea,
+                               ib_syyyymm, ib_eyyyymm):
+        result = db.session.query(
+            func.ST_asGeoJSON(cls.geom).label('geojson'),
+            cls.exclsv_area,
+            cls.count_family,
+            cls.area_location_kor,
+            cls.building_kor,
+            cls.area_wide,
+            cls.build_wide,
+            cls.building_exist,
+            cls.area_ratio,
+            cls.a_floor,
+            cls.b_floor,
+            cls.year_permission,
+            cls.parking_sum,
+            cls.height
+        ). \
+            filter(or_(cls.sid_cd == sid_cd,
+                       cls.sgg_cd == sgg_cd,
+                       cls.emd_cd == emd_cd)). \
+            filter(cls.house_clsftn_code == ib_house_kind). \
+            filter(and_(cls.exclsv_area >= ib_sexarea,
+                        cls.exclsv_area <= ib_eexarea)). \
+            filter(and_(cls.year_permission >= ib_syyyymm,
+                        cls.year_permission <= ib_eyyyymm)). \
+            filter(cls.geom is not None). \
+            order_by(asc(collate(cls.building_kor, 'C')))
+
+        return result
+
+    @classmethod
+    def find_by_filter_for_bubble(cls, sid_cd, sgg_cd, emd_cd,
+                                  ib_house_kind, ib_sexarea, ib_eexarea,
+                                  ib_syyyymm, ib_eyyyymm):
+        geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(LawEmdArea.geom)).label('geojson')). \
+            filter(LawEmdArea.emd_cd == cls.emd_cd).limit(1).label('geojson')
+
+        result = db.session.query(
+            db.session.query(LawEmdArea.emd_ko_nm).filter(LawEmdArea.emd_cd == cls.emd_cd).limit(1).label('area_ko_nm'),
+            geojson,
+            func.count(cls.count_family).label('total_sum')
+        ).filter(or_(cls.sid_cd == sid_cd,
+                     cls.sgg_cd == sgg_cd,
+                     cls.emd_cd == emd_cd)). \
+            filter(cls.house_clsftn_code == ib_house_kind). \
+            filter(and_(cls.exclsv_area >= ib_sexarea,
+                        cls.exclsv_area <= ib_eexarea)). \
+            filter(cls.year_permission == ib_eyyyymm). \
+            filter(cls.year_permission is not None). \
+            filter(cls.geom is not None).\
+            group_by(cls.emd_cd)
+
+        print(result.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+
+        return result

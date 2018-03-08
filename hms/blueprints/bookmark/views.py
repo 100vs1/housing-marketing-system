@@ -2,6 +2,7 @@
 from flask import Blueprint, request, jsonify, json
 from flask_login import current_user, login_required
 from sqlalchemy import text
+from sqlalchemy.dialects import postgresql
 
 from lib.util_json import render_json
 from hms.blueprints.bookmark.models import Bookmark
@@ -16,9 +17,17 @@ def before_request():
 
 
 @bookmark.route('', methods=['GET', 'POST'])
-def bookmarks():
+def select_bookmark():
+    page = int(request.form.get('bookmark_page'))
+    if page is None:
+        page = 1
+
+    per_page = 10
+
     recent_bookmarks = Bookmark.query.filter(Bookmark.user_id == current_user.id) \
-        .order_by(Bookmark.created_on.desc()).limit(20)
+        .order_by(Bookmark.created_on.desc()).limit(per_page).offset((page - 1) * per_page)
+
+    # print(recent_bookmarks.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
 
     items = [{
         'id': bookmark.id,

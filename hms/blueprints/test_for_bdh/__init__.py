@@ -1,0 +1,1 @@
+from hms.blueprints.test_for_bdh.views import test

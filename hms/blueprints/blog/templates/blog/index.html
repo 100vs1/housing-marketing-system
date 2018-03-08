@@ -5,59 +5,69 @@
 {% block title %}블로그 / 목록{% endblock %}
 
 {% block body %}
-  {{ f.search('blog.posts') }}
+{{ f.search('blog.posts') }}
 
-  {% if posts.total == 0 %}
-    <h3>조회된 게시물이 없습니다.</h3>
-    {% if request.args.get('q') %}
-      <p>검색어를 재입력 또는 제거 후 다시 시도해주세요.</p>
-    {% else %}
-      <p>아직 올라 온 글이 없네요. <a href="{{ url_for('blog.posts_new') }}">최초로 등록하기</a>.</p>
-    {% endif %}
-  {% else %}
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th class="col-header">
-              {{ items.sort('created_on', '등록일') }}
-            </th>
-            <th class="col-header">
-              {{ items.sort('title', '제목') }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for post in posts.items %}
-          <tr>
-            <td>
-              <time class="from-now"
-                    data-datetime="{{ post.created_on }}">
+{% if posts.total == 0 %}
+<h3>조회된 게시물이 없습니다.</h3>
+{% if request.args.get('q') %}
+<p>검색어를 재입력 또는 제거 후 다시 시도해주세요.</p>
+{% else %}
+<p>아직 올라 온 글이 없네요. <a href="{{ url_for('blog.posts_new') }}">최초로 등록하기</a>.</p>
+{% endif %}
+{% else %}
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th class="col-header">
+            {{ items.sort('created_on', '등록일') }}
+        </th>
+        <th class="col-header">
+            {{ items.sort('title', '제목') }}
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for post in posts.items %}
+    <tr>
+        <td>
+            <time class="from-now"
+                  data-datetime="{{ post.created_on }}">
                 {{ post.created_on }}
-              </time>
-            </td>
-            <td>
-              <a href="{{ url_for('blog.posts_edit', id=post.id) }}">
+            </time>
+        </td>
+        <td>
+            <a href="{{ url_for('blog.posts_edit', id=post.id) }}">
                 <h4 class="media-heading">{{ post.title }}</h4>
-              </a>
-              <p class="text-muted">{{ post.body|safe }}</p>
-              <a href="{{ url_for('blog.posts_delete', id=post.id) }}" title="삭제하기">X</a>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+            </a>
+            <p class="text-muted">{{ post.body|safe }}</p>
+            <a href="{{ url_for('blog.posts_delete', id=post.id) }}" title="삭제하기">X</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
-      <hr/>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="visible-xs visible-sm sm-margin-top"></div>
-          <a href="{{ url_for('blog.posts_new') }}"
-              class="btn btn-primary btn-block">
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4 text-center">
+        {{ items.paginate(posts) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-5">
+    </div>
+    <div class="col-md-2" align="center">
+        <div class="visible-xs visible-sm sm-margin-top"></div>
+        <a href="{{ url_for('blog.posts_new') }}"
+           class="btn btn-primary btn-block">
             등록하기
-          </a>
-        </div>
-      </div>
+        </a>
+    </div>
+</div>
 
-    {{ items.paginate(posts) }}
-  {% endif %}
+
+{% endif %}
 {% endblock %}

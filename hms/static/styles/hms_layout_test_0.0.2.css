@@ -1,0 +1,369 @@
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+	padding-top: 50px;
+	padding-bottom: 20px;
+	/*margin-bottom: 60px;*/
+}
+
+body, table, a, input, select, textarea{
+	font-family: "NanumGothic";
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-top: 10px;
+  border-top: 1px solid #e9e9e9;
+  height: 60px;
+}
+
+/* Margin and padding
+-------------------------------------------------- */
+.lg-margin-bottom {
+  margin-bottom: 60px;
+}
+
+.md-margin-bottom {
+  margin-bottom: 40px;
+}
+
+.sm-margin-bottom {
+  margin-top: 20px;
+}
+
+.lg-margin-top {
+  margin-top: 60px;
+}
+
+.md-margin-top {
+  margin-top: 40px;
+}
+
+.sm-margin-top {
+  margin-top: 20px;
+}
+
+/* Helpers
+-------------------------------------------------- */
+
+.small {
+  font-size: 12px;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+.spinner {
+  display: none;
+}
+
+.scale-up {
+  transform: scale(1.05);
+}
+
+.quarter-faded {
+  opacity: 0.75;
+}
+
+.half-faded {
+  opacity: 0.5;
+}
+
+.relative {
+  position: relative;
+}
+
+/* Bootstrap overrides
+-------------------------------------------------- */
+label {
+  font-weight: 400;
+}
+
+.checkbox input[type='checkbox'], .checkbox-inline input[type='checkbox'] {
+  margin-left: 0;
+}
+
+.alert-small {
+  padding: 5px;
+  margin-bottom: 0;
+}
+
+.alert-error, .alert-message {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+.alert-error hr, .alert-message hr {
+  border-top-color: #e4b9c0;
+}
+
+.alert-error .alert-link, .alert-message .alert-link {
+  color: #843534;
+}
+
+.col-header {
+  height: 26px;
+}
+
+dd {
+  margin-bottom: 8px;
+}
+
+/* Admin dashboard
+-------------------------------------------------- */
+#bulk_actions {
+  display: none;
+  padding-bottom: 8px;
+}
+
+#scope {
+  margin-bottom: 0;
+  width: 160px;
+  height: 29px;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.sort:after {
+  content: '\f0dc';
+  font-family: FontAwesome;
+  margin-left: 6px;
+  color: #BBB;
+}
+
+.asc:after {
+  content: '\f0dd';
+  font-family: FontAwesome;
+  margin-left: 6px;
+  color: #444;
+}
+
+.desc:after {
+  content: '\f0de';
+  font-family: FontAwesome;
+  margin-left: 6px;
+  color: #444;
+}
+
+#duration-in-months {
+  display: none;
+}
+
+.rd-date table td {
+  padding: 5px;
+}
+
+/* Billing
+-------------------------------------------------- */
+#coupon_code_status {
+  display: none;
+}
+
+.coupon-code {
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 2px dashed #e1e1e1;
+}
+
+.coupon-code input {
+  margin-bottom: 5px;
+}
+
+.payment-errors {
+  display: none;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.cc-details {
+  width: 75px;
+}
+
+a.pricing--primary {
+  color: #fff;
+}
+
+/* Bet
+-------------------------------------------------- */
+#dice {
+  font-size: 100px;
+}
+
+
+
+
+
+#map{
+	position: relative;
+	height: 100%;
+}
+
+.ui-layout-container{
+	position: relative;
+	width: 100%;
+	height: 95%;
+	overflow: hidden;
+}
+
+
+/* bootstrap primary color */
+.active.list-group-item,
+.active.list-group-item:hover,
+.active.list-group-item:focus{
+	border-color: #39989C;
+	background-color: #39989C;
+}
+.ui-widget-content{
+	background: #F8F8F8;
+	border-color: #39989C;
+}
+
+
+/* 섹션박스 타이틀 */
+.ui-state-default{
+	background: #EAF5F5;
+	border-color: #EAF5F5;
+}
+.ui-state-default:hover{
+	background: #C5E9E9;
+	border-color: #39989C;
+}
+.ui-state-active,
+.ui-state-active:hover,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active,
+.panel-default > .panel-heading{
+	background: #39989C;
+	border-color: #39989C;
+	color: #FFF;
+}
+.ui-state-active a,
+.ui-state-active a:link,
+.ui-state-active a:visited{
+	font-weight: bold;
+	color: #FFF;
+}
+
+
+.ui-layout-resizer{
+	overflow: visible !important;
+}
+
+.ui-layout-toggler-west{
+	width: 12px !important;
+	border-width: 1px 1px 1px 0;
+}
+.ui-layout-toggler-west-open{
+	left: -1px !important;
+	background: #FFF url("../images/arrow_left.png") no-repeat center center;
+}
+.ui-layout-toggler-west-closed{
+	background: #FFF url("../images/arrow_right.png") no-repeat center center;
+}
+
+.ui-layout-toggler-east{
+	left: -11px !important;
+	width: 12px !important;
+	border-width: 1px 0 1px 1px;
+}
+.ui-layout-toggler-east-open{
+	background: #FFF url("../images/arrow_right.png") no-repeat center center;
+}
+.ui-layout-toggler-east-closed{
+	background: #FFF url("../images/arrow_left.png") no-repeat center center;
+}
+
+.ui-layout-toggler-south{
+	height: 12px !important;
+}
+.ui-layout-toggler-south-open{
+	top: -6px !important;
+	background: #BBB url("../images/arrow_top.png") no-repeat center center;
+}
+.ui-layout-toggler-south-closed{
+	top: 0 !important;
+	background: #BBB url("../images/arrow_bottom.png") no-repeat center center;
+}
+
+
+
+.ui-layout-west,
+.ui-layout-east{
+	top: 8px !important;
+}
+
+.ui-layout-resizer{
+	width: 0 !important;
+}
+.ui-layout-toggler-west-open:hover,
+.ui-layout-toggler-east-open:hover{
+	background-color: #E9F7FF;
+}
+
+
+/* 버튼 및 셀렉트박스 컬러 */
+button.btn-default{
+	border-color: #39989C;
+	background-color: #39989C;
+	color: #FFF;
+}
+button.btn-default:hover{
+	background-color: #33CCCC;
+	color: #FFF;
+}
+
+/* 셀렉트박스 컬러 */
+.dropdown-toggle{
+	background-color: #FFF !important;
+	border-color: #BBB;
+}
+.bootstrap-select > .dropdown-toggle,
+.bootstrap-select > .dropdown-toggle.bs-placeholder{
+	color: #444;
+}
+.bootstrap-select > .dropdown-toggle:active,
+.bootstrap-select > .dropdown-toggle:focus,
+.bootstrap-select > .dropdown-toggle:hover,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:active,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:hover{
+	background-color: #DFEDFF;
+	color: #000;
+}
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus{
+	background-color: #39989C;
+	color: #FFF;
+}
+
+
+.ui-helper-reset{ font-size: 1em }
+.ui-accordion .ui-accordion-header{ margin-top: 6px }
+
+
+.border0{ border: 0 !important }
+
+
+/* 메인 Carousel */
+.carousel-inner > .item > img{
+	width: 100%;
+	margin: 0 auto;
+}
+
+
+/* bootstrap media 수정 */
+@media all and (min-width: 1200px){
+	.container{ width: 1260px !important }
+	.ui-layout-container{ width: 100% !important }
+}
+

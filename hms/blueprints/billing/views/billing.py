@@ -56,7 +56,7 @@ def coupon_code():
 @login_required
 def create():
     if current_user.subscription:
-        flash(_('You already have an active subscription.'), 'info')
+        flash(_('You already have an active subscription.'), 'util')
         return redirect(url_for('user.settings'))
 
     plan = request.args.get('plan')

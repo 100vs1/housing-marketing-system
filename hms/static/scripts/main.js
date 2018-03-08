@@ -336,7 +336,7 @@ var bets = function () {
         $(recentBetsSelector + ' tr:last').remove();
       }
 
-      return $outcomeStatus.addClass('alert alert-info alert-small').html(status_class);
+      return $outcomeStatus.addClass('alert alert-util alert-small').html(status_class);
     }).fail(function (xhr, status, error) {
       var status_class = 'alert-error';
       var error_status = 'You are out of coins. You should buy more.';

@@ -1,20 +1,24 @@
 # -*- coding: utf-8 -*-
+
+import csv
+import sys
+
 from flask import (
     Blueprint,
     redirect,
     request,
     flash,
     url_for,
-    render_template)
+    jsonify)
+from flask import render_template, session
 from flask_login import (
     login_required,
     login_user,
     current_user,
     logout_user)
 
-from lib.safe_next_url import safe_next_url
+from hms.blueprints.rest_api.models.vWordlAPI import VWorldAPI
 from hms.blueprints.user.decorators import anonymous_required
-from hms.blueprints.user.models import User
 from hms.blueprints.user.forms import (
     LoginForm,
     BeginPasswordResetForm,
@@ -23,6 +27,8 @@ from hms.blueprints.user.forms import (
     WelcomeForm,
     UpdateCredentialsForm,
     UpdateLocaleForm)
+from hms.blueprints.user.models import User
+from lib.safe_next_url import safe_next_url
 
 user = Blueprint('user', __name__, template_folder='templates')
 
@@ -31,9 +37,29 @@ user = Blueprint('user', __name__, template_folder='templates')
 @anonymous_required()
 def login():
     form = LoginForm(next=request.args.get('next'))
+    
+    print('*' * 80)
+    print('Login Complete')
+    print('*' * 80)
 
+    # resp = make_response(render_template('user/login.html', form=form))
     if form.validate_on_submit():
         u = User.find_by_identity(request.form.get('identity'))
+
+        # print('*' * 80)
+        # print(u.id)
+        # print('*' * 80)
+        # resp.set_cookie('hms:user_id', '뭐라도 되야하는거 아니냐')
+        # resp.set_cookie('hms:hohoho', 'asdfasdfasdf')
+
+        # @after_this_request
+        # def remember_user_id(response):
+        #     response.set_cookie('user_id', str(u.id))
+        #
+        # print('*' * 50)
+        # for hoho in request.cookies:
+        #     print(hoho)
+        # print('*' * 50)
 
         if u and u.authenticated(password=request.form.get('password')):
             # As you can see remember me is always enabled, this was a design
@@ -60,7 +86,7 @@ def login():
             flash('Identity or password is incorrect.', 'error')
 
     return render_template('user/login.html', form=form)
-
+    # return resp
 
 @user.route('/logout')
 @login_required

@@ -4,7 +4,9 @@
 
 {% block body %}
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
         <h2>설정</h2>
         <h4 class="text-muted margin-bottom">{{ current_user.email }}</h4>
 
@@ -42,58 +44,6 @@
         </div>
         <a href="{{ url_for('billing.purchase_coins') }}"
            class="btn btn-primary">Buy more coins</a>#}
-    </div>
-    <div class="col-md-5 col-md-push-1 col-md-offset-1">
-        {% if current_user.subscription %}
-        <h2>{{ current_user.subscription.plan | title }}
-            subscription</h2>
-        <h4 class="text-muted margin-bottom">
-            {{ current_user.credit_card.brand }}
-            ****{{ current_user.credit_card.last4 }}
-            ({{ current_user.credit_card.exp_date.strftime('%m/%Y') }})
-        </h4>
-
-        <div class="list-group">
-            <a class="list-group-item"
-               href="{{ url_for('billing.update_payment_method') }}">
-                Update payment info
-            </a>
-            <a class="list-group-item"
-               href="{{ url_for('billing.billing_details') }}">
-                Billing details
-            </a>
-            <a class="list-group-item"
-               href="{{ url_for('billing.update') }}">
-                Change plan
-            </a>
-            <a class="list-group-item"
-               href="{{ url_for('billing.cancel') }}">
-                <span class="text-muted">Cancel subscription</span>
-            </a>
-        </div>
-        {% else %}
-        <h2>오늘 당장 등록하세요</h2>
-        <h4 class="text-muted">
-            황금알을 낳는 거위를 찾고 싶나요? 지금 등록하세요!
-        </h4>
-
-        <p>
-            자, 이제 계정을 만드시고 오늘 등록만 하시면 놀라운 일이 벌어집니다.
-        </p>
-        {#<a href="{{ url_for('billing.pricing') }}"
-             class="btn btn-primary">더 상세히</a>#}
-
-        <hr/>
-        {% if current_user.invoices %}
-        <h3>Previous subscription info</h3>
-        <div class="list-group">
-            <a class="list-group-item"
-               href="{{ url_for('billing.billing_details') }}">
-                Billing details
-            </a>
-        </div>
-        {% endif %}
-        {% endif %}
     </div>
 </div>
 {% endblock %}

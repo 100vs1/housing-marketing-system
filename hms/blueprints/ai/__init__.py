@@ -1,0 +1,1 @@
+from hms.blueprints.ai.views import ai

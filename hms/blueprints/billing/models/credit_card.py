@@ -61,7 +61,7 @@ class CreditCard(ResourceMixin, db.Model):
     @classmethod
     def extract_card_params(cls, customer):
         """
-        Extract the credit card info from a payment customer object.
+        Extract the credit card util from a payment customer object.
 
         :param customer: Payment customer
         :type customer: Payment customer

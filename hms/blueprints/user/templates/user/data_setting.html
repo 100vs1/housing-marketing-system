@@ -1,0 +1,536 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Data settings{% endblock %}
+
+{% block body %}
+<style>
+    .btn-file {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
+    }
+
+    .loader {
+        border: 8px solid #ffffff; /* Light grey */
+        border-radius: 50%;
+        border-top: 8px solid #3F316E; /* Blue */
+        width: 60px;
+        height: 60px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+        position: relative;
+        z-index: 10;
+        left: 50%;
+        bottom: 50%;
+        display: none;
+    }
+
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .wrap-loading { /*화면 전체를 어둡게 합니다.*/
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 2.1%;
+        z-index: 9;
+        background: rgba(0, 0, 0, 0.6); /*not in ie */
+        filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr='#20000000', endColorstr='#20000000'); /* ie */
+        display: none;
+    }
+
+    .modal-dialog.modal-fullsize {
+        width: 80%;
+        height: 100%;
+        margin: auto;
+        padding: 0;
+    }
+
+    .modal-content.modal-fullsize {
+        height: auto;
+        min-height: 800%;
+        border-radius: 0;
+    }
+
+    .remove-scroll-bar {
+        overflow: hidden;
+    }
+
+</style>
+<div class="loader"></div>
+<div id="mdl-set-field" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mdl-sef-field-label">
+    <!--<div class="modal-fullscreen modal-dialog modal-fullsize" role="document">-->
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mdl-sef-field-label"></h4>
+            </div>
+            <div class="modal-body">
+                <div id="dataTables"></div>
+                <div id="formatTables"></div>
+                <div class="container-fluid">
+                    <div class="row">
+                        <!--<div class="col-sm-6">-->
+                            <!--<div class="list-group">-->
+                                <!--<a class="list-group-item active">벌크 업로드 사용방법</a>-->
+                            <!--</div>-->
+                            <!--<div id="sortable" class="list-group" style="display: none;">-->
+                                <!--<div class="form-group">-->
+                                    <!--<a> 마커 벌크 업로드 기능 사용법 image 예시</a>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <div class="col-sm-12">
+                            <div class="list-group">
+                                <a class="list-group-item active">데이터 리스트</a>
+                            </div>
+                            <div> header를 한 번 클릭해주세요. </div>
+                            <div class="text-right">
+                                <a id="view_manual"><i class="fa fa-question-circle fa-2x" aria-hidden="true"></i></a>
+                            </div>
+                            <!--<ul class="nav nav-tabs">-->
+                                <!--<li class="active"><a href="#">Only Data Field</a></li>-->
+                                <!--<li><a href="#">Full Data Set</a></li>-->
+                            <!--</ul>-->
+                            <div id="user-data-ex-parent">
+                                <div id="user-data-ex"></div>
+                            </div>
+                            <div id="div-user-data" class="col-sm-9">
+                                <div class="list-group">
+                                    <a class="list-group-item active">My Data</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="btn-save-data-complete" type="button" class="btn btn-default" data-dismiss="modal">저장
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#sortable').sortable({});
+        $(".user-data-field").draggable();
+//        $("#format-category").draggable();
+//        $("#format-title").draggable();
+//        $("#format-address").draggable();
+//        $("#format-address").draggable();
+//        $("#format-address").draggable();
+//        $("#format-address").draggable();
+//        $("#format-address").draggable();
+//        $("#format-address").draggable();
+//        $("#format-address").draggable();
+    });
+</script>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Save Data Result</h4>
+            </div>
+            <div id="mdl-data-result" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div>
+    <div class="col-md-8 col-md-offset-2">
+        <form id="frm-data-setting" method="post" enctype="multipart/form-data">
+            <input id="data-file" name="data-file" type="file" class="file" data-icon="false">
+        </form>
+
+        <div class="text-center">
+            <button id="btn-submit" type="button" class="btn btn-default">저장</button>
+            <button id="btn-cancel" type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+            <!--<button id="btn-alert" type="button" class="btn btn-default">알림 허용 테스트</button>-->
+            <!--<button id="btn-notification" type="button" class="btn btn-default">알림 받기 테스트</button>-->
+            <!--<button id="btn-web-socket" type="button" class="btn btn-default">웹 소켓 테스트</button>-->
+        </div>
+
+        <br>
+
+        <div class="alert alert-warning">
+            <i class="fa fa-exclamation-circle text-primary-bookmark" aria-hidden="true"> Notification</i>
+            <br>
+            <i>사용자 데이터 입력 파일은 csv 양식을 지원합니다.</i><br>
+            <i>데이터 입력 양식은 <a>클릭</a>하여 다운을 받으실 수 있습니다.</i><br>
+            <i>본 시스템에서 지원하지 않는 데이터 입력 양식으로 데이터 저장 시 오류가 발생 할 수 있습니다.</i>
+        </div>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+        <div class="text-center">
+            <h3><strong>< 사용자 데이터 입력 이력 관리 ></strong></h3>
+        </div>
+        <div id="data_setting_table_parent">
+            <div id="data_setting_table"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        readBulkHistory();
+
+        $('#btn-submit').on('click', function () {
+            var file_name = $('#data-file').val();
+            console.log("file_name :" + file_name + ":");
+            if (file_name !== undefined && file_name !== '') {
+                if (file_name.substr(file_name.lastIndexOf('.') + 1) !== 'csv') {
+                    alert('파일 확장자는 csv만을 지원합니다.');
+                } else {
+                    getCSVField();
+                }
+                console.log('타니?');
+////                saveCSVFile();
+
+            } else {
+                alert('파일을 지정해주세요.');
+            }
+        });
+
+        $('#btn-save-data-complete').on('click', function () {
+            saveCSVFile();
+
+        });
+
+        function notificationAllowable() {
+            Notification.requestPermission(function (result) {
+                console.log(result);
+                //요청을 거절하면,
+                if (result === 'denied') {
+                    return;
+                }
+                //요청을 허용하면,
+                else {
+                    //데스크탑 알림 권한 요청 버튼을 비활성화
+                    requestPermissionButton.attr('disabled', 'disabled');
+                    //데스크탑 메시지 입력폼을 활성화
+                    notificationMessage.removeAttr('disabled');
+                    //데스크탑 메시지 요청 버튼을 활성화
+                    notificationButton.removeAttr('disabled');
+                    return;
+                }
+            });
+        }
+
+        notificationAllowable();
+
+        $('#btn-alert').on('click', function () {
+            notificationAllowable();
+        });
+
+        $('#btn-notification').on('click', function () {
+            var message = '데이터 업로드가 완료 되었습니다. \n(x건)';
+
+
+            //메시지를 입력한 경우에만,
+            if (message !== null && message.length > 0) {
+                var options = {
+                    body: message,
+                    icon: "{{url_for('static', filename='images/logo/logo_80x80.png') }}",
+                    sound: "{{url_for('static', filename='sounds/arpeggio.mp3') }}"
+                };
+
+                //데스크탑 알림 요청
+                var notification = new Notification("Ctree House 데이터 업로드 알림", options);
+
+                var audio = new Audio("{{url_for('static', filename='sounds/arpeggio.mp3') }}");
+                audio.play();
+//                //알림 후 5초 뒤,
+                setTimeout(function () {
+                    //얼람 메시지 닫기
+                    notification.close();
+                }, 20000);
+            }
+        });
+
+        $('#btn-response').on('click', function () {
+            $.ajax({
+                url: '{{url_for("bulk_upload.response_test")}}',
+                processData: false,
+                contentType: false,
+                data: {test: 'test'},
+                method: 'POST',
+                timeout: 123412341234,
+                beforeSend: function () {
+                    showLoader();
+                },
+                complete: function () {
+                    hideLoader();
+                }
+            }).done(function (data) {
+                alert('하이다 씨벌' + data);
+            });
+        });
+
+        $('#view_manual').on('click', function() {
+            alert('기능 미구현 - 데이터 벌크 업로드 설명서 보여줄 예정')
+        })
+
+
+    });
+
+    function showLoader() {
+        $('.loader').show();
+        $('.wrap-loading').show();
+    }
+
+    function hideLoader() {
+        $('.loader').hide();
+        $('.wrap-loading').hide();
+    }
+
+    function getFileExtension1(filename) {
+        return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename)[0] : undefined;
+    }
+
+    function getFormData() {
+        var form = $('#frm-data-setting')[0];
+        var formData = new FormData(form);
+        formData.append("file", $('#data-file')[0].files[0]);
+
+        return formData;
+    }
+
+    var dataFieldList = [];
+
+    function getCSVField() {
+        var form = $('#frm-data-setting')[0];
+        var formData = new FormData(form);
+        formData.append("file", $('#data-file')[0].files[0]);
+
+        var tableData = [];
+
+        var fieldEditor = function (cell, onRendered, success, cancel) {
+            var editor = $(
+                "<select>" +
+                    "<option value='null'></option>" +
+                    "<option value='address'>주소</option>" +
+                    "<option value='category'>카테고리</option>" +
+                    "<option value='title'>제목</option>" +
+                    "<option value='content'>내용</option>" +
+                    "<option value='number1'>숫자형_1</option>" +
+                    "<option value='number2'>숫자형_2</option>" +
+                    "<option value='number3'>숫자형_3</option>" +
+                    "<option value='number4'>숫자형_4</option>" +
+                    "<option value='number5'>숫자형_5</option>" +
+                    "<option value='string1'>문자형_1</option>" +
+                    "<option value='string2'>문자형_2</option>" +
+                    "<option value='string3'>문자형_3</option>" +
+                    "<option value='string4'>문자형_4</option>" +
+                    "<option value='string5'>문자형_5</option>" +
+                "</select>");
+            editor.css({
+                "padding": "3px",
+                "width": "100%",
+                "box-sizing": "border-box",
+            });
+
+            console.log(cell.getValue());
+            editor.val(cell.getValue());
+
+            onRendered(function () {
+                editor.focus();
+                console.log(editor.focus());
+                editor.css("height", "100%");
+            });
+
+            editor.on("change blur", function (e, row) {
+                console.log(editor);
+                success(editor.val());
+            });
+
+            return editor;
+        };
+
+        $.ajax({
+            url: '{{url_for("bulk_upload.get_cols")}}',
+            processData: false,
+            contentType: false,
+            data: formData,
+            method: 'POST',
+            async: false,
+            complete: function () {
+                $(".user-data-field").draggable({
+                    connectToSortable: "#sortable",
+//                    helper: "clone",
+                    revert: "true"
+                });
+            }
+        }).done(function (data) {
+            var dataFieldList = [];
+            var columns = [];
+            console.log(data);
+            if (data.status && data.status === '500') {
+                alert(data.msg);
+            } else {
+                $.each(data.results, function (i, item) {
+                    tableData.push({header: item.col, field: '', exData: item.first_row, row: i});
+                });
+            }
+        });
+
+        var cols = [
+            {title: "Header", field: "header", width: 349, align: 'center', color: '#ff0000'},
+            {title: "Target Field", field: "field", width: 140, align: 'center', editor: fieldEditor, headerSort:false},
+            {title: "Data example", field: "exData", width: 349, align: 'center'}
+        ];
+
+        $('#user-data-ex').remove();
+
+        var userDataEx = document.createElement('div');
+        userDataEx.setAttribute('id', 'user-data-ex');
+
+        $('#user-data-ex-parent').append(userDataEx);
+
+        $('#user-data-ex').tabulator({
+            movableColumns: true,
+            layout: "fitDataFill",
+            data: tableData,
+            height: "100%",
+            columns: cols
+        });
+
+        $('#mdl-sef-field-label').text('유저 마커 데이터 셋 - ' + $('#data-file').val());
+
+        $('#div-user-data').html(dataFieldList.join(''));
+        $('#mdl-set-field').modal('show');
+    }
+
+    function saveCSVFile() {
+        var form = $('#frm-data-setting')[0];
+        var formData = new FormData(form);
+        formData.append("file", $('#data-file')[0].files[0]);
+        $.each($('#user-data-ex').tabulator("getData"), function(i, item){
+            formData.append("match_info", JSON.stringify(item));
+        });
+
+        console.log($('#user-data-ex').tabulator("getData"));
+
+        $.ajax({
+            url: '{{url_for("bulk_upload.save_data")}}',
+            processData: false,
+            contentType: false,
+            data: formData,
+            method: 'POST',
+            beforeSend: function () {
+                showLoader();
+            },
+            complete: function () {
+                hideLoader();
+
+                setTimeout(readBulkHistory(), 10000);
+            },
+        }).done(function (data) {
+            var result = [];
+            result.push("<p>성공 : " + data.successCnt + "</p>" + "<p>실패 : " + data.failCnt + "</p>" + "<p>실패이유 : " + data.failReason + "</p>");
+
+            $('#mdl-data-result').html(result.join(''));
+            $('#myModal').modal('show');
+        });
+    }
+
+//    function readBulkHistory() {
+//        console.log("안타니?");
+//        $.ajax({
+//            url: '{{url_for("bulk_upload.srch_bulk_history")}}',
+//            processData: false,
+//            contentType: false,
+//            method: 'POST',
+//            beforeSend: function () {
+//                showLoader();
+//            },
+//            complete: function () {
+//                hideLoader();
+//            },
+//        }).done(function (data) {
+//            console.log(data.rows)
+//        });
+//    }
+//    readBulkHistory();
+
+//    $('#data_setting_table').remove();
+//
+//    let dataSettingTable = document.createElement('div');
+//    dataSettingTable.setAttribute('id', 'pivotTables');
+//
+//    $('#data_setting_table_parent').append(dataSettingTable);
+
+    function readBulkHistory(){
+        $('#data_setting_table').remove();
+
+        let dataSettingTable = document.createElement('div');
+        dataSettingTable.setAttribute('id', 'data_setting_table');
+
+        $('#data_setting_table_parent').append(dataSettingTable);
+
+        $('#data_setting_table').tabulator({
+            height: "520px",
+            fitColumns: true,
+            ajaxURL: '{{ url_for("bulk_upload.srch_bulk_history") }}',
+            ajaxConfig: "POST",
+            ajaxResponse: function (url, params, response) {
+                return response.rows
+            },
+            columns: [
+                {title: "생성일", field: "created_on"},
+                {title: "파일명", field: "file_name"},
+                {title: "총 레코드 수", field: "total_cnt", sorter: "number"},
+                {title: "성공 수", field: "success_cnt"},
+                {title: "실패 수", field: "fail_cnt"},
+            ]
+        });
+    }
+
+    $()
+</script>
+{% endblock %}

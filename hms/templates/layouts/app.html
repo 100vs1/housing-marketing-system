@@ -13,7 +13,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a href="{{ url_for('page.home') }}">
-                <img src="{{ url_for('static', filename='images/hms.jpg') }}"
+                <img src="{{ url_for('static', filename='images/logo/logo_main.jpg') }}"
                      class="img-responsive"
                      width="229" height="50" title="주택 마케팅 포털 시스템" alt="주택 마케팅 포털 시스템"/>
             </a>
@@ -51,8 +51,12 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{{ url_for('situation.index') }}">지역현황</a></li>
-                <li><a href="#">미래예측</a></li>
-                <li id="ai"><a href="#" onclick="alert('준비 중입니다.')">인공지능</a></li>
+                <li><a href="{{ url_for('register.index') }}">현장등록</a></li>
+                <li><a href="{{ url_for('statistic.index') }}">통계보드</a></li>
+
+                <!--<li><a href="#">미래예측</a></li>-->
+                <!--<li id="ai"><a href="{{ url_for('ai.index') }}">인공지능</a></li>-->
+                <li><a href="{{ url_for('bulk_upload.data_setting') }}">사용자 데이터 정의</a></li>
                 <li><a href="{{ url_for('blog.posts') }}">커뮤니티</a></li>
                 {% if current_user.role == 'admin' %}
                 <li>

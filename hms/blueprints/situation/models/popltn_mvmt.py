@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-from sqlalchemy import func, and_, or_, desc, cast, String, Integer
-from hms.extensions import db
+
+import datetime
+from sqlalchemy import func, and_, or_, desc, cast, DATE, asc, collate
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.sql import compiler
+
 from hms.blueprints.common.models.code import Code
-from hms.blueprints.common.models.area import LawSidArea, LawSggArea, LawEmdArea
+from hms.blueprints.common.models.area import AdmSidArea, AdmSggArea, AdmEmdArea
+from geoalchemy2.types import Geometry
+from hms.extensions import db
 
 
 class PopltnMvmt(db.Model):
@@ -36,20 +42,50 @@ class PopltnMvmt(db.Model):
         super(PopltnMvmt, self).__init__(**kwargs)
 
     @classmethod
+    def find_by_filter_for_check(cls, out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd, in_emd_cd,
+                               mv_reasn_cds, aplcnt_age_cds, fmly_nums, st_yyyymm, ed_yyyymm):
+        result = db.session.query(
+                func.count(cls.id)
+            ).\
+            filter(or_(cls.out_sid_cd == out_sid_cds,
+                       cls.out_sgg_cd == out_sgg_cds,
+                   cls.out_emd_cd == out_emd_cds)). \
+            filter(cls.aplcnt_age_cd.in_(aplcnt_age_cds)). \
+            filter(cls.mv_reasn_cd.in_(mv_reasn_cds)). \
+            filter(cls.fmly_num.in_(fmly_nums)). \
+            filter(or_(cls.in_sid_cd == in_sid_cd,
+                       cls.in_sgg_cd == in_sgg_cd,
+                       cls.in_emd_cd == in_emd_cd)). \
+            filter(and_(cls.in_yyyymm >= st_yyyymm,
+                        cls.in_yyyymm <= ed_yyyymm))
+
+        return result[0][0]
+
+    @classmethod
     def find_by_filter_for_map(cls, out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd, in_emd_cd,
-                               mv_reasn_cds, aplcnt_age_cds, aplcnt_sex_cds, fmly_nums, st_yyyymm, ed_yyyymm):
+                               mv_reasn_cds, aplcnt_age_cds, fmly_nums, st_yyyymm, ed_yyyymm):
         # 서브 쿼리
-        geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(LawSidArea.geom)).label('geojson')). \
-            filter(LawSidArea.sid_cd == cls.in_sid_cd).limit(1).label('geojson')
+        geojson = ''
+        if in_sid_cd is not None:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmSidArea.geom)).label('geojson')). \
+                filter(AdmSidArea.sid_cd == cls.in_sid_cd).limit(1).label('geojson')
+            group_by_target = cls.in_sid_cd
+        elif in_sgg_cd is not None:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmSggArea.geom)).label('geojson')). \
+                filter(AdmSggArea.sgg_cd == cls.in_sgg_cd).limit(1).label('geojson')
+            group_by_target = cls.in_sgg_cd
+        elif in_emd_cd is not None:
+            geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+                filter(AdmEmdArea.emd_cd == cls.in_emd_cd).limit(1).label('geojson')
+            group_by_target = cls.in_emd_cd
 
         results = db.session.query(geojson,
                                    func.count(cls.fmly_num).label('hshold_cnt'),
                                    func.sum(cls.fmly_num).label('fmly_sum')). \
-            filter(or_(cls.out_sid_cd.in_(out_sid_cds),
-                       cls.out_sgg_cd.in_(out_sgg_cds),
-                       cls.out_emd_cd.in_(out_emd_cds))). \
+            filter(or_(cls.out_sid_cd == out_sid_cds,
+                       cls.out_sgg_cd == out_sgg_cds,
+                       cls.out_emd_cd == out_emd_cds)). \
             filter(cls.aplcnt_age_cd.in_(aplcnt_age_cds)). \
-            filter(cls.aplcnt_sex_cd.in_(aplcnt_sex_cds)). \
             filter(cls.mv_reasn_cd.in_(mv_reasn_cds)). \
             filter(cls.fmly_num.in_(fmly_nums)). \
             filter(or_(cls.in_sid_cd == in_sid_cd,
@@ -57,57 +93,54 @@ class PopltnMvmt(db.Model):
                        cls.in_emd_cd == in_emd_cd)). \
             filter(and_(cls.in_yyyymm >= st_yyyymm,
                         cls.in_yyyymm <= ed_yyyymm)). \
-            group_by(cls.in_sid_cd)
+            group_by(group_by_target)
 
         return results
 
     @classmethod
-    def find_by_filter_for_grid(cls, out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd, in_emd_cd,
-                                mv_reasn_cds, aplcnt_age_cds, aplcnt_sex_cds, fmly_nums, st_yyyymm, ed_yyyymm):
-        results = db.session.query(cls.in_yyyymm,
-                                   db.session.query(LawSidArea.sid_ko_nm).
-                                   filter(LawSidArea.sid_cd == cls.in_sid_cd).limit(1).label('in_sid'),
-                                   db.session.query(LawSggArea.sgg_ko_nm).
-                                   filter(LawSggArea.sgg_cd == cls.in_sgg_cd).limit(1).label('in_sgg'),
-                                   db.session.query(LawEmdArea.emd_ko_nm).
-                                   filter(LawEmdArea.emd_cd == cls.in_emd_cd).limit(1).label('in_emd'),
-                                   db.session.query(LawSidArea.sid_ko_nm).
-                                   filter(LawSidArea.sid_cd == cls.out_sid_cd).limit(1).label('out_sid'),
-                                   db.session.query(LawSggArea.sgg_ko_nm).
-                                   filter(LawSggArea.sgg_cd == cls.out_sgg_cd).limit(1).label('out_sgg'),
-                                   db.session.query(LawEmdArea.emd_ko_nm).
-                                   filter(LawEmdArea.emd_cd == cls.out_emd_cd).limit(1).label('out_emd'),
-                                   # db.session.query(Code.name).
-                                   # filter(and_(Code.code == cls.mv_reasn_cd,
-                                   #             Code.group_code == 'mv_reasn')).limit(1).label('mv_reasn'),
-                                   # db.session.query(Code.name).
-                                   # filter(and_(Code.code == cls.aplcnt_clsftn_cd,
-                                   #             Code.group_code == 'aplcnt_clsftn')).limit(1).label('aplcnt_clsftn'),
-                                   # db.session.query(Code.name).
-                                   # filter(and_(cast(Code.code, Integer) == cast(cls.aplcnt_age_cd, Integer),
-                                   #             Code.group_code == 'aplcnt_age')).limit(1).label('aplcnt_age'),
-                                   # db.session.query(Code.name).
-                                   # filter(and_(cast(Code.code, Integer) == cls.aplcnt_sex_cd,
-                                   #             Code.group_code == 'aplcnt_sex')).limit(1).label('aplcnt_sex'),
-                                   cls.mv_reasn_cd.label('my_reasn'),
-                                   cls.aplcnt_clsftn_cd.label('aplcnt_clsftn'),
-                                   cls.aplcnt_age_cd.label('aplcnt_age'),
-                                   cls.aplcnt_sex_cd.label('aplcnt_sex'),
-                                   cls.fmly_num). \
-            filter(or_(cls.out_sid_cd.in_(out_sid_cds),
-                       cls.out_sgg_cd.in_(out_sgg_cds),
-                       cls.out_emd_cd.in_(out_emd_cds))). \
-            filter(cls.aplcnt_age_cd.in_(aplcnt_age_cds)). \
-            filter(cls.aplcnt_sex_cd.in_(aplcnt_sex_cds)). \
-            filter(cls.mv_reasn_cd.in_(mv_reasn_cds)). \
-            filter(cls.fmly_num.in_(fmly_nums)). \
+    def find_by_filter_for_bubble(cls, out_sid_cds, out_sgg_cds, out_emd_cds, in_sid_cd, in_sgg_cd, in_emd_cd,
+                                mv_reasn_cds, aplcnt_age_cds, fmly_nums, st_yyyymm, ed_yyyymm):
+
+        geojson = db.session.query(func.ST_AsGeoJSON(func.ST_Centroid(AdmEmdArea.geom)).label('geojson')). \
+            filter(AdmEmdArea.emd_cd == cls.in_emd_cd).limit(1).label('geojson')
+
+        result = db.session.query(db.session.query(AdmEmdArea.emd_ko_nm).
+                                  filter(AdmEmdArea.emd_cd == cls.in_emd_cd).limit(1).label('area_ko_nm'),
+                                  geojson,
+                                  cls.in_emd_cd,
+                                  func.sum(cls.fmly_num).label('total_sum')). \
+            filter(or_(cls.out_sid_cd == out_sid_cds,
+                       cls.out_sgg_cd == out_sgg_cds,
+                       cls.out_emd_cd == out_emd_cds)). \
             filter(or_(cls.in_sid_cd == in_sid_cd,
                        cls.in_sgg_cd == in_sgg_cd,
                        cls.in_emd_cd == in_emd_cd)). \
+            filter(cls.aplcnt_age_cd.in_(aplcnt_age_cds)). \
+            filter(cls.mv_reasn_cd.in_(mv_reasn_cds)). \
+            filter(cls.fmly_num.in_(fmly_nums)). \
             filter(and_(cls.in_yyyymm >= st_yyyymm,
                         cls.in_yyyymm <= ed_yyyymm)). \
-            order_by(desc(cls.in_yyyymm))
+            group_by(cls.in_emd_cd)
 
-        return results
+        print(result.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+        return result
 
+    @classmethod
+    def find_summary_by_geom(cls, geom):
+        target_yyyymm = db.session.query(func.max(cls.in_yyyymm)).limit(1)
 
+        target_emd = AdmEmdArea.find_emd_cds_by_geom(geom)
+
+        in_popltn_sum = db.session.query(func.count(cls.id)).\
+            filter(cls.in_emd_cd.in_(target_emd)).\
+            filter(cls.in_yyyymm == target_yyyymm).limit(1)
+
+        out_popltn_sum = db.session.query(func.count(cls.id)). \
+            filter(cls.out_emd_cd.in_(target_emd)). \
+            filter(cls.in_yyyymm == target_yyyymm).limit(1)
+
+        return {
+            'pm_yyyymm': target_yyyymm,
+            'in_popltn_sum': in_popltn_sum,
+            'out_popltn_sum': out_popltn_sum,
+        }

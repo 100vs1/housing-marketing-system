@@ -1,0 +1,1 @@
+from hms.blueprints.rest_api.views import rest_api

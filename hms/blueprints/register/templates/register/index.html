@@ -1,0 +1,303 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Housing Marketing System{% endblock %}
+{% block meta_description %}Compete against yourself and others by guessing the
+outcome of a dice roll. Win points and dominate the leaderboard.{% endblock %}
+
+{% block body %}
+<style type="text/css">
+    td input.table_input{
+        width: 400px;
+    }
+</style>
+
+<div class="container">
+    <h3>현장 등록</h3>
+    <form>
+        <table class="table">
+            <tr>
+                <td class="text-right">
+                    <label for="busins_type">사업구분</label>
+                </td>
+                <td>
+                    <select id="busins_type" name="busins_type" class="selectpicker" title="카테고리 선택"
+                            data-size="10" data-actions-box="true">
+                        <option value="apt">아파트</option>
+                        <option value="officetel">오피스텔</option>
+                        <option value="row_house">연립주택</option>
+                        <option value="detatched_house">단독주택</option>
+                        <option value="office">오피스</option>
+                        <option value="shopping">상가</option>
+                        <option value="etc">기타</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="complex_name">단지명</label>
+                </td>
+                <td>
+                    <input id="complex_name" name="complex_name" class="form-control margin-bottom table_input" placeholder="단지명을 입력하세요.">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="site_addr">현장주소</label>
+                </td>
+                <td>
+                    <input id="site_addr" name="site_addr" class="form-control margin-bottom table_input" placeholder="현장주소를 입력하세요.">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="operator_name">시행사</label>
+                </td>
+                <td>
+                    <input id="operator_name" name="operator_name" class="form-control margin-bottom table_input" placeholder="시행사를 입력하세요.">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="builder_name">시공사</label>
+                </td>
+                <td>
+                    <input id="builder_name" name="builder_name" class="form-control margin-bottom table_input" placeholder="시공사를 입력하세요.">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="call_number">전화번호</label>
+                </td>
+                <td>
+                    <input type="tel" id="call_number" name="call_number" class="form-control margin-bottom table_input" placeholder="전화번호를 입력하세요.">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="model-addr">모델 하우스 주소</label>
+                </td>
+                <td id="td-model">
+                    <div>
+                        <input name="model_addr" class="form-control margin-bottom table_input" placeholder="모델 하우스 주소를 입력하세요." style="display: inline-block">
+                        <button id="btn-add-model" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="open_date">오픈일</label>
+                </td>
+                <td class="form-inline">
+                    <input class="form-control margin-bottom" id="open_date">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label for="advt_date">광고일</label>
+                </td>
+                <td class="form-inline">
+                    <input class="form-control margin-bottom" id="advt_date">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label>청약일</label>
+                </td>
+                <td class="form-inline">
+                    <input id="offer_sdate" class="form-control margin-bottom" > ~
+                    <input id="offer_edate" class="form-control margin-bottom" >
+
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label>계약일</label>
+                </td>
+                <td class="form-inline">
+                    <input class="form-control margin-bottom" id="contract_sdate"> ~
+                    <input class="form-control margin-bottom" id="contract_edate">
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label>조감도</label>
+                </td>
+                <td>
+                    <div>
+                        <input id="input-b1" name="input-b1" type="file" class="file">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label>투시도</label>
+                </td>
+                <td>
+                    <div>
+                        <input id="input-b1" name="input-b1" type="file" class="file">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label>배치도</label>
+                </td>
+                <td>
+                    <div>
+                        <input id="input-b1" name="input-b1" type="file" class="file">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label>동호수표</label>
+                </td>
+                <td>
+                    <div>
+                        <input id="input-b1" name="input-b1" type="file" class="file">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">
+                    <label>커뮤니티</label>
+                </td>
+                <td>
+                    <div>
+                        <input id="input-b1" name="input-b1" type="file" class="file">
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <h3>공급 세대</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">타입</th>
+                    <th class="text-center">전용면적</th>
+                    <th class="text-center">분양면적</th>
+                    <th class="text-center">계약면적</th>
+                    <th class="text-center">분양가</th>
+                    <th class="text-center">평면도</th>
+                    <th class="text-center">ISO</th>
+                    <th class="text-center">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="align-middle">1</td>
+                    <td><input class="form-control margin-bottom" placeholder="타입" style="display: inline-block"></td>
+                    <td><input class="form-control margin-bottom" placeholder="전용면적" style="display: inline-block"></td>
+                    <td><input class="form-control margin-bottom" placeholder="분양면적" style="display: inline-block"></td>
+                    <td><input class="form-control margin-bottom" placeholder="계약면적" style="display: inline-block"></td>
+                    <td><input class="form-control margin-bottom" placeholder="분양가" style="display: inline-block"></td>
+                    <td><input name="input-b1" type="file" class="file"></td>
+                    <td><input name="input-b1" type="file" class="file"></td>
+                    <td>
+                        <button class="btn btn-default btn-sm" type="button">
+                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-center" style="margin-bottom: 30px;">
+            <button id="btn-bookmark-submit" type="button" class="btn btn-default">저장</button>
+            <button id="btn-bookmark-cancel" type="button" class="btn btn-default">취소</button>
+        </div>
+    </form>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#btn-add-model').on('click', function () {
+            addCloneRow($(this));
+        })
+
+    });
+
+    function addCloneRow(el){
+        console.log(el);
+        console.log($(el).parent());
+        console.log(el.parent().parent());
+
+        let $parent = $(el).parent();
+        let $grandParent = $parent.parent();
+
+        console.log($parent);
+        console.log($grandParent);
+
+        $grandParent.append($parent);
+        console.log('하이');
+//        $
+//        $btn = $('#btn-add-model');
+//        console.log();
+//
+//        console.log($('#btn-add-model').siblings()[0]);
+//        $clone = $('#btn-add-model').clone();
+//        let html = $btn.parent().html()
+//        console.log(html);
+//        let content = '<div>' +
+//            html +
+//            '</div>';
+//        console.log(content);
+//
+//        $('#td-model').prepend(content);
+//
+//        $btn.html('<i class="fa fa-minus" aria-hidden="true"></i>');
+//        $btn.attr('onclick', 'hehe()');
+//        alert('하이다 씨바');
+    }
+
+    function hehe() {
+        console.log($(this));
+        alert('지울거다 누구보다 깨끗히');
+    }
+
+    function hi() {
+
+    }
+    //    $.fn.datepicker.dates[''] = {
+    //        days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    //        daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    //        daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+    //        months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    //        monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    //        today: "Today",
+    //        clear: "Clear",
+    //        format: "mm/dd/yyyy",
+    //        titleFormat: "MM yyyy", /* Leverages same syntax as 'format' */
+    //        weekStart: 0
+    //    };
+    var hmsUtil = new HmsUtil();
+
+    $.datepicker.setDefaults({
+        dateFormat: 'yy-mm-dd',
+        prevText: '이전 달',
+        nextText: '다음 달',
+        monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        monthNamesShort: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+        dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+        dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+        showMonthAfterYear: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true,
+        selectOtherMonths: true
+    });
+
+    $(function () {
+        $("#open_date").datepicker();
+        $("#advt_date").datepicker();
+        $("#offer_sdate").datepicker();
+        $("#offer_edate").datepicker();
+        $("#contract_sdate").datepicker();
+        $("#contract_edate").datepicker();
+    });
+
+</script>
+{% endblock %}

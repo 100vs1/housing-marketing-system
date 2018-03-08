@@ -9,6 +9,7 @@ from itsdangerous import URLSafeTimedSerializer
 from werkzeug.contrib.fixers import ProxyFix
 
 from hms.blueprints.admin import admin
+from hms.blueprints.ai import ai
 from hms.blueprints.bet import bet
 from hms.blueprints.billing import billing
 from hms.blueprints.billing import stripe_webhook
@@ -20,10 +21,16 @@ from hms.blueprints.blog import blog
 from hms.blueprints.bookmark import bookmark
 from hms.blueprints.common import common
 from hms.blueprints.contact import contact
+from hms.blueprints.marker_bulk import bulk_upload
 from hms.blueprints.page import page
 from hms.blueprints.situation import situation
+from hms.blueprints.test_for_bdh import test
 from hms.blueprints.user import user
 from hms.blueprints.user.models import User
+from hms.blueprints.rest_api import rest_api
+from hms.blueprints.util import util
+from hms.blueprints.register import register
+from hms.blueprints.statistic import statistic
 from hms.extensions import (
     debug_toolbar,
     mail,
@@ -35,9 +42,10 @@ from hms.extensions import (
 )
 
 CELERY_TASK_LIST = [
-    'hms.blueprints.contact.tasks',
-    'hms.blueprints.user.tasks',
+    # 'hms.blueprints.contact.tasks',
+    # 'hms.blueprints.user.tasks',
     'hms.blueprints.billing.tasks',
+    # 'hms.blueprints.rest_api.tasks',
 ]
 
 
@@ -78,6 +86,7 @@ def create_app(settings_override=None):
 
     app.config.from_object('config.settings')
     app.config.from_pyfile('settings.py', silent=True)
+    app.config['JSON_AS_ASCII'] = False
 
     if settings_override:
         app.config.update(settings_override)
@@ -96,9 +105,16 @@ def create_app(settings_override=None):
     app.register_blueprint(stripe_webhook)
     app.register_blueprint(bet)
     app.register_blueprint(situation)
+    app.register_blueprint(ai)
     app.register_blueprint(bookmark)
     app.register_blueprint(blog)
     app.register_blueprint(common)
+    app.register_blueprint(rest_api)
+    app.register_blueprint(util)
+    app.register_blueprint(bulk_upload)
+    app.register_blueprint(register)
+    app.register_blueprint(statistic)
+    app.register_blueprint(test)
     template_processors(app)
     extensions(app)
     authentication(app, User)
@@ -114,7 +130,9 @@ def extensions(app):
     :param app: Flask application instance
     :return: None
     """
-    debug_toolbar.init_app(app)
+    if app.config.get('DEBUG'):
+        debug_toolbar.init_app(app)
+
     mail.init_app(app)
     csrf.init_app(app)
     db.init_app(app)
@@ -228,13 +246,12 @@ def exception_handler(app):
     :param app: Flask application instance
     :return: None
     """
-    mail_handler = SMTPHandler((app.config.get('MAIL_SERVER'),
-                                app.config.get('MAIL_PORT')),
-                               app.config.get('MAIL_USERNAME'),
-                               [app.config.get('MAIL_USERNAME')],
-                               '[Exception handler] A 5xx was thrown',
-                               (app.config.get('MAIL_USERNAME'),
-                                app.config.get('MAIL_PASSWORD')),
+    print("~~~~~~~~~~~~~~~~~~!@#!@#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@#!@#~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    mail_handler = SMTPHandler((app.config.get('MAIL_SERVER'), app.config.get('MAIL_PORT')),        #mailhost
+                               app.config.get('MAIL_USERNAME'),                                     #fromaddr
+                               [app.config.get('MAIL_USERNAME')],                                   #toaddrs
+                               '[Exception handler] A 5xx was thrown',                              #subject
+                               (app.config.get('MAIL_USERNAME'), app.config.get('MAIL_PASSWORD')),  #credentials
                                secure=())
 
     mail_handler.setLevel(logging.ERROR)

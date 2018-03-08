@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+from werkzeug.contrib import cache
+
 from hms.extensions import db
 from lib.util_sqlalchemy import ResourceMixin
+
+from werkzeug.contrib.cache import MemcachedCache
 
 
 class CodeGroup(ResourceMixin, db.Model):
@@ -41,6 +45,7 @@ class Code(ResourceMixin, db.Model):
     definition = db.Column(db.String(300))
     created_id = db.Column(db.Integer, nullable=False)
     updated_id = db.Column(db.Integer, nullable=False)
+    options = db.Column(db.String(), nullable=False)
 
     def __init__(self, **kwargs):
         # Call Flask-SQLAlchemy's constructor.
@@ -49,6 +54,7 @@ class Code(ResourceMixin, db.Model):
     @classmethod
     def find_by_group_code(cls, group_code):
         # 그룹코드로 가용한 코드 목록을 조회한다.
+
         codes = cls.query.join(CodeGroup). \
             filter(cls.group_code == group_code). \
             filter(CodeGroup.is_use == True). \

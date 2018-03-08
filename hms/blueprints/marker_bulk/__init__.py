@@ -1,0 +1,1 @@
+from hms.blueprints.marker_bulk.views import bulk_upload

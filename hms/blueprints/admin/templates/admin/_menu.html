@@ -1,5 +1,31 @@
-<li><a href="{{ url_for('admin.dashboard') }}">대시보드</a></li>
-<li role="separator" class="divider"></li>
-<li><a href="{{ url_for('admin.users') }}">사용자관리</a></li>
-{#<li><a href="{{ url_for('admin.coupons') }}">쿠폰관리</a></li>#}
-{#<li><a href="{{ url_for('admin.invoices') }}">청구서관리</a></li>#}
+<li class="dropdown">
+
+    <a href="#" class="dropdown-toggle"
+       data-toggle="dropdown"
+       role="button" aria-haspopup="true"
+       aria-expanded="false">관리자
+        <span class="caret"></span></a>
+    <ul class="dropdown-menu">
+        <!--<li><a href="{{ url_for('user.settings') }}">설정</a></li>-->
+        <li><a href="{{ url_for('admin.dashboard') }}">대시보드</a></li>
+        <!--<li role="separator" class="divider"></li>-->
+        <!--<li class="dropdown-header">세션</li>-->
+        <!--<li><a href="{{ url_for('user.logout') }}">로그아웃</a></li>-->
+        <li><a href="{{ url_for('admin.users') }}">사용자 관리</a></li>
+        <li role="separator" class="divider"></li>
+        <li class="dropdown-header">데이터 관리</li>
+        <!--<li><a href="#">인구통계</a></li>-->
+        <!--<li><a href="#">인구주택총조사</a></li>-->
+        <!--<li><a href="#">인구이동</a></li>-->
+        <!--<li><a href="#">수요분석 - 거래량</a></li>-->
+        <!--<li><a href="#">수요분석 - 가격</a></li>-->
+        <!--<li><a href="#">입주물량</a></li>-->
+        <!--<li><a href="#">자영업현황</a></li>-->
+        <!--<li><a href="#">세대통계</a></li>-->
+        <!--<li><a href="#">분양현황</a></li>-->
+    </ul>
+
+    <!--<li><a href="{{ url_for('admin.dashboard') }}">대시보드</a></li>-->
+    <!--<li role="separator" class="divider"></li>-->
+    <!--<li><a href="{{ url_for('admin.users') }}">사용자관리</a></li>-->
+</li>
