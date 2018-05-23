@@ -6,7 +6,9 @@ from celery.schedules import crontab
 DEBUG = True
 LOG_LEVEL = 'DEBUG'  # CRITICAL / ERROR / WARNING / INFO / DEBUG
 DEBUG_TB_INTERCEPT_REDIRECTS = False
+APP_ROOT = '../hms'
 
+SERVER_TYPE = 'local'
 SERVER_NAME = 'www.local_alphanets.ai'
 WTF_CSRF_ENABLED = False
 SECRET_KEY = 'insecurekeyfordev'
@@ -14,15 +16,15 @@ SECRET_KEY = 'insecurekeyfordev'
 # Flask-Mail.
 # MAIL_DEFAULT_SENDER = ''
 # MAIL_SERVER = ''
-MAIL_DEFAULT_SENDER = 'contact@local.host'
+MAIL_DEFAULT_SENDER = 'alpha.analytics.cop@local.host'
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 # MAIL_USERNAME = 'you@gmail.com'
 # MAIL_PASSWORD = 'awesomepassword'
-MAIL_USERNAME = '100vs1.engineer@gmail.com'
-MAIL_PASSWORD = 'dkfvkxptmxm'
+MAIL_USERNAME = 'alpha.analytics.cop@gmail.com'
+MAIL_PASSWORD = 'alpha2018'
 
 # Flask-Babel.
 LANGUAGES = {
@@ -31,6 +33,9 @@ LANGUAGES = {
     # 'es': 'Spanish'
 }
 BABEL_DEFAULT_LOCALE = 'en'
+
+# asset
+WEBPACK_MANIFEST_PATH = APP_ROOT + '/build/manifest.json'
 
 # Celery.
 CELERY_BROKER_URL = 'redis://:devpassword@redis:6379/0'
@@ -59,12 +64,19 @@ db_uri = 'postgresql://spark:alpha2018@183.111.230.254:5432/hms'
 SQLALCHEMY_DATABASE_URI = db_uri
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_BINDS = {
-    'gisdb': 'postgresql://spark:alpha2018@183.111.230.254:5432/gisdb'
+    'gisdb': 'postgresql://spark:alpha2018@183.111.230.254:5432/gisdb',
+    'hms_user': 'postgresql://spark:alpha2018@183.111.230.254:5432/hms_user',
+    'hms_system': 'postgresql://spark:alpha2018@183.111.230.254:5432/hms_system',
+    'hms': 'postgresql://spark:alpha2018@183.111.230.254:5432/hms'
     # 'gisdb': 'postgresql://spark:1234567@192.168.0.62:5432/gisdb'
     # 'gisdb': 'postgresql://spark:1234567@192.168.0.61:5432/gisdb'
     # 'gisdb': 'postgresql://spark:alpha2017@alphadb.c4jyep4rijvc.ap-northeast-2.rds.amazonaws.com:5432/gisdb'
 }
 
+# cache
+CACHE_TYPE = 'redis'
+CACHE_REDIS_URL = 'redis://localhost:6370/0'
+# CACHE_KEY_PREFIX = APP_NAME
 
 # User.
 SEED_ADMIN_EMAIL = 'dev@local.host'
@@ -146,9 +158,21 @@ RATELIMIT_STRATEGY = 'fixed-window-elastic-expiry'
 RATELIMIT_HEADERS_ENABLED = True
 
 # REST API Connection Info
-VWORLD_API_KEY = '483E0418-2F46-3223-80A1-F66D16A24685'
+
+if SERVER_TYPE is 'local':
+    VWORLD_API_KEY = 'A2D7B074-4BE3-3253-BA1B-04619AC46675'
+else:
+    VWORLD_API_KEY = '483E0418-2F46-3223-80A1-F66D16A24685'
+
 LIVY_URL = 'http://183.111.230.251:8998/'
 HDFS_URL = 'hdfs://183.111.230.251:9000/'
 
-NOORI_URL = "http://stat.molit.go.kr/portal/openapi/service/rest/getList.do"
+## statistic board
 NOORI_API_KEY = "dc0c6371a661434fa456c8b23ad1b9ce"
+NOORI_URL = "http://stat.molit.go.kr/portal/openapi/service/rest/getList.do"
+
+KOSIS_API_KEY = "MjBhMmY2ZjUzOTMwMzkyYmQ3ZWNjMzEzMzJlMmVkNmY="
+KOSIS_URL = "http://kosis.kr/openapi/statisticsData.do?method=getList"
+
+ECOS_API_KEY = "Z0BPT8N98YA1QSGZ2A7N"
+ECOS_URL = "http://ecos.bok.or.kr/api/"
